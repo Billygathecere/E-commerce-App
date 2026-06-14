@@ -43,7 +43,7 @@ import { AcademyPortal } from "./components/AcademyPortal";
 
 export default function App() {
   // --- CORE VIEW STATE ---
-  const [phoneScreen, setPhoneScreen] = useState<"home" | "catalog" | "detail" | "cart" | "profile">("home");
+  const [phoneScreen, setPhoneScreen] = useState<"home" | "catalog" | "detail" | "cart" | "profile" | "wishlist">("home");
   
   // --- AUTHENTICATION STATE ENGINES (Frontend Simulation Only!) ---
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -173,6 +173,12 @@ export default function App() {
       setFavorites([...favorites, productId]);
       triggerAlertToast("Saved item to your permanent Favorites! ❤️");
     }
+  };
+
+  // Move directly to the cart
+  const handleMoveToCart = (product: Product) => {
+    handleAddToCart(product, product.colors[0].name, product.sizes[0]);
+    setFavorites(favorites.filter(id => id !== product.id));
   };
 
   // Cart quantity actions
@@ -585,10 +591,30 @@ export default function App() {
                   ShopSwift
                 </span>
 
-                <div className="relative">
+                <div className="flex items-center space-x-1">
+                  <button 
+                    onClick={() => setPhoneScreen("wishlist")}
+                    className={`p-2 rounded-full relative transition-colors cursor-pointer ${
+                      phoneScreen === "wishlist" 
+                        ? "bg-pink-50 text-pink-500" 
+                        : "text-slate-800 hover:bg-slate-50"
+                    }`}
+                  >
+                    <Heart size={18} className={favorites.length > 0 ? "fill-pink-500 stroke-pink-500 text-pink-500" : ""} />
+                    {favorites.length > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-pink-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-md">
+                        {favorites.length}
+                      </span>
+                    )}
+                  </button>
+
                   <button 
                     onClick={() => setPhoneScreen("cart")}
-                    className="p-2 text-slate-800 hover:bg-slate-50 rounded-full relative"
+                    className={`p-2 rounded-full relative transition-colors cursor-pointer ${
+                      phoneScreen === "cart" 
+                        ? "bg-slate-100 text-[#0C1E26]" 
+                        : "text-slate-800 hover:bg-slate-50"
+                    }`}
                   >
                     <ShoppingCart size={18} />
                     {cartCount > 0 && (
@@ -1600,6 +1626,138 @@ export default function App() {
                   </div>
                 )}
 
+                {/* SCREEN 5: WISHLIST (SAVEDITEMS) VIEWPORT SCREEN */}
+                {phoneScreen === "wishlist" && (
+                  <div className="animate-fadeIn p-5 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <h3 className="text-sm font-extrabold text-slate-900 tracking-tight font-sans text-left">
+                          Saved Collection
+                        </h3>
+                        <p className="text-[10px] text-slate-400 text-left">
+                          {favorites.length === 0 
+                            ? "Your wishlist is empty" 
+                            : `${favorites.length} premium ${favorites.length === 1 ? 'item' : 'items'} saved`}
+                        </p>
+                      </div>
+                      
+                      {favorites.length > 0 && (
+                        <button
+                          onClick={() => {
+                            setFavorites([]);
+                            triggerAlertToast("Successfully cleared all bookmark logs. 🧹");
+                          }}
+                          className="text-[10px] text-rose-500 hover:text-rose-600 font-extrabold cursor-pointer"
+                        >
+                          Clear All
+                        </button>
+                      )}
+                    </div>
+
+                    {favorites.length === 0 ? (
+                      /* HIGH FIDELITY EMPTY STATE */
+                      <div className="bg-white border border-slate-200/60 rounded-[32px] p-8 text-center space-y-5 shadow-xs select-none py-14 animate-fadeIn">
+                        <div className="relative mx-auto h-16 w-16 bg-pink-50 text-pink-400 rounded-3xl flex items-center justify-center">
+                          <Heart size={26} className="text-pink-500 animate-pulse" />
+                          <div className="absolute top-0 right-0 h-3 w-3 bg-pink-500 rounded-full border-2 border-white" />
+                        </div>
+                        
+                        <div className="space-y-2 max-w-[85%] mx-auto">
+                          <h4 className="text-xs font-black text-slate-800 font-sans uppercase tracking-wider">
+                            No Saved Items Here
+                          </h4>
+                          <p className="text-[11px] text-slate-400 font-medium leading-relaxed">
+                            Bookmark premium pieces while browsing the collection or testing checkout telemetry.
+                          </p>
+                        </div>
+
+                        <button
+                          onClick={() => setPhoneScreen("catalog")}
+                          className="px-6 py-2.5 bg-[#0C1E26] text-white text-xs font-bold uppercase tracking-wider rounded-xl cursor-pointer hover:bg-slate-900 transition-colors active:scale-95 mx-auto block"
+                        >
+                          Explore Catalog
+                        </button>
+                      </div>
+                    ) : (
+                      /* ACTIVE WISHLIST PRODUCT GRID */
+                      <div className="space-y-4">
+                        <div className="grid grid-cols-2 gap-4">
+                          {productsData
+                            .filter(product => favorites.includes(product.id))
+                            .map(product => {
+                              const KESPrice = Math.round(product.priceUSD * 130);
+                              return (
+                                <div
+                                  key={product.id}
+                                  onClick={() => handleViewProductDetail(product)}
+                                  className="bg-white border border-slate-200/60 rounded-[28px] overflow-hidden flex flex-col justify-between cursor-pointer group hover:shadow-md transition-all duration-350 relative text-left"
+                                >
+                                  {/* Small Absolute Delete Quick Button */}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleToggleFavorite(product.id);
+                                    }}
+                                    className="absolute top-2.5 right-2.5 h-6.5 w-6.5 rounded-full bg-slate-950/5 text-slate-400 hover:bg-pink-50 hover:text-pink-500 z-10 flex items-center justify-center transition-all cursor-pointer border border-transparent hover:border-pink-100"
+                                    title="Unsaved"
+                                  >
+                                    <Heart size={11} className="fill-pink-500 text-pink-500 stroke-pink-500" />
+                                  </button>
+
+                                  {/* Thumbnail Illustration background */}
+                                  <div className="aspect-[10/9] bg-slate-50 relative flex items-center justify-center p-3 select-none">
+                                    <div className="w-20 h-20 flex items-center justify-center group-hover:scale-105 transition-transform">
+                                      <ProductImageRender name={product.name} />
+                                    </div>
+                                  </div>
+
+                                  {/* Details and Move to Cart actions split */}
+                                  <div className="p-3.5 space-y-2 text-left bg-white">
+                                    <div className="space-y-0.5">
+                                      <span className="text-[8.5px] font-black text-slate-400 uppercase tracking-widest block leading-none">
+                                        {product.category}
+                                      </span>
+                                      <h4 className="text-[11px] font-bold text-slate-900 leading-snug truncate font-sans">
+                                        {product.name}
+                                      </h4>
+                                      <span className="text-[11.5px] font-black text-slate-950 block">
+                                        KES {KESPrice.toLocaleString()}
+                                      </span>
+                                    </div>
+
+                                    {/* Move Directly To Cart Active push button */}
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleMoveToCart(product);
+                                      }}
+                                      className="w-full py-2 bg-[#0C1E26] text-white hover:bg-emerald-500 hover:text-slate-950 rounded-xl font-bold text-[10px] uppercase tracking-wider flex items-center justify-center space-x-1 transition-all pointer-events-auto cursor-pointer"
+                                    >
+                                      <span>Move to Cart</span>
+                                      <ShoppingBag size={10} />
+                                    </button>
+                                  </div>
+
+                                </div>
+                              );
+                            })}
+                        </div>
+
+                        {/* Interactive Info Footer Decors */}
+                        <div className="bg-emerald-50 border border-emerald-100 p-3.5 rounded-2xl select-none space-y-1 text-left">
+                          <h4 className="text-[10.5px] font-black text-[#1c5f35] flex items-center space-x-1">
+                            <Sparkles size={11} className="text-emerald-600 animate-pulse" />
+                            <span>Telemetry Operations Info</span>
+                          </h4>
+                          <p className="text-[9.5px] text-[#227541] leading-relaxed">
+                            Moving items directly to your cart synchronizes active currency aggregates. Use M-Pesa sandbox logs inside the Cart tab to complete simulated API checkouts.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
+
                    {/* SCREEN 4: SANDBOX PROFILE & RECEIPT SUMMARY LOGS */}
                 {phoneScreen === "profile" && (
                   <div className="animate-fadeIn pb-12">
@@ -2134,6 +2292,7 @@ export default function App() {
                 {[
                   { key: "home", label: "Home", icon: Home },
                   { key: "catalog", label: "Catalog", icon: Grid },
+                  { key: "wishlist", label: "Saved", icon: Heart, badge: favorites.length },
                   { key: "cart", label: "Cart", icon: ShoppingBag, badge: cartCount },
                   { key: "profile", label: "Profile", icon: User }
                 ].map(tab => {
