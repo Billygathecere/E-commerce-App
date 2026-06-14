@@ -33,7 +33,14 @@ import {
   User,
   ExternalLink,
   Chrome,
-  Apple
+  Apple,
+  Trash2,
+  Edit,
+  PlusCircle,
+  Save,
+  Settings,
+  X,
+  Sliders
 } from "lucide-react";
 
 import { Product, Review, CartItem } from "./types";
@@ -43,7 +50,22 @@ import { AcademyPortal } from "./components/AcademyPortal";
 
 export default function App() {
   // --- CORE VIEW STATE ---
-  const [phoneScreen, setPhoneScreen] = useState<"home" | "catalog" | "detail" | "cart" | "profile" | "wishlist">("home");
+  const [phoneScreen, setPhoneScreen] = useState<"home" | "catalog" | "detail" | "cart" | "profile" | "wishlist" | "admin">("home");
+
+  // --- DYNAMIC CATALOG DATA STATE ---
+  const [products, setProducts] = useState<Product[]>(() => {
+    const saved = localStorage.getItem("shopswift_products");
+    try {
+      if (saved) return JSON.parse(saved);
+    } catch (e) {
+      console.error("Failed to load products from localStorage", e);
+    }
+    return productsData;
+  });
+
+  useEffect(() => {
+    localStorage.setItem("shopswift_products", JSON.stringify(products));
+  }, [products]);
   
   // --- AUTHENTICATION STATE ENGINES (Frontend Simulation Only!) ---
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -67,7 +89,17 @@ export default function App() {
   const [catalogCategory, setCatalogCategory] = useState<string>("All");
   
   // --- CURRENT ACTIVE PRODUCT DETAIL STATE ---
-  const [selectedProduct, setSelectedProduct] = useState<Product>(productsData[2]); // Hyper-dash as default
+  const [selectedProduct, setSelectedProduct] = useState<Product>(() => {
+    const saved = localStorage.getItem("shopswift_products");
+    try {
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed && parsed.length > 2) return parsed[2];
+        if (parsed && parsed.length > 0) return parsed[0];
+      }
+    } catch(e) {}
+    return productsData[2];
+  }); // Hyper-dash as default
   const [selectedColor, setSelectedColor] = useState<string>("Crimson Red");
   const [selectedSize, setSelectedSize] = useState<number>(9);
   
@@ -118,6 +150,152 @@ export default function App() {
 
   // Right-Panel Academy Tracker Tab State
   const [academyTab, setAcademyTab] = useState("welcome");
+
+  // --- ADMIN PORTAL STATE ---
+  const [adminActiveTab, setAdminActiveTab] = useState<"list" | "form">("list");
+  const [editingProductId, setEditingProductId] = useState<string | null>(null); // null means "Add Product"
+  const [adminName, setAdminName] = useState("");
+  const [adminCategory, setAdminCategory] = useState("Sneaker");
+  const [adminTagline, setAdminTagline] = useState("");
+  const [adminPriceUSD, setAdminPriceUSD] = useState("");
+  const [adminOriginalPriceUSD, setAdminOriginalPriceUSD] = useState("");
+  const [adminDescription, setAdminDescription] = useState("");
+  const [adminSizes, setAdminSizes] = useState("7, 8, 9, 10, 11");
+  const [adminBadge, setAdminBadge] = useState("");
+  const [adminBadgeType, setAdminBadgeType] = useState<"new" | "sale" | "">("");
+
+  // Admin action: Delete product
+  const handleDeleteProduct = (productId: string) => {
+    // Delete from products list
+    setProducts(products.filter(p => p.id !== productId));
+    // Clear matches if selected
+    if (selectedProduct.id === productId) {
+      const remaining = products.filter(p => p.id !== productId);
+      if (remaining.length > 0) {
+        setSelectedProduct(remaining[0]);
+      }
+    }
+    // Remove from wishlist
+    setFavorites(favorites.filter(id => id !== productId));
+    // Remove from cart
+    setCart(cart.filter(item => item.product.id !== productId));
+    triggerAlertToast("Product removed from catalog successfully! 🗑️");
+  };
+
+  // Admin action: Populate form for editing
+  const handleEditProductSelect = (product: Product) => {
+    setEditingProductId(product.id);
+    setAdminName(product.name);
+    setAdminCategory(product.category);
+    setAdminTagline(product.tagline);
+    setAdminPriceUSD(product.priceUSD.toString());
+    setAdminOriginalPriceUSD(product.originalPriceUSD ? product.originalPriceUSD.toString() : "");
+    setAdminDescription(product.description || "");
+    setAdminSizes(product.sizes.join(", "));
+    setAdminBadge(product.badge || "");
+    setAdminBadgeType(product.badgeType || "");
+    setAdminActiveTab("form");
+  };
+
+  // Admin action: Reset form fields
+  const handleClearAdminForm = () => {
+    setEditingProductId(null);
+    setAdminName("");
+    setAdminCategory("Sneaker");
+    setAdminTagline("");
+    setAdminPriceUSD("");
+    setAdminOriginalPriceUSD("");
+    setAdminDescription("");
+    setAdminSizes("7, 8, 9, 10, 11");
+    setAdminBadge("");
+    setAdminBadgeType("");
+  };
+
+  // Admin action: Save product (handle edit or add)
+  const handleSaveProduct = () => {
+    if (!adminName.trim()) {
+      alert("Product Name is required.");
+      return;
+    }
+    if (!adminCategory.trim()) {
+      alert("Product Category is required.");
+      return;
+    }
+    if (!adminTagline.trim()) {
+      alert("Tagline is required.");
+      return;
+    }
+    const price = parseFloat(adminPriceUSD);
+    if (isNaN(price) || price <= 0) {
+      alert("Please enter a valid price greater than 0 USD.");
+      return;
+    }
+
+    const originalPrice = adminOriginalPriceUSD.trim() ? parseFloat(adminOriginalPriceUSD) : undefined;
+    const sizesArray = adminSizes.split(",").map(s => parseInt(s.trim(), 10)).filter(s => !isNaN(s));
+
+    if (editingProductId) {
+      // Edit existing product
+      setProducts(products.map(p => {
+        if (p.id === editingProductId) {
+          const updated = {
+            ...p,
+            name: adminName,
+            category: adminCategory,
+            tagline: adminTagline,
+            priceUSD: price,
+            originalPriceUSD: originalPrice,
+            description: adminDescription,
+            badge: adminBadge || undefined,
+            badgeType: (adminBadgeType || undefined) as any,
+            sizes: sizesArray.length > 0 ? sizesArray : [7, 8, 9, 10, 11]
+          };
+          if (selectedProduct.id === editingProductId) {
+            setSelectedProduct(updated);
+          }
+          return updated;
+        }
+        return p;
+      }));
+      triggerAlertToast(`Product details updated successfully! 📝`);
+    } else {
+      // Add new product
+      const newSlug = adminName.toLowerCase().replace(/[^a-z0-9]+/g, '-') + '-' + Math.floor(Math.random() * 1000);
+      const newProduct: Product = {
+        id: newSlug,
+        name: adminName,
+        category: adminCategory,
+        tagline: adminTagline,
+        priceUSD: price,
+        originalPriceUSD: originalPrice,
+        description: adminDescription,
+        badge: adminBadge || undefined,
+        badgeType: (adminBadgeType || undefined) as any,
+        rating: 5,
+        reviewsCount: 1,
+        tag: "new",
+        colors: [
+          { name: "Slate Dark", hex: "#0F172A", main: "bg-[#0F172A]", accent: "text-slate-800", accentDark: "#020617" },
+          { name: "Polar Ice", hex: "#0ea5e9", main: "bg-[#0ea5e9]", accent: "text-sky-500", accentDark: "#0369a1" }
+        ],
+        sizes: sizesArray.length > 0 ? sizesArray : [7, 8, 9, 10, 11]
+      };
+      setProducts([...products, newProduct]);
+      triggerAlertToast(`New product "${adminName}" added to catalog! 🚀`);
+    }
+
+    // Reset form and go back to list
+    handleClearAdminForm();
+    setAdminActiveTab("list");
+  };
+
+  // Reset all products back to default schema
+  const handleResetCatalogToDefault = () => {
+    if (window.confirm("Are you sure you want to reset the catalog database back to the standard showcase items? This will remove all your custom creations!")) {
+      setProducts(productsData);
+      triggerAlertToast("Catalog database flushed & restored to standard showroom items! 🧹");
+    }
+  };
 
   // --- DERIVED CART COUNT TALLIES ---
   const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
@@ -476,8 +654,8 @@ export default function App() {
     }
   };
 
-  // Filter products Data list based on search and filters
-  const filteredProducts = productsData.filter(product => {
+  // Filter products list based on search and filters
+  const filteredProducts = products.filter(product => {
     const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
                           product.category.toLowerCase().includes(searchQuery.toLowerCase());
     
@@ -592,6 +770,19 @@ export default function App() {
                 </span>
 
                 <div className="flex items-center space-x-1">
+                  <button 
+                    onClick={() => setPhoneScreen("admin")}
+                    className={`p-2 rounded-full relative transition-colors cursor-pointer ${
+                      phoneScreen === "admin" 
+                        ? "bg-emerald-50 text-emerald-500" 
+                        : "text-slate-800 hover:bg-slate-50"
+                    }`}
+                    title="Admin Console"
+                  >
+                    <Sliders size={18} />
+                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 bg-emerald-500 rounded-full flex items-center justify-center shadow-md animate-pulse" />
+                  </button>
+
                   <button 
                     onClick={() => setPhoneScreen("wishlist")}
                     className={`p-2 rounded-full relative transition-colors cursor-pointer ${
@@ -745,8 +936,8 @@ export default function App() {
                       <span className="text-[11px] font-extrabold text-slate-400">
                         {/* Display real results tally, but scales to look professional with that 128 marker when unfiltered */}
                         {catalogSearch === "" && catalogCategory === "All" && catalogSort === "none" 
-                          ? "128 Results" 
-                          : `${Math.round(128 * (productsData.filter(p => {
+                          ? `${Math.round(128 * (products.length / 6))} Results` 
+                          : `${Math.round(128 * (products.filter(p => {
                               const matchesSearch = p.name.toLowerCase().includes(catalogSearch.toLowerCase()) || p.category.toLowerCase().includes(catalogSearch.toLowerCase());
                               const matchesCat = catalogCategory === "All" || p.category.toLowerCase() === catalogCategory.toLowerCase();
                               return matchesSearch && matchesCat;
@@ -757,7 +948,7 @@ export default function App() {
 
                     {/* Two Column Beautiful Products Grid */}
                     <div className="grid grid-cols-2 gap-x-4 gap-y-5 px-5 pb-12">
-                      {productsData
+                      {products
                         .filter(product => {
                           const matchesSearch = product.name.toLowerCase().includes(catalogSearch.toLowerCase()) || 
                                                 product.category.toLowerCase().includes(catalogSearch.toLowerCase());
@@ -873,7 +1064,7 @@ export default function App() {
                     </div>
 
                     {/* Empty search catalog notification state */}
-                    {productsData.filter(product => {
+                    {products.filter(product => {
                       const matchesSearch = product.name.toLowerCase().includes(catalogSearch.toLowerCase()) || 
                                             product.category.toLowerCase().includes(catalogSearch.toLowerCase());
                       const matchesCategory = catalogCategory === "All" || 
@@ -939,20 +1130,43 @@ export default function App() {
                       {/* Button Controls */}
                       <div className="pb-8 px-6 relative z-10 flex items-center space-x-3">
                         <button 
-                          onClick={() => handleViewProductDetail(productsData[2])} // Sneaker
+                          onClick={() => handleViewProductDetail(products[2] || products[0] || productsData[2])} // Sneaker
                           className="px-5 py-2.5 bg-[#22c55e] hover:bg-[#1eb053] text-[#051111] font-extrabold text-xs rounded-lg transition-all duration-150 transform active:scale-95 cursor-pointer shadow-md"
                         >
                           Shop Now
                         </button>
                         <button 
                           onClick={() => {
-                            setSelectedProduct(productsData[0]); // Smartwatch
+                            setSelectedProduct(products[0] || productsData[0]); // Smartwatch
                             setPhoneScreen("detail");
                           }}
                           className="px-5 py-2.5 border border-white/60 hover:bg-white/10 text-white font-extrabold text-xs rounded-lg transition-all duration-150 cursor-pointer"
                         >
                           View Lookbook
                         </button>
+                      </div>
+                    </div>
+
+
+                    {/* ADMIN PORTAL GATEWAY PROMPT BANNER */}
+                    <div className="mt-6 px-5">
+                      <div 
+                        onClick={() => setPhoneScreen("admin")}
+                        className="bg-emerald-50 border border-emerald-200 hover:border-emerald-300 rounded-2xl p-3 flex items-center justify-between cursor-pointer group shadow-2xs transition-all"
+                      >
+                        <div className="flex items-center space-x-2.5 text-left">
+                          <div className="h-7 w-7 rounded-xl bg-emerald-500 text-white flex items-center justify-center">
+                            <Sliders size={13} />
+                          </div>
+                          <div>
+                            <h5 className="text-[11.5px] font-black text-slate-900 leading-tight">Admin Catalog Controls</h5>
+                            <p className="text-[9.5px] text-[#227541] font-medium leading-none">Add, edit, or purge showcase items in real-time</p>
+                          </div>
+                        </div>
+                        <div className="flex items-center space-x-1">
+                          <span className="text-[8.5px] text-[#227541] font-black bg-emerald-100/80 px-2 py-0.5 rounded-full uppercase tracking-wider">Configure</span>
+                          <ChevronRight size={14} className="text-[#227541] group-hover:translate-x-0.5 transition-transform" />
+                        </div>
                       </div>
                     </div>
 
@@ -1682,7 +1896,7 @@ export default function App() {
                       /* ACTIVE WISHLIST PRODUCT GRID */
                       <div className="space-y-4">
                         <div className="grid grid-cols-2 gap-4">
-                          {productsData
+                          {products
                             .filter(product => favorites.includes(product.id))
                             .map(product => {
                               const KESPrice = Math.round(product.priceUSD * 130);
@@ -1755,6 +1969,349 @@ export default function App() {
                         </div>
                       </div>
                     )}
+                  </div>
+                )}
+
+                {/* SCREEN 6: ADMIN PRODUCTS CONTROLS SCREEN */}
+                {phoneScreen === "admin" && (
+                  <div className="animate-fadeIn p-5 space-y-6">
+                    {/* Header with back navigation arrow */}
+                    <div className="flex items-center space-x-3.5 border-b border-slate-105 pb-3 select-none">
+                      <button
+                        onClick={() => {
+                          handleClearAdminForm();
+                          setPhoneScreen("profile");
+                        }}
+                        className="h-8 w-8 rounded-full bg-slate-105 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
+                        title="Back to developer profile"
+                      >
+                        <ArrowLeft size={14} strokeWidth={2.5} />
+                      </button>
+                      <div className="text-left">
+                        <h3 className="text-sm font-extrabold text-[#0C1E26] uppercase tracking-wider font-sans text-left">
+                          Admin Catalog Controls
+                        </h3>
+                        <p className="text-[10px] text-emerald-600 font-mono tracking-tight leading-none text-left">
+                          Local DB Live Sync Active
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Sub Tab Buttons inside Admin screen */}
+                    <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 select-none">
+                      <button
+                        onClick={() => setAdminActiveTab("list")}
+                        className={`w-1/2 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all duration-150 flex items-center justify-center space-x-1 cursor-pointer ${
+                          adminActiveTab === "list"
+                            ? "bg-[#0C1E26] text-white shadow-sm"
+                            : "text-slate-500 hover:text-slate-800"
+                        }`}
+                      >
+                        <Sliders size={11} />
+                        <span>Manage Items ({products.length})</span>
+                      </button>
+                      <button
+                        onClick={() => {
+                          if (adminActiveTab === "list") handleClearAdminForm();
+                          setAdminActiveTab("form");
+                        }}
+                        className={`w-1/2 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all duration-150 flex items-center justify-center space-x-1 cursor-pointer ${
+                          adminActiveTab === "form"
+                            ? "bg-[#0C1E26] text-white shadow-sm"
+                            : "text-slate-500 hover:text-slate-800"
+                        }`}
+                      >
+                        {editingProductId ? <Edit size={11} /> : <PlusCircle size={11} />}
+                        <span>{editingProductId ? "Edit Item" : "Create Item"}</span>
+                      </button>
+                    </div>
+
+                    {/* TAB CONTENT 1: LIST VIEW */}
+                    {adminActiveTab === "list" && (
+                      <div className="space-y-4 text-left">
+                        {/* Interactive Stats Tapes */}
+                        <div className="grid grid-cols-2 gap-2 bg-slate-50 p-3 rounded-2xl border border-slate-200/50 select-none">
+                          <div className="text-left">
+                            <span className="text-[8.5px] font-bold text-slate-400 uppercase tracking-wider block">Average Price</span>
+                            <span className="text-xs font-black text-slate-800 leading-none">
+                              USD {Math.round(products.reduce((acc, p) => acc + p.priceUSD, 0) / (products.length || 1))}
+                            </span>
+                          </div>
+                          <div className="text-left border-l border-slate-200 pl-3">
+                            <span className="text-[8.5px] font-bold text-slate-400 uppercase tracking-wider block">Unique Types</span>
+                            <span className="text-xs font-black text-slate-800 leading-none">
+                              {Array.from(new Set(products.map(p => p.category))).length} Categories
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Search field for management list */}
+                        <div className="relative">
+                          <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
+                          <input
+                            type="text"
+                            placeholder="Search catalogs by name..."
+                            value={catalogSearch}
+                            onChange={(e) => setCatalogSearch(e.target.value)}
+                            className="w-full text-xs font-medium bg-slate-50 hover:bg-slate-100 border border-slate-200/80 rounded-xl pl-9.5 pr-4 py-2.5 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-850"
+                          />
+                        </div>
+
+                        {/* Standard item lists scroll area */}
+                        <div className="space-y-2.5 max-h-[380px] overflow-y-auto pr-1">
+                          {products
+                            .filter(p => p.name.toLowerCase().includes(catalogSearch.toLowerCase()))
+                            .map(product => {
+                              const KESPrice = Math.round(product.priceUSD * 130);
+                              return (
+                                <div
+                                  key={product.id}
+                                  className="p-3 bg-white border border-slate-200/80 rounded-2xl flex items-center justify-between hover:border-slate-300 transition-colors gap-3 text-left"
+                                >
+                                  <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 flex-shrink-0">
+                                    <ProductImageRender name={product.name} />
+                                  </div>
+
+                                  <div className="flex-1 min-w-0 text-left">
+                                    <div className="flex items-center space-x-1.5 justify-start">
+                                      <span className="text-[8px] font-extrabold text-emerald-700 bg-emerald-50 px-1.5 py-0.5 rounded-md uppercase tracking-wider leading-none">
+                                        {product.category}
+                                      </span>
+                                      {product.badge && (
+                                        <span className="text-[7.5px] font-black text-rose-700 bg-rose-50 px-1 py-0.5 rounded-md uppercase leading-none">
+                                          {product.badge}
+                                        </span>
+                                      )}
+                                    </div>
+                                    <h4 className="text-[11px] font-extrabold text-slate-900 truncate leading-snug mt-0.5 font-sans text-left">
+                                      {product.name}
+                                    </h4>
+                                    <div className="flex items-center space-x-2 text-[10px] font-semibold text-slate-400 font-mono mt-0.5 text-left">
+                                      <span className="text-slate-800 font-black">KES {KESPrice.toLocaleString()}</span>
+                                      <span>•</span>
+                                      <span>USD {product.priceUSD}</span>
+                                    </div>
+                                  </div>
+
+                                  {/* Direct Actions Buttons */}
+                                  <div className="flex items-center space-x-1.5 flex-shrink-0">
+                                    <button
+                                      onClick={() => handleEditProductSelect(product)}
+                                      className="h-7 w-7 rounded-lg bg-slate-50 border border-slate-200 hover:bg-slate-100 flex items-center justify-center text-slate-600 transition-all cursor-pointer"
+                                      title="Edit Product Details"
+                                    >
+                                      <Edit size={11} />
+                                    </button>
+                                    <button
+                                      onClick={() => {
+                                        if (window.confirm(`Are you sure you want to remove "${product.name}" from the catalog?`)) {
+                                          handleDeleteProduct(product.id);
+                                        }
+                                      }}
+                                      className="h-7 w-7 rounded-lg bg-rose-50 border border-rose-100 hover:bg-rose-100 flex items-center justify-center text-rose-600 transition-all cursor-pointer"
+                                      title="Delete Product"
+                                    >
+                                      <Trash2 size={11} />
+                                    </button>
+                                  </div>
+                                </div>
+                              );
+                            })}
+
+                          {products.filter(p => p.name.toLowerCase().includes(catalogSearch.toLowerCase())).length === 0 && (
+                            <div className="text-center py-10 text-slate-400">
+                              <HelpCircle size={28} className="mx-auto block text-slate-300 mb-2" />
+                              <p className="text-xs font-semibold text-center">No sandboxed product matches found</p>
+                            </div>
+                          )}
+                        </div>
+
+                        {/* Reset Database triggers action */}
+                        <div className="pt-2 border-t border-slate-100 flex justify-between items-center bg-white">
+                          <button
+                            onClick={handleResetCatalogToDefault}
+                            className="text-[9.5px] text-[#0C1E26] hover:text-rose-500 font-extrabold cursor-pointer hover:underline"
+                          >
+                            ⚠️ Reset back to factory showroom list
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                    {/* TAB CONTENT 2: ADD/EDIT FORM VIEW */}
+                    {adminActiveTab === "form" && (
+                      <div className="space-y-4 text-left animate-fadeIn">
+                        <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 select-none">
+                          <p className="text-[9.5px] text-slate-550 text-slate-500 leading-normal font-medium text-left">
+                            {editingProductId 
+                              ? `Currently modifying details for ${adminName}. Changes apply instantly across the catalog index.` 
+                              : "Assemble your custom premium gear. New products map immediately inside seasonal lists."}
+                          </p>
+                        </div>
+
+                        <div className="space-y-3.5">
+                          {/* product Name input */}
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block text-left">Product Name *</label>
+                            <input
+                              type="text"
+                              placeholder="e.g. Space-Fit Hybrid Sneaker"
+                              value={adminName}
+                              onChange={(e) => setAdminName(e.target.value)}
+                              className="w-full text-xs font-semibold bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl px-3.5 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800"
+                            />
+                          </div>
+
+                          {/* category selection picker */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block text-left">Department Category *</label>
+                              <select
+                                value={adminCategory}
+                                onChange={(e) => setAdminCategory(e.target.value)}
+                                className="w-full text-xs font-semibold bg-slate-50 hover:bg-slate-100/80 border border-slate-250 rounded-xl px-2.5 py-2.5 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800"
+                              >
+                                <option value="Smartwatch">Smartwatch</option>
+                                <option value="Audio">Audio</option>
+                                <option value="Sneaker">Sneaker</option>
+                                <option value="Camera">Camera</option>
+                                <option value="Apparel">Apparel</option>
+                              </select>
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block text-left">Tagline Specs *</label>
+                              <input
+                                type="text"
+                                placeholder="e.g. Ultra responsive grip"
+                                value={adminTagline}
+                                onChange={(e) => setAdminTagline(e.target.value)}
+                                className="w-full text-xs font-semibold bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl px-3.5 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Pricing coordinates */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block text-left">Price (USD) *</label>
+                              <input
+                                type="number"
+                                placeholder="e.g. 129"
+                                value={adminPriceUSD}
+                                onChange={(e) => setAdminPriceUSD(e.target.value)}
+                                className="w-full text-xs font-semibold bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl px-3.5 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800"
+                              />
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block text-left">Original Price (USD) / Optional</label>
+                              <input
+                                type="number"
+                                placeholder="e.g. 199 (for Sale tag)"
+                                value={adminOriginalPriceUSD}
+                                onChange={(e) => setAdminOriginalPriceUSD(e.target.value)}
+                                className="w-full text-xs font-semibold bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl px-3.5 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Available sizes comma lists */}
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block text-left">Sizes (Comma Separated)</label>
+                              <input
+                                type="text"
+                                placeholder="e.g. 7, 8, 9, 10, 11"
+                                value={adminSizes}
+                                onChange={(e) => setAdminSizes(e.target.value)}
+                                className="w-full text-xs font-semibold bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl px-3.5 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800"
+                              />
+                            </div>
+
+                            <div className="space-y-1">
+                              <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block text-left">Product Badge / Optional</label>
+                              <input
+                                type="text"
+                                placeholder="e.g. Special Edition, Promo"
+                                value={adminBadge}
+                                onChange={(e) => setAdminBadge(e.target.value)}
+                                className="w-full text-xs font-semibold bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl px-3.5 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800"
+                              />
+                            </div>
+                          </div>
+
+                          {/* Badge Type Toggle */}
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block font-sans text-left">Badge Visual Styling</label>
+                            <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 select-none">
+                              <button
+                                type="button"
+                                onClick={() => setAdminBadgeType("")}
+                                className={`w-1/3 py-1.5 text-[9px] font-bold uppercase rounded-lg transition-all cursor-pointer ${
+                                  adminBadgeType === "" ? "bg-white text-slate-850 shadow-2xs" : "text-slate-500"
+                                }`}
+                              >
+                                None
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setAdminBadgeType("new")}
+                                className={`w-1/3 py-1.5 text-[9px] font-bold uppercase rounded-lg transition-all cursor-pointer ${
+                                  adminBadgeType === "new" ? "bg-white text-emerald-800 shadow-2xs" : "text-slate-500"
+                                }`}
+                              >
+                                New (Emerald Badge)
+                              </button>
+                              <button
+                                type="button"
+                                onClick={() => setAdminBadgeType("sale")}
+                                className={`w-1/3 py-1.5 text-[9px] font-bold uppercase rounded-lg transition-all cursor-pointer ${
+                                  adminBadgeType === "sale" ? "bg-white text-rose-800 shadow-2xs" : "text-slate-500"
+                                }`}
+                              >
+                                Sale (Pink Badge)
+                              </button>
+                            </div>
+                          </div>
+
+                          {/* description block */}
+                          <div className="space-y-1">
+                            <label className="text-[10px] font-black text-slate-400 uppercase tracking-wider block text-left">Detailed Narrative Biography</label>
+                            <textarea
+                              rows={3}
+                              placeholder="Describe this premium showcase item, highlight ergonomic materials, aesthetics..."
+                              value={adminDescription}
+                              onChange={(e) => setAdminDescription(e.target.value)}
+                              className="w-full text-xs font-semibold bg-slate-50 hover:bg-slate-100/80 border border-slate-200 rounded-xl px-3.5 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800 resize-none animate-fadeIn"
+                            />
+                          </div>
+
+                          {/* Submit controls */}
+                          <div className="pt-3 flex space-x-3 select-none">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                handleClearAdminForm();
+                                setAdminActiveTab("list");
+                              }}
+                              className="w-1/2 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-2xs uppercase tracking-wider font-extrabold rounded-xl transition-all cursor-pointer text-center"
+                            >
+                              Discard
+                            </button>
+                            <button
+                              type="button"
+                              onClick={handleSaveProduct}
+                              className="w-1/2 py-2.5 bg-[#0C1E26] hover:bg-emerald-500 text-white hover:text-slate-950 text-2xs uppercase tracking-wider font-extrabold rounded-xl transition-all cursor-pointer text-center flex items-center justify-center space-x-1 shadow-md"
+                            >
+                              <Save size={11} />
+                              <span>{editingProductId ? "Update Product" : "Save Product"}</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
                   </div>
                 )}
 
@@ -2184,6 +2741,32 @@ export default function App() {
                             <span>IP: Simulated 127.0.0.1</span>
                           </div>
 
+                        </div>
+
+                        {/* Admin Portal Gateway Card */}
+                        <div className="bg-emerald-50 border border-emerald-100/80 rounded-[22px] p-4.5 space-y-3 shadow-xs">
+                          <div className="flex items-center justify-between">
+                            <div className="flex items-center space-x-2">
+                              <div className="h-7 w-7 rounded-lg bg-emerald-500 text-white flex items-center justify-center">
+                                <Sliders size={13} />
+                              </div>
+                              <div>
+                                <h5 className="text-[11.5px] font-black text-slate-900 leading-tight">Admin Catalog Manager</h5>
+                                <p className="text-[9px] text-[#227541] font-medium font-mono leading-none">Status: Sandbox Superuser Access</p>
+                              </div>
+                            </div>
+                            <span className="text-[8px] bg-emerald-100 text-emerald-800 font-extrabold px-2.5 py-0.5 rounded-full uppercase tracking-wider">Active</span>
+                          </div>
+                          <p className="text-[10px] text-slate-600 leading-relaxed font-sans font-medium text-left">
+                            Add custom tech pieces, purge items, or modify active price weights. Updates apply in real-time across home feeds, search indexes, and shopping cart ratios.
+                          </p>
+                          <button
+                            onClick={() => setPhoneScreen("admin")}
+                            className="w-full py-2 bg-slate-950 hover:bg-[#0C1E26] text-white hover:text-emerald-400 text-[10.5px] uppercase tracking-wider font-extrabold rounded-xl transition-all cursor-pointer flex items-center justify-center space-x-1.5 shadow-md border border-slate-800"
+                          >
+                            <Settings size={11} className="animate-spin-slow" />
+                            <span>Enter Admin Dashboard</span>
+                          </button>
                         </div>
 
                         {/* M-Pesa Synced Telemetry Block */}
