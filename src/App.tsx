@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { 
   Heart, 
   ShoppingCart, 
@@ -12,248 +12,69 @@ import {
   BookOpen, 
   Code, 
   ShieldCheck, 
-  Database, 
-  Flame, 
+  Plus, 
+  Minus, 
+  HelpCircle, 
+  Eye, 
   Cpu, 
-  Check, 
-  Users, 
-  RefreshCw,
-  Info,
-  HelpCircle,
-  Eye,
-  Settings,
   Sparkles,
-  Award
+  Award,
+  Users,
+  Check,
+  Percent,
+  TrendingUp,
+  Mail,
+  Home,
+  Grid,
+  ShoppingBag,
+  User,
+  ExternalLink
 } from "lucide-react";
 
-// Interactive High-Fidelity Sneaker vector illustration with configurable cosmetic states
-function HighFidelityShoeIllustration({ mainColor, accentColor, accentDark, isActionView }) {
-  if (isActionView) {
-    // Action / lifestyle shot mockup vector (athlete running representation)
-    return (
-      <svg viewBox="0 0 400 320" className="w-full h-full drop-shadow-2xl transition-all duration-700" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <linearGradient id="groundGrad" x1="0" y1="280" x2="400" y2="280" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#0f172a" stopOpacity="0"/>
-            <stop offset="50%" stopColor="#334155" stopOpacity="0.4"/>
-            <stop offset="100%" stopColor="#0f172a" stopOpacity="0"/>
-          </linearGradient>
-          <linearGradient id="legGrad" x1="160" y1="0" x2="220" y2="150" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#1e293b"/>
-            <stop offset="100%" stopColor="#475569"/>
-          </linearGradient>
-          <linearGradient id="actionShoeGrad" x1="180" y1="120" x2="310" y2="210" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor={mainColor}/>
-            <stop offset="100%" stopColor={accentDark}/>
-          </linearGradient>
-          <radialGradient id="sunSpot" cx="200" cy="160" r="140" fx="200" fy="160" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#38bdf8" stopOpacity="0.2"/>
-            <stop offset="100%" stopColor="#020617" stopOpacity="0"/>
-          </radialGradient>
-        </defs>
-
-        {/* Ambient background rays */}
-        <circle cx="200" cy="160" r="140" fill="url(#sunSpot)" />
-        <path d="M 120,270 L 280,270" stroke="url(#groundGrad)" strokeWidth="6" strokeLinecap="round" />
-
-        {/* Dynamic Running Athlete Leg (Inclinatory Angle) */}
-        <path d="M 152,10 L 195,115 C 205,125 215,135 210,145 L 255,178 L 220,185 L 182,142 L 140,25 Z" fill="url(#legGrad)" opacity="0.85"/>
-        {/* Sock band */}
-        <path d="M 210,145 L 223,155 L 214,162 L 202,152 Z" fill="#94a3b8" />
-
-        {/* Floating sneaker graphic at running lift-off angle */}
-        <g transform="translate(45, 12) rotate(18, 200, 160)">
-          {/* Main Body */}
-          <path 
-            d="M 100,180 C 95,160 88,110 110,95 C 130,80 170,75 200,90 C 220,100 230,135 260,130 C 295,125 335,115 380,145 C 395,155 401,170 390,180 L 360,190 L 160,190 Z" 
-            fill="url(#actionShoeGrad)" 
-            stroke={accentDark} 
-            strokeWidth="1"
-          />
-          {/* Accents & Stripes */}
-          <path d="M 160,105 Q 220,110 260,140 Q 300,170 360,180" stroke={accentColor} strokeWidth="3" opacity="0.8" />
-          <path d="M 130,115 Q 190,120 230,150" stroke={accentColor} strokeWidth="1.5" opacity="0.5" />
-          <path d="M 190,175 Q 250,125 300,135 Q 280,160 230,180 Z" fill={accentColor} opacity="0.4" />
-          
-          {/* Responsive White Sole */}
-          <path 
-            d="M 90,182 C 88,198 100,207 130,209 C 180,212 305,210 355,201 C 385,196 398,189 392,179 L 365,188 L 95,188 Z" 
-            fill="#ffffff" 
-            stroke="#cbd5e1" 
-            strokeWidth="1" 
-          />
-          {/* Lacing lines */}
-          <path d="M 205,90 Q 225,110 245,125" fill="none" stroke="#f8fafc" strokeWidth="2.5" />
-          <path d="M 220,87 Q 232,105 252,120" fill="none" stroke="#f8fafc" strokeWidth="2.5" />
-        </g>
-      </svg>
-    );
-  }
-
-  // Classic side studio view (Default state display)
-  return (
-    <svg viewBox="0 0 400 240" className="w-full h-full drop-shadow-3xl transition-all duration-700" fill="none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        {/* Dynamic drop shadow matching footwear profiles */}
-        <ellipse cx="200" cy="214" rx="145" ry="11" fill="black" opacity="0.35" />
-        
-        {/* Dynamic gradients configurable by properties */}
-        <linearGradient id="bodyGradColor" x1="0" y1="0" x2="350" y2="240" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor={mainColor} />
-          <stop offset="100%" stopColor={accentDark} />
-        </linearGradient>
-        
-        <linearGradient id="soleGradColor" x1="50" y1="180" x2="350" y2="220" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor="#ffffff" />
-          <stop offset="60%" stopColor="#f1f5f9" />
-          <stop offset="100%" stopColor="#cbd5e1" />
-        </linearGradient>
-
-        <linearGradient id="brandAccentGrad" x1="120" y1="120" x2="280" y2="180" gradientUnits="userSpaceOnUse">
-          <stop offset="0%" stopColor={accentColor} />
-          <stop offset="100%" stopColor="#e2e8f0" stopOpacity="0.1" />
-        </linearGradient>
-      </defs>
-
-      {/* Modern Aero Knit Upper Chassis */}
-      <path 
-        d="M 60,180 
-           C 55,165 48,125 70,110 
-           C 90,95 130,80 160,95 
-           C 180,105 190,140 220,135 
-           C 255,130 295,120 340,150 
-           C 355,160 361,175 350,185 
-           L 320,195 L 120,195 Z" 
-        fill="url(#bodyGradColor)" 
-        stroke={accentDark} 
-        strokeWidth="1.2"
-      />
-
-      {/* Aerodynamics sports stripes matching performance aesthetics */}
-      <path 
-        d="M 120,110 Q 180,115 220,145 Q 260,175 320,185" 
-        stroke={accentColor} 
-        strokeWidth="4" 
-        strokeLinecap="round" 
-        opacity="0.85" 
-      />
-      <path 
-        d="M 90,120 Q 150,125 190,155 Q 230,185 290,192" 
-        stroke={accentColor} 
-        strokeWidth="2.5" 
-        strokeLinecap="round" 
-        opacity="0.5" 
-      />
-
-      {/* Structural Logo Panel overlay */}
-      <path 
-        d="M 152,180 Q 212,130 262,140 Q 242,165 192,185 Z" 
-        fill="url(#brandAccentGrad)" 
-        stroke={accentColor} 
-        strokeWidth="1.5" 
-        opacity="0.9"
-      />
-      <path 
-        d="M 177,183 Q 222,145 252,152 Z" 
-        fill="none" 
-        stroke="#ffffff" 
-        strokeWidth="1" 
-        opacity="0.5"
-      />
-
-      {/* Sneaker Tongue structure */}
-      <path 
-        d="M 140,90 Q 155,75 170,85 Q 165,110 160,120" 
-        fill={accentDark} 
-        stroke={mainColor} 
-        strokeWidth="1.2"
-      />
-
-      {/* Back Heel Support Cup */}
-      <path 
-        d="M 60,180 C 58,162 64,135 80,129 C 85,145 81,180 60,180 Z" 
-        fill="#1e293b" 
-        opacity="0.35"
-      />
-
-      {/* High-Fidelity Knit Mesh details */}
-      <path d="M 285,150 Q 305,158 325,170" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" />
-      <path d="M 275,158 Q 295,166 315,178" stroke="#ffffff" strokeWidth="1" strokeLinecap="round" opacity="0.35" />
-
-      {/* Sports Lacing Eyelet systems & laces */}
-      <g opacity="0.95">
-        <path d="M 158,103 L 208,138" stroke="#1e293b" strokeWidth="5" strokeLinecap="round" opacity="0.15" />
-        <path d="M 163,98 Q 183,118 203,133" fill="none" stroke="#f8fafc" strokeWidth="2.2" strokeLinecap="round" />
-        <path d="M 178,94 Q 190,112 210,127" fill="none" stroke="#f8fafc" strokeWidth="2.2" strokeLinecap="round" />
-        <path d="M 193,91 Q 200,105 218,118" fill="none" stroke="#f8fafc" strokeWidth="2.2" strokeLinecap="round" />
-      </g>
-      
-      {/* Front Foot Protective Wrap overlay */}
-      <path 
-        d="M 320,195 C 335,190 355,185 350,175 C 342,170 330,182 315,188 Z" 
-        fill="#1e293b" 
-        opacity="0.2"
-      />
-
-      {/* Soles Integrated Kinetic Air cushioning pads */}
-      <rect x="75" y="196" width="35" height="11" rx="4.5" fill="#38bdf8" stroke={accentColor} strokeWidth="1.2" opacity="0.7" />
-      <circle cx="89" cy="201.5" r="2.5" fill="#ffffff" />
-      <circle cx="98" cy="201.5" r="2.5" fill="#ffffff" />
-
-      {/* Ergonomic Curved Sports Midsole */}
-      <path 
-        d="M 50,182 
-           C 48,198 60,212 90,214 
-           C 140,217 265,215 315,206 
-           C 345,201 358,194 352,184 
-           L 325,193 L 55,193 Z" 
-        fill="url(#soleGradColor)" 
-        stroke="#cbd5e1" 
-        strokeWidth="1.2" 
-      />
-      
-      {/* Dynamic Traction Sole treads */}
-      <path d="M 70,214 L 80,210 M 110,215 L 120,211 M 150,215 L 160,211 M 210,215 L 220,211 M 270,213 L 280,209" stroke="#cbd5e1" strokeWidth="2" opacity="0.8" />
-    </svg>
-  );
-}
+import { Product, Review, CartItem } from "./types";
+import { productsData } from "./data/products";
+import { ProductImageRender } from "./components/ProductIllustrations";
+import { AcademyPortal } from "./components/AcademyPortal";
 
 export default function App() {
-  // --- STATE LAYER (Crucial for React Learning!) ---
-  const [selectedColor, setSelectedColor] = useState("Crimson Red");
-  const [selectedSize, setSelectedSize] = useState(9); // Default recommended size 9
-  const [activeThumbnail, setActiveThumbnail] = useState(0); // Index tracking of visual carousel
-  const [cartCount, setCartCount] = useState(0); // Cart badge counter
-  const [isFavorited, setIsFavorited] = useState(false); // Heart toggle state
-  const [feedbackToast, setFeedbackToast] = useState(""); // Notifications on screen
+  // --- CORE VIEW STATE ---
+  const [phoneScreen, setPhoneScreen] = useState<"home" | "detail" | "cart" | "profile">("home");
   
-  // Custom Reviews Dynamic Registry
-  const [userReviews, setUserReviews] = useState([
-    {
-      id: 1,
-      author: "James Kamau",
-      date: "2 days ago",
-      rating: 5,
-      comment: "Incredibly fast delivery and the shoes feel amazing. The M-Pesa integration made the checkout so smooth!",
-      tag: "Verified Buyer"
-    },
-    {
-      id: 2,
-      author: "Sarah W.",
-      date: "1 week ago",
-      rating: 5,
-      comment: "Perfect fit. I used the size guide and it was spot on. Highly recommend for daily training.",
-      tag: "Verified Buyer"
-    },
-    {
-      id: 3,
-      author: "Ondiek M.",
-      date: "2 weeks ago",
-      rating: 5,
-      comment: "The build quality is professional-grade. Best sneakers I've bought this year.",
-      tag: "Verified Buyer"
-    }
-  ]);
+  // --- CURRENT ACTIVE PRODUCT DETAIL STATE ---
+  const [selectedProduct, setSelectedProduct] = useState<Product>(productsData[2]); // Hyper-dash as default
+  const [selectedColor, setSelectedColor] = useState<string>("Crimson Red");
+  const [selectedSize, setSelectedSize] = useState<number>(9);
+  
+  // --- DYNAMIC STATE ENGINES ---
+  const [cart, setCart] = useState<CartItem[]>([]);
+  const [favorites, setFavorites] = useState<string[]>([]);
+  
+  // --- SEARCH & FILTERS ---
+  const [searchQuery, setSearchQuery] = useState("");
+  const [activeCategoryFilter, setActiveCategoryFilter] = useState<"All" | "New" | "Sale">("All");
+  
+  // --- FEEDBACK SYSTEM ---
+  const [feedbackToast, setFeedbackToast] = useState("");
+  const [emailInput, setEmailInput] = useState("");
+  
+  // --- DYNAMIC REVIEWS REGISTRY (Mapped dynamically!) ---
+  const [productReviews, setProductReviews] = useState<Record<string, Review[]>>({
+    "pro-smartwatch": [
+      { id: 1, author: "Otieno O.", date: "1 day ago", rating: 5, comment: "The biometric tracking on this Watch XT is exceptionally precise. Connected M-Pesa immediately.", tag: "Verified Buyer" },
+      { id: 2, author: "Aminah J.", date: "4 days ago", rating: 4, comment: "Build quality is stellar. Metal watch ring looks brilliant.", tag: "Verified Buyer" }
+    ],
+    "sonicmaster-headphones": [
+      { id: 1, author: "Wanjiku N.", date: "2 days ago", rating: 5, comment: "Unbelievable noise isolation. Ideal for workouts and focus blocks.", tag: "Verified Buyer" }
+    ],
+    "hyper-dash-sneaker": [
+      { id: 1, author: "James Kamau", date: "2 days ago", rating: 5, comment: "Incredibly fast delivery and the shoes feel amazing. The M-Pesa integration made checkout so smooth!", tag: "Verified Buyer" },
+      { id: 2, author: "Sarah W.", date: "1 week ago", rating: 5, comment: "Perfect fit. Used the recommended UK size 9 and it was spot on. Highly recommend for daily training.", tag: "Verified Buyer" },
+      { id: 3, author: "Ondiek M.", date: "2 weeks ago", rating: 5, comment: "Build quality is professional-grade. Best sneakers I've bought this year.", tag: "Verified Buyer" }
+    ],
+    "retro-shot-camera": [
+      { id: 1, author: "Njoroge G.", date: "3 days ago", rating: 5, comment: "A masterpiece rangefinder camera model. Exceptional optics resolution.", tag: "Verified Buyer" }
+    ]
+  });
 
   // Review Form state variables
   const [showReviewForm, setShowReviewForm] = useState(false);
@@ -261,146 +82,216 @@ export default function App() {
   const [reviewRating, setReviewRating] = useState(5);
   const [reviewText, setReviewText] = useState("");
 
-  // Safaricom Lipa Na M-Pesa Simulator Flow states
+  // Safaricom Lipa Na M-Pesa SIM STK Push Simulator Flow states
   const [mpesaPaymentState, setMpesaPaymentState] = useState("idle"); // idle, entering_pin, processing, success
-  const mpesaShortCode = "174379"; // Paybill number for Lipa Na M-Pesa sandbox
+  const mpesaShortCode = "174379"; // Safaricom Lipa Na M-Pesa standard sandbox shortcode
   const [phoneNumber, setPhoneNumber] = useState("0712345678");
   const [simPin, setSimPin] = useState("");
   const [simTerminalLogs, setSimTerminalLogs] = useState<string[]>([]);
+  const [orderReceiptId, setOrderReceiptId] = useState("KF21M30X9Z");
 
-  // Right-Panel Academy Tracker Tab
-  const [academyTab, setAcademyTab] = useState("welcome"); // welcome, states_explained, mpesa_handshake, review_component
+  // Right-Panel Academy Tracker Tab State
+  const [academyTab, setAcademyTab] = useState("welcome");
 
-  // Custom Color Spec Definitions - matches styling & visualization colors
-  const catalogStyleSpecs = {
-    "Crimson Red": {
-      name: "Crimson Red",
-      hex: "#E74C3C", // Standard HEX color code
-      main: "#E74C3C",
-      accent: "#ff6c5c",
-      accentDark: "#a82012",
-      class: "bg-[#E74C3C]"
-    },
-    "Lime Green": {
-      name: "Lime Green",
-      hex: "#8FE31C",
-      main: "#8FE31C",
-      accent: "#adff3d",
-      accentDark: "#5c9c04",
-      class: "bg-[#8FE31C]"
-    },
-    "Obsidian Navy": {
-      name: "Obsidian Navy",
-      hex: "#1E2D3D",
-      main: "#1c2e42",
-      accent: "#3a5675",
-      accentDark: "#0c1521",
-      class: "bg-[#1E2D3D]"
-    },
-    "Pearl White": {
-      name: "Pearl White",
-      hex: "#FAFAFC",
-      main: "#f8fafc",
-      accent: "#94a3b8",
-      accentDark: "#475569",
-      class: "bg-white border border-slate-300"
-    }
-  };
+  // --- DERIVED CART COUNT TALLIES ---
+  const cartCount = cart.reduce((acc, item) => acc + item.quantity, 0);
 
-  const activeSpecs = catalogStyleSpecs[selectedColor] || catalogStyleSpecs["Crimson Red"];
-
-  // Carousel Thumbnails
-  const phoneThumbnails = [
-    { title: "Red Studio View", isShoe: true, matchColor: "Crimson Red" },
-    { title: "Lime Reflex View", isShoe: true, matchColor: "Lime Green" },
-    { title: "Pearl White Angle", isShoe: true, matchColor: "Pearl White" },
-    { title: "Lifestyle Closeup", isShoe: false, label: "+2" }
-  ];
-
-  // Action: Simple Cart Trigger
-  const triggerAddToCart = () => {
-    setCartCount(prev => prev + 1);
-    triggerAlertToast(`Added 1 x SwiftFlow Trainer (${selectedColor}, UK Size ${selectedSize}) to Cart!`);
-  };
-
-  // Helper helper to show user action status toasts
-  const triggerAlertToast = (message) => {
+  // Trigger feedback toasts safely
+  const triggerAlertToast = (message: string) => {
     setFeedbackToast(message);
     setTimeout(() => {
       setFeedbackToast("");
     }, 4000);
   };
 
-  // Submit verified review handler
+  // Sync color & size when product changes
+  useEffect(() => {
+    if (selectedProduct) {
+      setSelectedColor(selectedProduct.colors[0]?.name || "");
+      setSelectedSize(selectedProduct.sizes[0] || 9);
+      setShowReviewForm(false);
+    }
+  }, [selectedProduct]);
+
+  // Action: Add directly to state card basket
+  const handleAddToCart = (product: Product, color: string, size: number) => {
+    const existingIndex = cart.findIndex(
+      item => item.product.id === product.id && 
+              item.selectedColor === color && 
+              item.selectedSize === size
+    );
+
+    if (existingIndex > -1) {
+      const updated = [...cart];
+      updated[existingIndex].quantity += 1;
+      setCart(updated);
+    } else {
+      setCart([...cart, { product, quantity: 1, selectedColor: color, selectedSize: size }]);
+    }
+    triggerAlertToast(`Added 1 x ${product.name} (${color}, Size ${size}) to your Cart!`);
+  };
+
+  // Quick purchase add from products catalog grid (uses default specs)
+  const handleFeaturedQuickCart = (product: Product, e: React.MouseEvent) => {
+    e.stopPropagation(); // Avoid triggering full screen details navigation
+    handleAddToCart(product, product.colors[0].name, product.sizes[0]);
+  };
+
+  // Toggle Favorite
+  const handleToggleFavorite = (productId: string, e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    if (favorites.includes(productId)) {
+      setFavorites(favorites.filter(id => id !== productId));
+      triggerAlertToast("Removed item from your saved watch list.");
+    } else {
+      setFavorites([...favorites, productId]);
+      triggerAlertToast("Saved item to your permanent Favorites! ❤️");
+    }
+  };
+
+  // Cart quantity actions
+  const adjustCartQty = (itemIndex: number, delta: number) => {
+    const updated = [...cart];
+    if (updated[itemIndex].quantity + delta <= 0) {
+      updated.splice(itemIndex, 1);
+      triggerAlertToast("Removed item from dynamic cart listing.");
+    } else {
+      updated[itemIndex].quantity += delta;
+    }
+    setCart(updated);
+  };
+
+  // Submit verified product reviews from details container
   const handleReviewSubmission = (e: React.FormEvent) => {
     e.preventDefault();
     if (!reviewName.trim() || !reviewText.trim()) {
-      alert("Please enter both Name and Comment to proceed.");
+      alert("Please supply both your Name and Comment structure to post.");
       return;
     }
-    const submittedNode = {
-      id: userReviews.length + 1,
+    const newRev: Review = {
+      id: Date.now(),
       author: reviewName,
       date: "Just now",
       rating: reviewRating,
       comment: reviewText,
-      tag: "Verified-Local"
+      tag: "Verified Local Buyer"
     };
-    setUserReviews([submittedNode, ...userReviews]);
+
+    const targetKey = selectedProduct.id;
+    const existingRevList = productReviews[targetKey] || [];
+    setProductReviews({
+      ...productReviews,
+      [targetKey]: [newRev, ...existingRevList]
+    });
+
     setReviewName("");
     setReviewText("");
     setShowReviewForm(false);
-    triggerAlertToast("Verified Review posted successfully and added to dynamic state!");
+    triggerAlertToast("Verified Review updated and appended inside local state engine!");
   };
 
-  // Simulated Lipa Na M-Pesa STK Push initiator
-  const initiateSTKPushSimulation = () => {
-    setMpesaPaymentState("entering_pin");
-    setSimPin("");
-    setSimTerminalLogs(["Initializing premium M-Pesa sandbox handshakes..."]);
+  // Calculate cart cost in USD and conversion to Safaricom KES equivalent
+  const getCartTotalUSD = () => {
+    return cart.reduce((acc, item) => acc + (item.product.priceUSD * item.quantity), 0);
+  };
+  const getCartTotalKES = () => {
+    return Math.round(getCartTotalUSD() * 130); // 1 USD = 130 KES exchange rate proxy
   };
 
-  // Submit SIM PIN trigger simulated Daraja hook callbacks
-  const completeMpesaPaymentSim = () => {
-    if (simPin.length < 4) {
-      alert("SIM prompt requires a 4-digit mobile validation PIN.");
+  // Simulated Lipa Na M-Pesa STK Push sequence initiator
+  const handleInitiateMpesaCheckout = () => {
+    if (cart.length === 0 && phoneScreen === "cart") {
+      alert("Your cart is currently empty! Fill-up in the catalog first.");
       return;
     }
+    setMpesaPaymentState("entering_pin");
+    setSimPin("");
+    setSimTerminalLogs(["Initializing Daraja client-routing handshakes..."]);
+  };
 
+  // Complete Simulated PIN entry
+  const handleExecuteMpesaTelemetry = () => {
+    if (simPin.length < 4) {
+      alert("Simulation standard requires entry of standard 4-digit security PIN.");
+      return;
+    }
     setMpesaPaymentState("processing");
 
-    // Micro-delay simulation representation for log rendering & education
-    const simSteps = [
-      { msg: "🔑 Client secure handshake: Loading Daraja Credentials...", delay: 250 },
-      { msg: "🔑 Generating Base64 token using Consumer Secret & Client Keys...", delay: 800 },
-      { msg: "🎫 OAuth Bearer Token obtained: Token active for 3600 seconds.", delay: 1400 },
-      { msg: "📡 Dispatched STK Push envelope to Safaricom network gateway: https://sandbox.safaricom.co.ke/mpesa/stkpush/v1/processrequest", delay: 2000 },
-      { msg: `📱 Request status: Dispatched Lipa Na M-Pesa Prompt to +254${phoneNumber.substring(1)}...`, delay: 2600 },
-      { msg: "🎯 Subscriber entered 4-digit SIM PIN inside custom dialogue frame.", delay: 3200 },
-      { msg: "⚡ ASYNC WEBHOOK RECEIVED: Payload Callback Response 'ResultCode: 0' (Payment Successful)", delay: 3800 },
-      { msg: "🔔 Safaricom Receipt payload successfully verified with SSL handshake.", delay: 4400 },
-      { msg: "💾 Connected local MongoDB schema collection. Order 'WS_2026_PREM' marked as PAID.", delay: 5100 },
-      { msg: "🛍️ State updated! Rendering green mobile receipt screen...", delay: 5600 }
+    // Micro stages simulation logs to educate standard workspace users
+    const checkoutValueKES = phoneScreen === "detail" ? Math.round(selectedProduct.priceUSD * 130) : getCartTotalKES();
+    const mockOrderNum = "ORD_" + Math.random().toString(36).substring(3, 8).toUpperCase();
+    const logs = [
+      { text: "🔑 Authenticating client credential nodes on Daraja sandbox gateway...", interval: 200 },
+      { text: "🔑 Generating HMAC Base64 request payloads with client private key passkeys...", interval: 700 },
+      { text: "🎫 Secure token validated: Bearer connection configured successfully.", interval: 1300 },
+      { text: `📡 Dispatched network STK Push envelope: Paybill 174379, Amount KES ${checkoutValueKES.toLocaleString()}`, interval: 1900 },
+      { text: `📱 Simulating pop-up prompt output displayed on subscriber node: +254${phoneNumber.substring(1)}`, interval: 2400 },
+      { text: "🎯 Handset validation approved: Secret SIM PIN confirmed correct.", interval: 3100 },
+      { text: "⚡ Webhook received: ResultCode: 0, status payload validated 'Transaction Success'", interval: 3700 },
+      { text: "💾 Relational catalog updated: Saved standard transaction to MongoDB schema.", interval: 4300 },
+      { text: "🎉 Sequence finished! Rendering payment confirmation screen...", interval: 4900 }
     ];
 
-    simSteps.forEach(step => {
+    logs.forEach(log => {
       setTimeout(() => {
-        setSimTerminalLogs(p => [...p, step.msg]);
-        if (step.msg.includes("Rendering green mobile receipt")) {
+        setSimTerminalLogs(old => [...old, log.text]);
+        if (log.text.includes("payment confirmation screen")) {
           setMpesaPaymentState("success");
+          setOrderReceiptId("KT" + Math.floor(Math.random() * 89999 + 10000) + "M30X");
           triggerAlertToast("Lipa Na M-Pesa transaction confirmed successfully!");
+          // Empty cart upon successful overall e-commerce pay
+          if (phoneScreen === "cart") {
+            setCart([]);
+          }
         }
-      }, step.delay);
+      }, log.interval);
     });
   };
 
+  // Email Newsletter Submission
+  const handleSubscribeNewsletter = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!emailInput.trim() || !emailInput.includes("@")) {
+      alert("Please input a valid customer email address.");
+      return;
+    }
+    triggerAlertToast(`Subscribed ${emailInput} for Weekly Deals! Check active state.`);
+    setEmailInput("");
+  };
+
+  // Navigating to product detail view
+  const handleViewProductDetail = (product: Product) => {
+    setSelectedProduct(product);
+    setPhoneScreen("detail");
+    // Scroll mobile simulation to top
+    const deviceWrapper = document.getElementById("mockup-inner-viewport");
+    if (deviceWrapper) {
+      deviceWrapper.scrollTop = 0;
+    }
+  };
+
+  // Filter products Data list based on search and filters
+  const filteredProducts = productsData.filter(product => {
+    const matchesSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase()) || 
+                          product.category.toLowerCase().includes(searchQuery.toLowerCase());
+    
+    if (activeCategoryFilter === "All") {
+      return matchesSearch;
+    } else if (activeCategoryFilter === "New") {
+      return matchesSearch && product.id !== "retro-shot-camera" && product.id !== "sonicmaster-headphones"; // Mocking "new" filter items
+    } else if (activeCategoryFilter === "Sale") {
+      return matchesSearch && !!product.originalPriceUSD;
+    }
+    return matchesSearch;
+  });
+
   return (
-    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans flex flex-col justify-between selection:bg-indigo-600 selection:text-white">
+    <div className="min-h-screen bg-[#F8FAFC] text-slate-900 font-sans flex flex-col justify-between selection:bg-emerald-600 selection:text-white">
       
       {/* Dynamic Screen Action Toaster notification */}
       {feedbackToast && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 animate-bounce bg-emerald-500 text-slate-950 border border-emerald-300 font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-full flex items-center space-x-2.5 shadow-2xl">
-          <CheckCircle size={16} />
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 animate-bounce bg-slate-900 text-white border border-slate-700 font-bold text-xs uppercase tracking-wider px-6 py-3 rounded-full flex items-center space-x-2.5 shadow-2xl">
+          <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
           <span>{feedbackToast}</span>
         </div>
       )}
@@ -409,35 +300,35 @@ export default function App() {
       <header className="border-b border-slate-200 bg-white shadow-xs px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
         <div className="flex items-center space-x-3.5">
           <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center text-white font-black text-xl tracking-wider">
-            SS
+            S
           </div>
           <div>
             <div className="flex items-center space-x-2">
-              <h1 className="font-extrabold text-base tracking-tight text-slate-900 flex items-center gap-1.5">
+              <h1 className="font-extrabold text-[#0D0F12] text-md tracking-tight flex items-center gap-1.5">
                 ShopSwift
-                <span className="text-2xs bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-full px-2.5 py-0.5 font-normal">
-                  Interactive UI & Payment Academy
+                <span className="text-2xs bg-emerald-500/10 text-emerald-700 border border-emerald-500/10 rounded-full px-2.5 py-0.5 font-bold">
+                  Catalog Sandbox v2.0
                 </span>
               </h1>
             </div>
-            <p className="text-xs text-slate-500">Learn React state management and Safaricom Daraja integration step-by-step.</p>
+            <p className="text-xs text-slate-500">Explore premium catalog screens, layout architecture, and M-Pesa STK simulations.</p>
           </div>
         </div>
 
         {/* Global Cart status indicator for state tracking */}
         <div className="flex items-center space-x-4">
-          <span className="hidden sm:inline-flex items-center text-xs text-slate-500 bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg font-medium">
+          <span className="hidden sm:inline-flex items-center text-xs text-slate-500 bg-slate-100 border border-slate-100 px-3 py-1.5 rounded-lg">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2 animate-ping" />
-            Sandbox Environment Active
+            Sandbox Gateway Active
           </span>
 
           <div 
-            onClick={() => triggerAddToCart()}
+            onClick={() => setPhoneScreen("cart")}
             className="h-10 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl flex items-center justify-center space-x-2.5 cursor-pointer select-none transition-all duration-150 active:scale-95"
           >
-            <ShoppingCart size={16} />
-            <span className="text-xs font-bold">Shopping Cart</span>
-            <span className="bg-indigo-600 text-white font-extrabold text-[11px] h-5 w-5 rounded-full flex items-center justify-center">
+            <ShoppingCart size={14} className="text-emerald-400" />
+            <span className="text-xs font-bold">Your Cart</span>
+            <span className="bg-emerald-500 text-slate-950 font-black text-[10px] h-5 w-5 rounded-full flex items-center justify-center">
               {cartCount}
             </span>
           </div>
@@ -447,832 +338,1092 @@ export default function App() {
       {/* Interactive Play Space */}
       <main className="flex-grow max-w-[1450px] w-full mx-auto px-4 py-8 md:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         
-        {/* ==================== LEFT COLUMN: PHONE MOCKUP VIEWPORT (5 Columns) ==================== */}
-        {/* Handcrafted exactly matching the mobile design screenshot layout provided by user */}
-        <section className="col-span-1 lg:col-span-5 flex flex-col items-center">
-          
-          <div className="w-full max-w-[420px] bg-white border-[6px] border-slate-800 rounded-[48px] shadow-2xl overflow-hidden relative flex flex-col justify-between min-h-[860px]">
+        {/* ==================== LEFT COLUMN: PHONE MOCKUP VIEWPORT (7 Columns) ==================== */}
+        {/* Render precise client UI representation with realistic framing dimensions */}
+        <section className="col-span-1 lg:col-span-12 xl:col-span-7 flex justify-center">
+          <div className="relative w-full max-w-[420px] aspect-[9/19] min-h-[780px] md:min-h-[850px] bg-slate-950 rounded-[52px] p-3.5 shadow-2xl border-4 border-slate-900 ring-12 ring-slate-900/30 flex flex-col justify-between overflow-hidden">
             
-            {/* Elegant Smartphone Screen Notch */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 h-5 w-42 bg-slate-800 rounded-b-2xl z-50 flex items-center justify-center select-none">
-              <span className="h-1.5 w-1.5 rounded-full bg-slate-950 mr-2" />
-              <span className="h-1.5 w-8 rounded-full bg-slate-950" />
+            {/* Top Speaker Screen notch */}
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-950 rounded-b-2xl z-40 flex items-center justify-center">
+              <div className="w-12 h-1 bg-slate-900 rounded-full" />
+              <div className="absolute right-4 w-1.5 h-1.5 bg-indigo-950/40 rounded-full" />
             </div>
 
-            {/* Simulated Mobile Top Navigation Header */}
-            <header className="px-5 pt-8 pb-3 bg-white flex items-center justify-between border-b border-slate-100 select-none text-slate-900">
-              <div className="flex items-center space-x-2 cursor-pointer hover:opacity-70 transition-opacity">
-                <ArrowLeft size={18} className="stroke-[2.5]" />
-                <span className="text-base font-bold tracking-tight">ShopSwift</span>
-              </div>
-              <div className="flex items-center space-x-4">
-                <Search size={18} className="text-slate-600 hover:text-indigo-600 cursor-pointer" />
-                <div onClick={() => triggerAddToCart()} className="relative cursor-pointer">
-                  <ShoppingCart size={18} className="text-slate-600 hover:text-indigo-600" />
-                  {cartCount > 0 && (
-                    <span className="absolute -top-1.5 -right-1.5 bg-indigo-600 text-white text-[9px] font-black h-4 w-4 rounded-full flex items-center justify-center">
-                      {cartCount}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </header>
+            {/* Simulated Glass Reflection */}
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-b from-white/5 to-transparent skew-x-12 pointer-events-none z-30" />
 
-            {/* Main Scrollable View */}
-            <div className="flex-1 overflow-y-auto no-scrollbar bg-[#F8FAFC] flex flex-col pb-24 max-h-[710px]">
+            {/* ACTIVE SIMULATED PHONE GLASS SCREENPORT */}
+            <div 
+              id="mockup-inner-viewport"
+              className="w-full h-full bg-[#fcfcfd] rounded-[38px] overflow-y-auto no-scrollbar relative flex flex-col justify-between"
+            >
               
-              {/* Image Carousel Spotlight Area - Styled with professional lighting backdrop */}
-              <div className="relative bg-[#0F172A] aspect-square flex items-center justify-center p-6 overflow-hidden select-none">
-                {/* Visual Glow Spotlight */}
-                <div className="absolute inset-0 bg-radial-gradient from-transparent to-black/85 pointer-events-none" />
-                <div 
-                  className="absolute inset-0 opacity-20 blur-2xl transition-all duration-700 pointer-events-none"
-                  style={{ background: `radial-gradient(circle, ${activeSpecs.main} 0%, transparent 70%)` }} 
-                />
-
-                {/* Sneaker Graphic Illustration */}
-                <div className="w-full h-full transform hover:scale-105 transition-transform duration-500">
-                  <HighFidelityShoeIllustration 
-                    mainColor={activeSpecs.main} 
-                    accentColor={activeSpecs.accent} 
-                    accentDark={activeSpecs.accentDark} 
-                    isActionView={activeThumbnail === 3}
-                  />
+              {/* --- INNER PHONE NAVIGATION HEADER (Matches customer layout) --- */}
+              <header className="bg-white border-b border-slate-100 px-5 pt-8 pb-3.5 flex items-center justify-between sticky top-0 z-30 select-none">
+                <div className="flex items-center space-x-2">
+                  <button 
+                    onClick={() => {
+                      if (phoneScreen !== "home") setPhoneScreen("home");
+                    }} 
+                    className="p-1.5 text-slate-800 hover:bg-slate-50 rounded-lg"
+                  >
+                    {phoneScreen !== "home" ? <ArrowLeft size={18} /> : (
+                      <div className="space-y-1 w-5">
+                        <div className="h-0.5 w-5 bg-slate-900" />
+                        <div className="h-0.5 w-4 bg-slate-900" />
+                        <div className="h-0.5 w-5 bg-slate-900" />
+                      </div>
+                    )}
+                  </button>
                 </div>
-              </div>
-
-              {/* Multi Thumbnails Beneath (Direct Layout Alignment) */}
-              <div className="px-4 py-3 bg-white grid grid-cols-4 gap-2 border-b border-slate-100">
-                {phoneThumbnails.map((thumb, idx) => {
-                  const isActive = idx === activeThumbnail;
-                  return (
-                    <div 
-                      key={idx}
-                      onClick={() => {
-                        setActiveThumbnail(idx);
-                        // Update active color dynamically if matched
-                        if (thumb.isShoe && thumb.matchColor) {
-                          setSelectedColor(thumb.matchColor);
-                        }
-                      }}
-                      className={`relative aspect-square rounded-xl cursor-pointer overflow-hidden p-1.5 transition-all duration-200 flex items-center justify-center ${
-                        isActive 
-                          ? "border-2 border-slate-900 bg-slate-50 ring-2 ring-slate-900/10 scale-102" 
-                          : "border border-slate-200 bg-slate-50/50 hover:border-slate-300"
-                      }`}
-                    >
-                      {thumb.isShoe && thumb.matchColor ? (
-                        <div className="w-full h-full transform scale-110">
-                          <HighFidelityShoeIllustration 
-                            mainColor={catalogStyleSpecs[thumb.matchColor].main}
-                            accentColor={catalogStyleSpecs[thumb.matchColor].accent}
-                            accentDark={catalogStyleSpecs[thumb.matchColor].accentDark}
-                            isActionView={false}
-                          />
-                        </div>
-                      ) : (
-                        <div className="relative w-full h-full flex flex-col items-center justify-center">
-                          {/* Real action lifestyle backdrop preview */}
-                          <div className="absolute inset-0 opacity-40">
-                            <HighFidelityShoeIllustration 
-                              mainColor="#E74C3C" 
-                              accentColor="#E74C3C" 
-                              accentDark="#a82012" 
-                              isActionView={true} 
-                            />
-                          </div>
-                          <div className="absolute inset-0 bg-black/50 rounded flex items-center justify-center">
-                            <span className="font-extrabold text-sm text-white font-mono">{thumb.label}</span>
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })}
-              </div>
-
-              {/* Product Info, Badges, & Actions Section */}
-              <div className="p-4 space-y-4 bg-white">
                 
-                {/* Header Badge, Stars Rating, and Review Tallies */}
-                <div className="space-y-1">
-                  <div className="flex items-center justify-between">
-                    <span className="px-2.5 py-0.5 text-[9px] uppercase font-bold bg-[#D4F6D4] text-[#1E5D1E] rounded-full tracking-wider">
-                      NEW ARRIVAL
-                    </span>
-                    <div className="flex items-center space-x-1">
-                      {[1,2,3,4,5].map(starIdx => (
-                        <Star key={starIdx} size={11} className="fill-amber-400 text-amber-400" />
-                      ))}
-                      <span className="text-[10px] text-slate-500 font-semibold pl-1">(128 Reviews)</span>
-                    </div>
-                  </div>
+                <span className="font-extrabold text-slate-950 tracking-wide text-base font-sans">
+                  ShopSwift
+                </span>
 
-                  <h2 className="text-xl font-extrabold tracking-tight text-slate-900 leading-tight">
-                    SwiftFlow Kinetic Trainer
-                  </h2>
-                  <div className="text-base font-extrabold text-[#003441] font-sans">
-                    KES 12,499.00
-                  </div>
+                <div className="relative">
+                  <button 
+                    onClick={() => setPhoneScreen("cart")}
+                    className="p-2 text-slate-800 hover:bg-slate-50 rounded-full relative"
+                  >
+                    <ShoppingCart size={18} />
+                    {cartCount > 0 && (
+                      <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-emerald-500 text-slate-950 text-[9px] font-black rounded-full flex items-center justify-center shadow-md animate-pulse">
+                        {cartCount}
+                      </span>
+                    )}
+                  </button>
                 </div>
+              </header>
 
-                <hr className="border-slate-100" />
-
-                {/* Description Text block from picture */}
-                <div className="space-y-1">
-                  <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                    Description
-                  </h4>
-                  <p className="text-xs text-slate-600 leading-relaxed font-sans">
-                    Engineered for elite performance and everyday comfort. The SwiftFlow Kinetic Trainer features our proprietary M-Tech cushioning and a breathable aero-knit upper for maximum reliability on any surface. Perfect for urban runners and gym enthusiasts alike.
-                  </p>
-                </div>
-
-                {/* SELECT COLOR interactive picker layout */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                      Select Color
-                    </h4>
-                    <span className="text-[10px] font-bold text-slate-600 bg-slate-100 px-2 py-0.5 rounded-full uppercase">
-                      {selectedColor}
-                    </span>
-                  </div>
-
-                  {/* Circular buttons mapping catalog specs */}
-                  <div className="flex items-center space-x-3.5 pt-1 select-none">
-                    {Object.keys(catalogStyleSpecs).map(color => {
-                      const isActive = selectedColor === color;
-                      return (
-                        <button
-                          key={color}
-                          onClick={() => {
-                            setSelectedColor(color);
-                            triggerAlertToast(`Switched active canvas to: ${color}`);
-                          }}
-                          className={`h-8 w-8 rounded-full transition-all duration-250 relative flex items-center justify-center shadow-xs ${
-                            isActive 
-                              ? "ring-4 ring-slate-900/15 border-2 border-slate-900 scale-108" 
-                              : "border border-slate-200 hover:scale-105 active:scale-95"
-                          } ${catalogStyleSpecs[color].class}`}
-                          title={color}
-                        />
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* SELECT SIZE interactive grid */}
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between">
-                    <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest font-mono">
-                      Select Size (UK)
-                    </h4>
-                    <button className="text-[10px] font-bold text-indigo-600 hover:underline">
-                      Size Guide
-                    </button>
-                  </div>
-
-                  <div className="grid grid-cols-4 gap-2">
-                    {[7, 8, 9, 10, 11, 12].map(sizeNum => {
-                      const isSelected = selectedSize === sizeNum;
-                      const isOutOfStock = sizeNum === 12; // Out of stock setting matching picture screenshot
-                      return (
-                        <button
-                          key={sizeNum}
-                          disabled={isOutOfStock}
-                          onClick={() => {
-                            setSelectedSize(sizeNum);
-                            triggerAlertToast(`Selected Shoe Size: UK ${sizeNum}`);
-                          }}
-                          className={`py-2 text-xs font-extrabold font-mono transition-all duration-150 rounded-xl border relative ${
-                            isSelected 
-                              ? "bg-white text-slate-900 border-slate-900 ring-2 ring-slate-900/10" 
-                              : isOutOfStock 
-                                ? "bg-slate-50 text-slate-300 border-slate-200 cursor-not-allowed opacity-50 line-through"
-                                : "bg-[#F8FAFC] text-slate-700 border-slate-200 hover:bg-slate-50 hover:border-slate-300"
-                          }`}
-                        >
-                          {sizeNum}
-                        </button>
-                      );
-                    })}
-                  </div>
-                </div>
-
-                {/* Lipa Na M-Pesa Interactive Secure checkout Card */}
-                <div 
-                  onClick={() => initiateSTKPushSimulation()}
-                  className="bg-[#EDFBF2] hover:bg-[#E2FBEB] border border-[#C6F2D5] rounded-2xl p-4 flex items-center justify-between cursor-pointer group transition-all duration-200 active:scale-98 shadow-sm"
-                >
-                  <div className="flex items-center space-x-3.5">
-                    <div className="h-10 w-10 shrink-0 rounded-xl bg-[#49B249] flex items-center justify-center text-white ring-4 ring-[#49B249]/10">
-                      <Smartphone size={20} className="fill-white/10" />
-                    </div>
-                    <div>
-                      <h4 className="text-xs font-bold text-[#1E5D1E] group-hover:text-indigo-600 transition-colors">
-                        Secure Checkout with M-Pesa
-                      </h4>
-                      <p className="text-[10px] text-[#2C6F2C] leading-snug">
-                        Instant confirmation & real-time tracking.
-                      </p>
-                    </div>
-                  </div>
-                  <ShieldCheck size={16} className="text-[#49B249]" />
-                </div>
-
-                <hr className="border-slate-100" />
-
-                {/* Customer Reviews UI Container */}
-                <div className="space-y-4">
-                  <div className="flex justify-between items-center bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <div>
-                      <h3 className="text-xl font-black text-slate-900">4.8</h3>
-                      <div className="flex mt-0.5">
-                        {[1,2,3,4,5].map(starIdx => (
-                          <Star key={starIdx} size={10} className="fill-amber-400 text-amber-400" />
-                        ))}
-                      </div>
-                      <p className="text-[9px] text-slate-500 font-semibold mt-1">
-                        Based on 128 verified purchases
-                      </p>
-                    </div>
+              {/* --- VIEW SCREEN CONDITIONAL ROUTING SYSTEM --- */}
+              <div className="flex-grow pb-24">
+                
+                {/* SCREEN 1: THE PRODUCTS LANDING CATALOG (Exactly styled to matching screenshot) */}
+                {phoneScreen === "home" && (
+                  <div className="animate-fadeIn">
                     
-                    <button 
-                      onClick={() => {
-                        setShowReviewForm(!showReviewForm);
-                        setAcademyTab("review_component"); // Teach them about how this action triggers UI state
-                      }}
-                      className="px-4 py-2 border border-slate-300 text-slate-700 hover:text-slate-900 hover:border-slate-400 rounded-xl text-xs font-bold transition-all active:scale-95"
-                    >
-                      {showReviewForm ? "Close Form" : "Write a Review"}
-                    </button>
-                  </div>
+                    {/* GIANT CURATED SEASONAL BANNER */}
+                    <div className="bg-[#0b1b1b] text-white relative h-[360px] overflow-hidden flex flex-col justify-between">
+                      {/* Dark Atmospheric Background image/gradient simulation */}
+                      <div className="absolute inset-0 bg-gradient-to-tr from-[#051111] via-[#0b2424] to-[#123838] opacity-95" />
+                      
+                      {/* Curated Silhouette Backdrop Simulation inside Canvas */}
+                      <div className="absolute inset-y-0 right-0 w-2/3 opacity-30 pointer-events-none mix-blend-screen">
+                        <svg viewBox="0 0 200 300" className="w-full h-full" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M 120,50 C 90,110 80,180 140,240" stroke="#22c55e" strokeWidth="12" strokeLinecap="round" opacity="0.4" />
+                          <circle cx="120" cy="90" r="30" fill="#22c55e" opacity="0.1" />
+                          <ellipse cx="140" cy="220" rx="30" ry="80" fill="#22c55e" opacity="0.3" transform="rotate(-15, 140, 220)" />
+                        </svg>
+                      </div>
 
-                  {/* Create verified Review micro form (Active visual UI state) */}
-                  {showReviewForm && (
-                    <form onSubmit={handleReviewSubmission} className="bg-white border border-slate-200 rounded-2xl p-4 space-y-4 animate-fadeIn shadow-lg">
-                      <div className="bg-slate-50 px-3 py-2 rounded-lg text-[10px] text-slate-500 leading-normal flex items-start space-x-2">
-                        <Info size={14} className="text-indigo-500 shrink-0 mt-0.5" />
-                        <span>This form appends directly to the React <code className="text-indigo-600">userReviews</code> array in state, instantly re-rendering below!</span>
+                      {/* Header Badge */}
+                      <div className="pt-8 px-6 relative z-10">
+                        <span className="bg-[#22c55e] text-[#051111] text-[9px] font-extrabold uppercase tracking-widest px-3 py-1.5 rounded-full inline-block">
+                          SEASONAL ARRIVALS
+                        </span>
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase tracking-wider text-slate-500 block">Reviewer Name</label>
-                        <input 
-                          type="text"
-                          required
-                          value={reviewName}
-                          onChange={(e) => setReviewName(e.target.value)}
-                          placeholder="e.g. James Kamau"
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:bg-white"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase tracking-wider text-slate-500 block">Rating Stars</label>
-                        <select
-                          value={reviewRating}
-                          onChange={(e) => setReviewRating(Number(e.target.value))}
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-2.5 py-2 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500"
-                        >
-                          <option value="5">⭐⭐⭐⭐⭐ Excellent Fit (5 Stars)</option>
-                          <option value="4">⭐⭐⭐⭐ Great Comfort (4 Stars)</option>
-                          <option value="3">⭐⭐⭐ Standard Build (3 Stars)</option>
-                        </select>
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[9px] font-bold uppercase tracking-wider text-slate-500 block">Your Comments</label>
-                        <textarea
-                          required
-                          rows={3}
-                          value={reviewText}
-                          onChange={(e) => setReviewText(e.target.value)}
-                          placeholder="Describe cushioning, M-Pesa experience, delivery speed..."
-                          className="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs text-slate-800 focus:outline-none focus:ring-1 focus:ring-indigo-500 h-18 resize-none focus:bg-white"
-                        />
-                      </div>
-                      <button 
-                        type="submit"
-                        className="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2 rounded-xl text-xs uppercase tracking-wider transition-colors"
-                      >
-                        Submit Locally Verified Review
-                      </button>
-                    </form>
-                  )}
 
-                  {/* Testimonials list - rendered exactly from dynamic State representation */}
-                  <div className="space-y-3">
-                    {userReviews.map(reviewNode => (
-                      <div key={reviewNode.id} className="bg-white border border-slate-100 rounded-2xl p-4 space-y-2.5 shadow-xs">
-                        <div className="flex items-center justify-between">
-                          <div>
-                            <h4 className="text-xs font-bold text-slate-900">{reviewNode.author}</h4>
-                            <p className="text-[9px] text-slate-400 font-semibold tracking-tight">
-                              <span className="text-[#1E5D1E] mr-1.5 font-bold">{reviewNode.tag}</span> • {reviewNode.date}
-                            </p>
-                          </div>
-                          <div className="flex">
-                            {Array.from({ length: reviewNode.rating }).map((_, i) => (
-                              <Star key={i} size={8} className="fill-amber-400 text-amber-400" />
-                            ))}
-                          </div>
-                        </div>
-                        <p className="text-xs text-slate-600 leading-relaxed italic">
-                          "{reviewNode.comment}"
+                      {/* Copy Block */}
+                      <div className="px-6 py-4 relative z-10 space-y-2">
+                        <h2 className="text-xl md:text-2xl font-extrabold tracking-tight leading-snug">
+                          Modern Essentials for a Dynamic Life.
+                        </h2>
+                        <p className="text-[11px] text-slate-300 leading-relaxed max-w-[90%] font-medium">
+                          Secure, seamless, and sophisticated. Discover our curated collection of high-performance gear and fashion-forward essentials.
                         </p>
                       </div>
-                    ))}
-                  </div>
 
-                  <div className="text-center pt-2">
-                    <button className="text-[10px] font-bold tracking-widest uppercase text-slate-400 hover:text-indigo-600 transition-colors">
-                      View All Reviews
-                    </button>
-                  </div>
-
-                </div>
-
-              </div>
-
-            </div>
-
-            {/* HIGH-FIDELITY SIMULATED SMARTPHONE SIM TOOLKIT INTERFACE OVERLAY */}
-            {mpesaPaymentState !== "idle" && (
-              <div className="absolute inset-0 bg-slate-950/70 backdrop-blur-xs z-50 flex items-center justify-center p-6 select-none font-sans">
-                
-                {mpesaPaymentState === "entering_pin" && (
-                  <div className="bg-[#E4EBD3] text-slate-950 rounded-2xl w-full max-w-[280px] p-5 shadow-2xl border-4 border-slate-700 animate-scaleUp">
-                    {/* Retro SIM prompt bar typical of safaricom mobile OS screens */}
-                    <div className="border-b border-stone-400 pb-2 mb-3">
-                      <h4 className="text-[9px] font-extrabold tracking-tight uppercase text-stone-600">Safaricom Menu</h4>
-                      <p className="text-[11px] font-bold text-stone-900">Lipa Na M-Pesa Online</p>
+                      {/* Button Controls */}
+                      <div className="pb-8 px-6 relative z-10 flex items-center space-x-3">
+                        <button 
+                          onClick={() => handleViewProductDetail(productsData[2])} // Sneaker
+                          className="px-5 py-2.5 bg-[#22c55e] hover:bg-[#1eb053] text-[#051111] font-extrabold text-xs rounded-lg transition-all duration-150 transform active:scale-95 cursor-pointer shadow-md"
+                        >
+                          Shop Now
+                        </button>
+                        <button 
+                          onClick={() => {
+                            setSelectedProduct(productsData[0]); // Smartwatch
+                            setPhoneScreen("detail");
+                          }}
+                          className="px-5 py-2.5 border border-white/60 hover:bg-white/10 text-white font-extrabold text-xs rounded-lg transition-all duration-150 cursor-pointer"
+                        >
+                          View Lookbook
+                        </button>
+                      </div>
                     </div>
 
-                    <div className="space-y-3">
-                      <p className="text-[11px] font-bold leading-normal text-stone-800">
-                        Do you want to pay KES 12,499.00 to SHOPSWIFT MERCH for order ref #WS2026? Enter M-Pesa PIN:
-                      </p>
 
-                      {/* Display Dots representing PIN masking */}
-                      <div className="bg-[#f5f5f3] border border-stone-400 text-center py-2.5 rounded font-black text-sm font-mono tracking-widest min-h-[38px] text-stone-900">
-                        {"* ".repeat(simPin.length) || "Enter 4-Digit PIN"}
+                    {/* FEATURED CATEGORIES SECTION */}
+                    <div className="mt-8 px-5 space-y-3 font-sans">
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">
+                            Featured Categories
+                          </h3>
+                          <p className="text-[10px] text-slate-400">
+                            Explore our wide range of premium collections
+                          </p>
+                        </div>
+                        <button 
+                          onClick={() => {
+                            setActiveCategoryFilter("All");
+                            setFeedbackToast("Loaded complete warehouse directory.");
+                          }}
+                          className="text-[11px] font-bold text-slate-800 flex items-center space-x-1"
+                        >
+                          <span>View All</span>
+                          <ChevronRight size={12} />
+                        </button>
                       </div>
 
-                      {/* Manual input keypad buttons to make simulated UI deeply interactive */}
-                      <div className="grid grid-cols-3 gap-1.5 pt-1.5 select-none">
-                        {[1, 2, 3, 4, 5, 6, 7, 8, 9, "Clear", 0, "⌫"].map((key) => {
-                          const isSpecial = typeof key === "string";
+                      {/* Horizontal Category Cards container */}
+                      <div className="flex items-center space-x-3 overflow-x-auto no-scrollbar py-2 select-none">
+                        
+                        {/* Electronics Category Card */}
+                        <div 
+                          onClick={() => setActiveCategoryFilter("All")}
+                          className="min-w-[145px] w-[145px] h-[100px] rounded-2xl bg-slate-900 overflow-hidden relative group cursor-pointer border border-slate-800 shadow-xs"
+                        >
+                          <div className="absolute inset-0 bg-radial-to-br from-indigo-950/40 via-slate-950 to-slate-950" />
+                          
+                          {/* Inner technology laptop visual svg representation */}
+                          <div className="absolute top-2 right-2 w-16 h-12 opacity-85 group-hover:scale-105 transition-transform duration-300">
+                            <svg viewBox="0 0 60 40" fill="none" className="w-full h-full">
+                              <rect x="12" y="8" width="36" height="20" rx="2" fill="#334155" stroke="#cbd5e1" strokeWidth="1" />
+                              <rect x="15" y="11" width="30" height="14" fill="#0f172a" />
+                              <path d="M 6,28 L 54,28 C 56,28 56,30 54,30 L 6,30 C 4,30 4,28 6,28 Z" fill="#cbd5e1" />
+                            </svg>
+                          </div>
+
+                          <span className="absolute bottom-3 left-4 font-extrabold text-[12px] text-white tracking-wide">
+                            Electronics
+                          </span>
+                        </div>
+
+                        {/* Fashion Category Card */}
+                        <div 
+                          onClick={() => setActiveCategoryFilter("Sale")}
+                          className="min-w-[145px] w-[145px] h-[100px] rounded-2xl bg-[#5c626e] overflow-hidden relative group cursor-pointer border border-slate-200 shadow-xs"
+                        >
+                          <div className="absolute inset-0 bg-gradient-to-br from-[#acb1bb] to-[#484f5c] opacity-90" />
+                          
+                          {/* Inner apparel SVG visual stand */}
+                          <div className="absolute top-1 right-2 w-14 h-16 opacity-85 group-hover:translate-y-0.5 transition-transform duration-300">
+                            <svg viewBox="0 0 40 50" fill="none" className="w-full h-full">
+                              <path d="M 8,45 L 32,45" stroke="#475569" strokeWidth="1.5" />
+                              <path d="M 20,45 L 20,10" stroke="#475569" strokeWidth="1.5" />
+                              <path d="M 12,18 L 28,18" stroke="#475569" strokeWidth="1.5" />
+                              <path d="M 20,10 Q 20,6 23,8" stroke="#475569" strokeWidth="1" fill="none" />
+                              {/* Hanger and dress clothes */}
+                              <path d="M 14,18 L 11,35 L 29,35 L 26,18 Z" fill="#e2e8f0" stroke="#475569" opacity="0.9" />
+                            </svg>
+                          </div>
+
+                          <span className="absolute bottom-3 left-4 font-extrabold text-[12px] text-white tracking-wide">
+                            Fashion
+                          </span>
+                        </div>
+
+                      </div>
+                    </div>
+
+
+                    {/* TRENDING NOW SECTION & FEED LIST */}
+                    <div className="mt-8 px-5 space-y-4">
+                      
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <h3 className="text-sm font-extrabold text-slate-900 tracking-tight">
+                            Trending Now
+                          </h3>
+                          <p className="text-[10px] text-slate-400">
+                            Top picks for you this week
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Interactive Filter Pills */}
+                      <div className="flex items-center space-x-2 pb-1 bg-transparent select-none">
+                        {[
+                          { key: "All", label: "All" },
+                          { key: "New", label: "New" },
+                          { key: "Sale", label: "Sale" }
+                        ].map(pill => (
+                          <button
+                            key={pill.key}
+                            onClick={() => {
+                              setActiveCategoryFilter(pill.key as any);
+                              triggerAlertToast(`Filtered view directory by: ${pill.label}`);
+                            }}
+                            className={`px-4 py-1.5 rounded-full text-xs font-bold transition-all duration-150 cursor-pointer ${
+                              activeCategoryFilter === pill.key
+                                ? "bg-slate-900 text-white shadow-md font-black"
+                                : "bg-white border border-slate-200 text-slate-500 hover:text-slate-800 hover:border-slate-300"
+                            }`}
+                          >
+                            {pill.label}
+                          </button>
+                        ))}
+                      </div>
+
+                      {/* Search bar helper inside inner catalog */}
+                      <div className="relative">
+                        <Search size={14} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="text"
+                          placeholder="Search products..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          className="w-full text-xs bg-white border border-slate-200 rounded-xl pl-9 pr-4 py-2.5 focus:outline-hidden focus:border-slate-400 transition-all font-medium"
+                        />
+                        {searchQuery && (
+                          <button 
+                            onClick={() => setSearchQuery("")}
+                            className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-bold"
+                          >
+                            Clear
+                          </button>
+                        )}
+                      </div>
+
+                      {/* Two Column Grid of Products Mapped elegantly */}
+                      <div className="grid grid-cols-2 gap-4">
+                        {filteredProducts.map(product => {
+                          const hasSale = !!product.originalPriceUSD;
+                          const isFav = favorites.includes(product.id);
+                          
                           return (
-                            <button
-                              key={key}
-                              type="button"
-                              onClick={() => {
-                                if (key === "Clear") setSimPin("");
-                                else if (key === "⌫") setSimPin(prev => prev.slice(0, -1));
-                                else if (simPin.length < 4) setSimPin(prev => prev + key);
-                              }}
-                              className={`py-2 rounded font-extrabold text-xs select-none active:bg-stone-300 transition-all ${
-                                isSpecial 
-                                  ? "bg-stone-300/80 text-stone-800 text-[10px]" 
-                                  : "bg-white border border-stone-300 shadow-3xs text-stone-950"
-                              }`}
+                            <div 
+                              key={product.id}
+                              onClick={() => handleViewProductDetail(product)}
+                              className="bg-white border border-slate-200/80 rounded-2xl overflow-hidden group hover:shadow-lg hover:border-slate-300 transition-all duration-300 flex flex-col justify-between cursor-pointer"
                             >
-                              {key}
-                            </button>
+                              {/* Thumbnail & Badging Container */}
+                              <div className="aspect-square bg-slate-50 relative flex items-center justify-center p-3 select-none">
+                                
+                                {/* Sale Badge tag top left */}
+                                {hasSale && (
+                                  <span className="absolute top-2.5 left-2.5 bg-[#22c55e] text-[#051111] font-extrabold text-[8px] tracking-wider px-2 py-1 rounded">
+                                    {product.badge || "SALE"}
+                                  </span>
+                                )}
+
+                                {/* Favorite button top right */}
+                                <button
+                                  onClick={(e) => handleToggleFavorite(product.id, e)}
+                                  className={`absolute top-2.5 right-2.5 h-7 w-7 rounded-full bg-white shadow-xs border flex items-center justify-center transition-all duration-150 z-20 ${
+                                    isFav ? "text-pink-500 border-pink-100 bg-pink-50" : "text-slate-400 border-slate-100 hover:text-slate-600"
+                                  }`}
+                                >
+                                  <Heart size={13} className={isFav ? "fill-pink-500 stroke-pink-500" : ""} />
+                                </button>
+
+                                {/* Dynamic Vector Render */}
+                                <div className="w-full h-full max-w-[110px] max-h-[110px] flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
+                                  <ProductImageRender name={product.name} />
+                                </div>
+                              </div>
+
+                              {/* Catalog item text data block */}
+                              <div className="p-3.5 bg-white border-t border-slate-50 space-y-1 relative">
+                                <span className="text-[8px] font-black text-rose-500 tracking-wider uppercase block">
+                                  {product.tagline}
+                                </span>
+                                
+                                <h4 className="text-xs font-bold text-slate-900 leading-tight tracking-tight truncate">
+                                  {product.name}
+                                </h4>
+
+                                <div className="flex items-center justify-between pt-1">
+                                  <div className="space-y-0.5">
+                                    <span className="text-xs font-black text-slate-900 block">
+                                      ${product.priceUSD.toFixed(2)}
+                                    </span>
+                                    {hasSale && (
+                                      <span className="text-[9px] line-through text-slate-400 block font-medium">
+                                        ${product.originalPriceUSD?.toFixed(2)}
+                                      </span>
+                                    )}
+                                  </div>
+
+                                  {/* Add to small blue cart launcher button */}
+                                  <button
+                                    onClick={(e) => handleFeaturedQuickCart(product, e)}
+                                    className="p-2 bg-[#0C1E26] hover:bg-[#163644] text-white rounded-lg transition-colors cursor-pointer select-none"
+                                  >
+                                    <ShoppingCart size={12} className="text-emerald-400" />
+                                  </button>
+                                </div>
+                              </div>
+
+                            </div>
                           );
                         })}
                       </div>
 
-                      {/* Actions */}
-                      <div className="flex space-x-2 pt-2 border-t border-stone-400/50">
-                        <button 
-                          onClick={() => setMpesaPaymentState("idle")}
-                          className="flex-1 py-2 rounded-xl font-bold text-2xs bg-stone-300 text-stone-700 hover:bg-stone-400 transition-all"
-                        >
-                          Cancel
-                        </button>
-                        <button 
-                          onClick={() => completeMpesaPaymentSim()}
-                          className="flex-1 py-2 rounded-xl font-bold text-2xs bg-emerald-600 text-white hover:bg-emerald-500 transition-all"
-                        >
-                          Send
-                        </button>
-                      </div>
-
-                    </div>
-                  </div>
-                )}
-
-                {/* Simulated Daraja Gateway Processing & logger trace terminal */}
-                {mpesaPaymentState === "processing" && (
-                  <div className="bg-slate-900 border border-slate-800 rounded-3xl p-5 w-full max-w-[320px] text-center space-y-4 animate-fadeIn shadow-2xl">
-                    <RefreshCw size={36} className="text-[#49B249] animate-spin mx-auto" />
-                    
-                    <div className="space-y-0.5">
-                      <h4 className="text-sm font-bold text-white">Daraja API Gateway Trace</h4>
-                      <p className="text-[10px] text-slate-400">Exposing secure webhook handshakes in real time:</p>
-                    </div>
-
-                    {/* Active API Logs viewer */}
-                    <div className="bg-slate-950 rounded-xl p-3 text-left font-mono text-[9px] text-emerald-400 border border-slate-800 space-y-1.5 max-h-[160px] overflow-y-auto no-scrollbar">
-                      {simTerminalLogs.map((logStr, idx) => (
-                        <div key={idx} className="leading-relaxed border-b border-slate-900 pb-1">
-                          {logStr}
+                      {filteredProducts.length === 0 && (
+                        <div className="text-center py-8 space-y-2">
+                          <HelpCircle className="mx-auto text-slate-300" size={32} />
+                          <p className="text-xs font-bold text-slate-500">No products found matching "{searchQuery}"</p>
+                          <button 
+                            onClick={() => { setSearchQuery(""); setActiveCategoryFilter("All"); }}
+                            className="text-xs text-emerald-600 font-extrabold"
+                          >
+                            Reset filters
+                          </button>
                         </div>
-                      ))}
+                      )}
+
                     </div>
+
+                    {/* TRUSTED PAYMENTS VIA M-PESA LOGO COMPONENT */}
+                    <div className="mt-8 mx-5 bg-[#0C1E26] text-white rounded-2xl p-5 border border-slate-700 space-y-3 shadow-md relative overflow-hidden">
+                      <div className="absolute -right-8 -bottom-8 opacity-5">
+                        <ShieldCheck size={96} />
+                      </div>
+
+                      <div className="flex items-center space-x-2.5 relative z-10">
+                        <div className="h-6 w-6 rounded-md bg-emerald-500 flex items-center justify-center text-slate-950">
+                          <ShieldCheck size={16} />
+                        </div>
+                        <h4 className="text-xs font-black tracking-normal uppercase text-emerald-400 font-sans">
+                          Trusted Payments via M-Pesa
+                        </h4>
+                      </div>
+
+                      <p className="text-[10px] text-slate-300 leading-relaxed font-sans relative z-10">
+                        Experience lightning-fast checkout with our integrated mobile payment systems. Your transactions are secure, encrypted, and instantaneous.
+                      </p>
+                    </div>
+
+                    {/* NEWSLETTER FORM */}
+                    <div className="mt-8 px-5">
+                      <div className="bg-slate-50 rounded-2xl p-5 border border-slate-200/80 space-y-3.5">
+                        <div className="space-y-1">
+                          <h4 className="text-xs font-bold text-slate-900 flex items-center">
+                            <Mail size={12} className="text-slate-800 mr-1.5" /> Newsletter
+                          </h4>
+                          <p className="text-[10px] text-slate-400">Subscribe for custom deals and sandbox guides.</p>
+                        </div>
+
+                        <form onSubmit={handleSubscribeNewsletter} className="flex flex-col gap-2">
+                          <input
+                            type="email"
+                            placeholder="Enter email for weekly deals"
+                            value={emailInput}
+                            onChange={(e) => setEmailInput(e.target.value)}
+                            className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-[11px] focus:outline-hidden focus:border-slate-400 font-medium"
+                          />
+                          <button 
+                            type="submit"
+                            className="w-full bg-[#1aa254] hover:bg-[#158243] text-white text-[11px] font-extrabold py-2.5 rounded-xl uppercase tracking-wider transition-colors cursor-pointer text-center"
+                          >
+                            Subscribe
+                          </button>
+                        </form>
+                      </div>
+                    </div>
+
                   </div>
                 )}
 
-                {/* Successful Payment Receipt details overlay */}
-                {mpesaPaymentState === "success" && (
-                  <div className="bg-white border border-slate-200 rounded-3xl p-6 w-full max-w-[320px] text-center space-y-4 animate-scaleUp shadow-2xl text-slate-900 relative">
-                    <div className="absolute top-0 right-0 h-20 w-20 bg-emerald-500/10 rounded-full blur-xl -mr-3 -mt-3" />
+
+                {/* SCREEN 2: HIGH-FIDELITY INTERACTIVE PRODUCT DETAILS PRESET */}
+                {phoneScreen === "detail" && (
+                  <div className="animate-fadeIn p-5 space-y-6">
                     
-                    <div className="h-11 w-11 bg-emerald-100 border border-emerald-200 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-xs">
-                      <CheckCircle size={24} />
+                    {/* Header back & favorites layout link */}
+                    <div className="flex items-center justify-between">
+                      <button 
+                        onClick={() => setPhoneScreen("home")}
+                        className="flex items-center space-x-1 p-2 text-slate-500 hover:text-slate-900 transition-colors"
+                      >
+                        <ArrowLeft size={16} />
+                        <span className="text-xs font-extrabold font-sans">Store Catalog</span>
+                      </button>
+
+                      <button
+                        onClick={() => handleToggleFavorite(selectedProduct.id)}
+                        className={`h-8 w-8 rounded-full border flex items-center justify-center transition-all ${
+                          favorites.includes(selectedProduct.id)
+                            ? "bg-pink-50 border-pink-100 text-pink-500"
+                            : "bg-white border-slate-200 text-slate-400 hover:text-slate-600"
+                        }`}
+                      >
+                        <Heart size={14} className={favorites.includes(selectedProduct.id) ? "fill-pink-500" : ""} />
+                      </button>
                     </div>
+
+                    {/* Product visual information core display */}
+                    <div className="space-y-2">
+                      <span className="bg-emerald-50 text-emerald-800 border border-emerald-100 rounded px-2 py-0.5 text-[8px] uppercase tracking-wider font-extrabold inline-block">
+                        {selectedProduct.category} • {selectedProduct.tag}
+                      </span>
+                      <h2 className="text-lg font-extrabold text-[#0D0F12] tracking-tight">{selectedProduct.name}</h2>
+                      
+                      {/* Rating details display */}
+                      <div className="flex items-center space-x-2">
+                        <div className="flex items-center text-amber-500">
+                          <Star size={11} className="fill-amber-500" />
+                          <Star size={11} className="fill-amber-500" />
+                          <Star size={11} className="fill-amber-500" />
+                          <Star size={11} className="fill-amber-500" />
+                          <Star size={11} className="fill-amber-500" />
+                        </div>
+                        <span className="text-[11px] font-black text-slate-900">{selectedProduct.rating.toFixed(1)}</span>
+                        <span className="text-[10px] text-slate-400">({selectedProduct.reviewsCount} verified reviews)</span>
+                      </div>
+                    </div>
+
+                    {/* Large high contrast vector presentation studio viewport */}
+                    <div className="bg-slate-50/50 rounded-2xl border border-slate-100 p-4 min-h-[180px] flex items-center justify-center relative shadow-inner overflow-hidden">
+                      <div className="absolute inset-0 bg-radial-to-b from-white to-transparent opacity-60" />
+                      <div className="w-full max-w-[180px] aspect-square flex items-center justify-center">
+                        <ProductImageRender 
+                          name={selectedProduct.name} 
+                          colorSpecs={selectedProduct.colors.find(c => c.name === selectedColor)} 
+                        />
+                      </div>
+                    </div>
+
+                    {/* Color selection dots picker */}
+                    <div className="space-y-2.5">
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+                        Select active dynamic Shade: <span className="text-slate-800 font-extrabold normal-case font-sans ml-1 text-xs">{selectedColor}</span>
+                      </h4>
+                      <div className="flex items-center space-x-3 select-none">
+                        {selectedProduct.colors.map(color => (
+                          <div 
+                            key={color.name}
+                            onClick={() => {
+                              setSelectedColor(color.name);
+                              triggerAlertToast(`Product painted shade config: ${color.name}`);
+                            }}
+                            className={`h-8 w-8 rounded-full border flex items-center justify-center cursor-pointer transition-all dynamic-ring ${
+                              selectedColor === color.name 
+                                ? "border-slate-800 scale-110 shadow-sm"
+                                : "border-slate-150 hover:border-slate-300"
+                            }`}
+                          >
+                            <span 
+                              className="h-5.5 w-5.5 rounded-full inline-block"
+                              style={{ backgroundColor: color.hex }}
+                            />
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+
+                    {/* Sizing guides layout buttons */}
+                    <div className="space-y-2.5 font-sans">
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">
+                        Select Standard Dimensions: <span className="text-slate-800 font-extrabold font-sans ml-1 text-xs">UK {selectedSize}</span>
+                      </h4>
+                      <div className="flex flex-wrap gap-2 select-none">
+                        {selectedProduct.sizes.map(size => (
+                          <button
+                            key={size}
+                            onClick={() => {
+                              setSelectedSize(size);
+                              triggerAlertToast(`Configured UK size metric: ${size}`);
+                            }}
+                            className={`px-3 py-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                              selectedSize === size
+                                ? "bg-slate-900 border-slate-950 text-white"
+                                : "bg-white border-slate-200 text-slate-600 hover:border-slate-300"
+                            }`}
+                          >
+                            Size {size}
+                          </button>
+                        ))}
+                        {/* Greyed out helper display option to represent actual stock limit simulation */}
+                        <button 
+                          disabled 
+                          className="px-3 py-2 rounded-xl text-xs font-medium border border-slate-200 bg-slate-100 text-slate-300 cursor-not-allowed cursor-pointer"
+                        >
+                          Size 12 (Out Of Stock)
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Description Write-up block */}
+                    <div className="space-y-2">
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block font-sans">Specifications & Description</h4>
+                      <p className="text-xs text-slate-500 leading-relaxed font-sans">{selectedProduct.description}</p>
+                    </div>
+
+                    {/* Safaricom instant M-Pesa pay sandbox trigger */}
+                    <div className="bg-emerald-50 rounded-2xl p-4.5 border border-emerald-100 space-y-3.5">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-extrabold text-[#113d11] tracking-wider uppercase font-sans">INSTANT checkout sandbox</span>
+                        <span className="text-2xs bg-emerald-100 text-[#144f14] font-black tracking-normal px-2.5 py-0.5 rounded-full uppercase">LIPA NA M-PESA</span>
+                      </div>
+                      <p className="text-[11px] text-emerald-800 leading-relaxed font-sans">
+                        Skip shopping cart aggregation and authorize checkout telemetry direct with Safaricom.
+                      </p>
+                      
+                      <div className="flex items-center justify-between bg-white border border-emerald-200 rounded-xl p-3">
+                        <span className="text-xs font-bold text-slate-600">Sim price:</span>
+                        <div className="text-right">
+                          <span className="text-xs line-through text-slate-400 font-bold block">${(selectedProduct.priceUSD * 1.2).toFixed(2)}</span>
+                          <span className="text-xs text-slate-900 font-extrabold mr-1 block">${selectedProduct.priceUSD.toFixed(2)}</span>
+                          <span className="text-[10px] font-black text-emerald-700 block bg-emerald-50 px-1.5 py-0.5 rounded mt-0.5">
+                            KES {(selectedProduct.priceUSD * 130).toLocaleString()}
+                          </span>
+                        </div>
+                      </div>
+
+                      <button
+                        onClick={handleInitiateMpesaCheckout}
+                        className="w-full bg-[#1AA254] hover:bg-[#158243] text-white font-extrabold py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-150 transform active:scale-95 shadow-lg shadow-emerald-500/10 cursor-pointer text-center"
+                      >
+                        ⚡ Checkout via M-Pesa
+                      </button>
+                    </div>
+
+                    {/* REVIEWS SEGMENT INDEX LOOP */}
+                    <div className="space-y-4 pt-4 border-t border-slate-100">
+                      <div className="flex items-center justify-between">
+                        <h4 className="text-xs font-extrabold text-slate-900 tracking-tight flex items-center">
+                          <Users size={14} className="text-slate-500 mr-1" /> Customer Experiences
+                        </h4>
+                        <button 
+                          onClick={() => setShowReviewForm(!showReviewForm)}
+                          className="text-2xs font-bold text-indigo-600 hover:text-indigo-800 cursor-pointer"
+                        >
+                          {showReviewForm ? "Collapse Form" : "Write a Review"}
+                        </button>
+                      </div>
+
+                      {/* Add reviews dynamic local form */}
+                      {showReviewForm && (
+                        <form onSubmit={handleReviewSubmission} className="bg-slate-50 rounded-2xl p-4 border border-slate-200/80 space-y-3.5 animate-fadeIn">
+                          <h5 className="text-xs font-black text-slate-800 font-sans">Append Test Verified valuation entry:</h5>
+                          
+                          <div className="space-y-1">
+                            <label className="text-2xs text-slate-400 block font-bold">YOUR NAME</label>
+                            <input
+                              type="text"
+                              value={reviewName}
+                              onChange={(e) => setReviewName(e.target.value)}
+                              placeholder="e.g. Mary Wanjiru"
+                              required
+                              className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-hidden font-medium"
+                            />
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-2xs text-slate-400 block font-bold">SCORE CARD RATING</label>
+                            <select
+                              value={reviewRating}
+                              onChange={(e) => setReviewRating(Number(e.target.value))}
+                              className="w-full bg-white border border-slate-200 rounded-xl px-2.5 py-2 text-xs focus:outline-hidden font-bold"
+                            >
+                              <option value="5">⭐⭐⭐⭐⭐ Excellent (5 Stars)</option>
+                              <option value="4">⭐⭐⭐⭐ Great (4 Stars)</option>
+                              <option value="3">⭐⭐⭐ Standard (3 Stars)</option>
+                            </select>
+                          </div>
+
+                          <div className="space-y-1">
+                            <label className="text-2xs text-slate-400 block font-bold font-sans">REVIEW CONTENT COMMENT</label>
+                            <textarea
+                              rows={3}
+                              value={reviewText}
+                              onChange={(e) => setReviewText(e.target.value)}
+                              placeholder="Type performance feedback..."
+                              required
+                              className="w-full bg-white border border-slate-200 rounded-xl px-3 py-2 text-xs focus:outline-hidden font-medium"
+                            />
+                          </div>
+
+                          <button 
+                            type="submit"
+                            className="bg-slate-900 text-white font-extrabold text-[10px] uppercase px-4 py-2 rounded-xl hover:bg-slate-800 transition-colors cursor-pointer"
+                          >
+                            Submit Verified review
+                          </button>
+                        </form>
+                      )}
+
+                      {/* Map reviews dynamic registry collection lists */}
+                      <div className="space-y-3 animate-fadeIn">
+                        {(productReviews[selectedProduct.id] || []).map(review => (
+                          <div key={review.id} className="bg-[#FAF9F6]/80 p-3.5 rounded-xl border border-slate-200/60 text-left space-y-1 font-sans">
+                            <div className="flex items-center justify-between">
+                              <span className="font-extrabold text-slate-800 text-xs">{review.author}</span>
+                              <span className="text-[9px] text-slate-400 font-mono font-medium">{review.date}</span>
+                            </div>
+
+                            <div className="flex items-center justify-between text-[10px]">
+                              <div className="flex items-center text-amber-500">
+                                {Array.from({ length: review.rating }).map((_, i) => (
+                                  <Star key={i} size={8} className="fill-amber-500 stroke-amber-500" />
+                                ))}
+                              </div>
+                              <span className="bg-emerald-500/10 text-emerald-800 font-black px-1.5 py-0.5 rounded text-[8px]">
+                                {review.tag}
+                              </span>
+                            </div>
+
+                            <p className="text-[11px] text-slate-600 leading-relaxed font-sans mt-1">
+                              {review.comment}
+                            </p>
+                          </div>
+                        ))}
+                      </div>
+
+                    </div>
+
+                    {/* Absolute panel trigger cart at foot */}
+                    <div className="pt-4 border-t border-slate-100 flex items-center gap-3">
+                      <button 
+                        onClick={() => handleAddToCart(selectedProduct, selectedColor, selectedSize)}
+                        className="flex-1 h-11 bg-slate-900 hover:bg-slate-800 text-white font-black text-xs rounded-xl flex items-center justify-center space-x-2 transition-all duration-150 transform active:scale-95 shadow-lg shadow-slate-900/10 cursor-pointer"
+                      >
+                        <ShoppingCart size={13} className="text-emerald-400" />
+                        <span>Add into Cart basket</span>
+                      </button>
+                    </div>
+
+                  </div>
+                )}
+
+
+                {/* SCREEN 3: SHOPPING CART SCREEN SECTION */}
+                {phoneScreen === "cart" && (
+                  <div className="animate-fadeIn p-5 space-y-6">
                     
-                    <div className="space-y-0.5">
-                      <h3 className="text-sm font-bold text-slate-900">Transaction Confirmed</h3>
-                      <p className="text-[10px] text-slate-500">Secure digital receipt verified</p>
+                    <div className="flex items-center justify-between">
+                      <button 
+                        onClick={() => setPhoneScreen("home")}
+                        className="flex items-center space-x-1 p-2 text-slate-500 hover:text-slate-900"
+                      >
+                        <ArrowLeft size={16} />
+                        <span className="text-xs font-bold font-sans">Catalog</span>
+                      </button>
+                      <h3 className="text-xs font-extrabold text-slate-400 uppercase tracking-wider font-sans">
+                        Dynamic Cart Assembly
+                      </h3>
                     </div>
 
-                    {/* Receipt Details Box */}
-                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 text-left space-y-2">
-                      <div className="flex justify-between items-center text-[10px] font-bold text-slate-400">
-                        <span>LIPA NA M-PESA</span>
-                        <span className="text-emerald-600 text-[9px] uppercase font-bold pr-1">SUCCESS</span>
+                    {cart.length === 0 ? (
+                      <div className="text-center py-16 space-y-3">
+                        <ShoppingBag size={42} className="mx-auto text-slate-300 animate-bounce" />
+                        <h4 className="text-sm font-extrabold text-slate-900">Your Basket is Empty</h4>
+                        <p className="text-2xs text-slate-500 leading-relaxed font-sans max-w-[80%] mx-auto">
+                          Browse our trending tech & design collections on the homepage to register items!
+                        </p>
+                        <button 
+                          onClick={() => setPhoneScreen("home")}
+                          className="px-4 py-2.5 bg-slate-900 text-white font-extrabold text-xs rounded-xl hover:bg-slate-800 cursor-pointer"
+                        >
+                          Discover Products
+                        </button>
                       </div>
-                      <hr className="border-slate-100" />
-                      <div className="grid grid-cols-2 gap-y-1.5 text-[10px] font-mono leading-relaxed">
-                        <span className="text-slate-500">Receipt Code:</span>
-                        <span className="text-slate-900 text-right font-extrabold text-xs">KF21M30X9Z</span>
+                    ) : (
+                      <div className="space-y-4 animate-fadeIn">
+                        
+                        {/* Selected items column */}
+                        <div className="space-y-3.5 max-h-[300px] overflow-y-auto no-scrollbar pr-1">
+                          {cart.map((item, idx) => (
+                            <div 
+                              key={`${item.product.id}-${item.selectedColor}-${item.selectedSize}`}
+                              className="flex items-center justify-between bg-white border border-slate-200/80 p-3 rounded-2xl gap-3 shadow-xs"
+                            >
+                              {/* Vector thumbnail */}
+                              <div className="h-12 w-12 bg-slate-50 rounded-xl flex items-center justify-center p-1.5 shrink-0">
+                                <ProductImageRender name={item.product.name} />
+                              </div>
 
-                        <span className="text-slate-500">Amount Paid:</span>
-                        <span className="text-emerald-600 text-right font-bold">KES 12,499.00</span>
+                              {/* Text info block */}
+                              <div className="flex-grow min-w-0">
+                                <h4 className="text-xs font-bold text-slate-900 truncate tracking-tight">{item.product.name}</h4>
+                                <span className="text-[9px] font-bold text-slate-400 block leading-none font-sans mt-0.5">
+                                  Size {item.selectedSize} | {item.selectedColor}
+                                </span>
+                                <span className="text-[11px] font-black text-slate-900 block mt-1">
+                                  ${(item.product.priceUSD * item.quantity).toFixed(2)}
+                                </span>
+                              </div>
 
-                        <span className="text-slate-500">Paybill Account:</span>
-                        <span className="text-slate-900 text-right font-bold">{mpesaShortCode}</span>
+                              {/* Count Adjusters */}
+                              <div className="flex items-center space-x-1.5 border border-slate-200 rounded-xl p-1 bg-slate-50 select-none">
+                                <button 
+                                  onClick={() => adjustCartQty(idx, -1)}
+                                  className="h-6 w-6 rounded-lg hover:bg-white text-slate-500 hover:text-slate-900 flex items-center justify-center cursor-pointer font-bold"
+                                >
+                                  <Minus size={11} strokeWidth={3} />
+                                </button>
+                                <span className="text-xs font-black px-1 text-slate-800">{item.quantity}</span>
+                                <button 
+                                  onClick={() => adjustCartQty(idx, 1)}
+                                  className="h-6 w-6 rounded-lg hover:bg-white text-slate-500 hover:text-slate-900 flex items-center justify-center cursor-pointer font-bold"
+                                >
+                                  <Plus size={11} strokeWidth={3} />
+                                </button>
+                              </div>
 
-                        <span className="text-slate-500">Local MongoDB order_id:</span>
-                        <span className="text-[#003441] text-right font-bold">col_ord_41a98</span>
+                            </div>
+                          ))}
+                        </div>
+
+                        {/* Order Sum block */}
+                        <div className="bg-slate-50 rounded-2xl p-4.5 border border-slate-200/80 space-y-3 font-sans">
+                          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Basket Summary</h4>
+                          <div className="divide-y divide-slate-200/50 space-y-2 text-xs">
+                            <div className="flex justify-between font-bold pt-1.5">
+                              <span className="text-slate-500">Subtotal value:</span>
+                              <span className="text-slate-900">${getCartTotalUSD().toFixed(2)}</span>
+                            </div>
+                            <div className="flex justify-between font-bold pt-1.5">
+                              <span className="text-slate-500">Sim Shipping:</span>
+                              <span className="text-emerald-600 uppercase">FREE SHIPPING</span>
+                            </div>
+                            <div className="flex justify-between font-extrabold pt-2 text-sm text-slate-950">
+                              <span className="font-extrabold">Total KES Conversion:</span>
+                              <span className="text-slate-950 font-black">KES {getCartTotalKES().toLocaleString()}</span>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Safaricom phone checkout triggers */}
+                        <div className="bg-emerald-50 rounded-2xl p-4.5 border border-emerald-100 space-y-3.5">
+                          <div className="flex items-center justify-between">
+                            <span className="text-[10px] font-extrabold text-[#113d11] tracking-wider uppercase font-sans">LIPA NA M-PESA GATEWAY</span>
+                            <span className="h-2 w-2 rounded-full bg-emerald-500" />
+                          </div>
+
+                          <div className="space-y-1.5 font-sans">
+                            <label className="text-2xs text-[#144f14] font-black uppercase tracking-wider block">Customer Mobile account number:</label>
+                            <input
+                              type="tel"
+                              value={phoneNumber}
+                              onChange={(e) => setPhoneNumber(e.target.value)}
+                              placeholder="e.g. 0712345678"
+                              className="w-full bg-white border border-emerald-200 rounded-xl px-3 py-2 text-xs tracking-wider focus:outline-hidden font-bold"
+                            />
+                            <p className="text-[9px] text-[#1e5d1e] font-sans">
+                              Safaricom Daraja API will initiate an STK push connection payload directed to this account number.
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={handleInitiateMpesaCheckout}
+                            className="w-full bg-[#1AA254] hover:bg-[#158243] text-white font-extrabold py-3 rounded-xl text-xs uppercase tracking-wider transition-all duration-150 transform active:scale-95 shadow-lg shadow-emerald-500/15 cursor-pointer text-center"
+                          >
+                            ⚡ Secure Checkout via M-Pesa
+                          </button>
+                        </div>
+
                       </div>
+                    )}
+
+                  </div>
+                )}
+
+
+                {/* SCREEN 4: SANDBOX PROFILE & RECEIPT SUMMARY LOGS */}
+                {phoneScreen === "profile" && (
+                  <div className="animate-fadeIn p-5 space-y-6">
+                    <h3 className="text-sm font-extrabold text-slate-900 tracking-tight font-sans">
+                      Your Sandbox Profile & Receipts
+                    </h3>
+                    
+                    {/* Simulator configurations info card */}
+                    <div className="bg-slate-50 p-4.5 rounded-2xl border border-slate-200/80 space-y-3">
+                      <div className="flex items-center space-x-2">
+                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
+                        <h4 className="text-xs font-extrabold text-slate-800">Mockup Sandbox Configs</h4>
+                      </div>
+                      
+                      <div className="space-y-1.5 text-2xs font-mono text-slate-500 leading-relaxed">
+                        <div className="flex justify-between">
+                          <span>Paybill Shortcode:</span>
+                          <span className="font-extrabold text-slate-900">{mpesaShortCode}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Default Phone:</span>
+                          <span className="font-extrabold text-slate-900">{phoneNumber}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span>Verified Orders Count:</span>
+                          <span className="font-extrabold text-slate-900">1 (col_ord_41a98)</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Standard simulated orders receipt */}
+                    <div className="space-y-3 font-sans">
+                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Order Receipts Registry</h4>
+                      
+                      <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 text-left relative overflow-hidden shadow-xs">
+                        <div className="absolute right-3 top-3 bg-emerald-500/10 text-emerald-800 text-[8px] font-black px-2 py-0.5 rounded-full uppercase">
+                          PAID & VERIFIED
+                        </div>
+
+                        <span className="text-[9px] font-bold text-slate-400 block uppercase font-mono">receipt code: KF21M30X9Z</span>
+                        <h5 className="text-xs font-bold text-slate-950 font-sans">SwiftFlow Sandbox Order</h5>
+                        
+                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-2xs font-mono text-slate-500 leading-none">
+                          <span>Price sum: KES 12,499.00</span>
+                          <span>Paybill: {mpesaShortCode}</span>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-xl space-y-1">
+                      <h4 className="text-xs font-bold text-indigo-950">Development Tip</h4>
+                      <p className="text-[10px] text-indigo-800 leading-relaxed">
+                        Real databases require production backend endpoints to store orders. In this client-only simulator, we use local state hooks array storage to display evaluations and transactions instantly.
+                      </p>
+                    </div>
+
+                  </div>
+                )}
+
+              </div>
+
+              {/* --- PORTABLE BOTTOM GRAPHIC ACTION BAR (Saves space & matches layout) --- */}
+              <nav 
+                className="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-100 px-4 py-3 pb-5 flex items-center justify-around z-30 select-none shadow-xs"
+                id="smartphone-bottom-navigation"
+              >
+                {[
+                  { key: "home", label: "Home", icon: Home },
+                  { key: "catalog", label: "Catalog", icon: Grid },
+                  { key: "cart", label: "Cart", icon: ShoppingBag, badge: cartCount },
+                  { key: "profile", label: "Profile", icon: User }
+                ].map(tab => {
+                  const Icon = tab.icon;
+                  const isActive = phoneScreen === tab.key;
+                  
+                  return (
+                    <button
+                      key={tab.key}
+                      onClick={() => {
+                        setPhoneScreen(tab.key as any);
+                        // Reset search directory query
+                        if (tab.key === "home") {
+                          setSearchQuery("");
+                          setActiveCategoryFilter("All");
+                        }
+                      }}
+                      className={`flex items-center space-x-1.5 px-3 py-2 rounded-full transition-all duration-200 relative cursor-pointer ${
+                        isActive 
+                          ? "bg-emerald-500 text-slate-950 font-black scale-102"
+                          : "text-slate-400 hover:text-slate-600"
+                      }`}
+                    >
+                      <Icon size={15} strokeWidth={isActive ? 3 : 2} />
+                      
+                      {isActive && (
+                        <span className="text-[11px] font-bold tracking-tight">
+                          {tab.label}
+                        </span>
+                      )}
+
+                      {/* Floating dynamic tally status */}
+                      {!isActive && tab.badge !== undefined && tab.badge > 0 && (
+                        <span className="absolute top-1 right-2 h-3.5 w-3.5 bg-rose-500 border border-white text-white text-[8px] rounded-full flex items-center justify-center font-black">
+                          {tab.badge}
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+
+            </div>
+
+            {/* --- SAVARICOM LIPA NA M-PESA SIMULATOR OVERLAYS FOR SECURE HANDSHAKE DESIGN --- */}
+            {mpesaPaymentState !== "idle" && (
+              <div 
+                className="absolute inset-0 bg-slate-950/85 backdrop-blur-xs z-50 flex items-center justify-center p-5 select-none animate-fadeIn"
+                id="mpesa-simulation-frame"
+              >
+                {/* Micro Keypad frame */}
+                {mpesaPaymentState === "entering_pin" && (
+                  <div className="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl border border-slate-200 text-center space-y-5">
+                    
+                    <div className="space-y-1">
+                      <span className="text-2xs bg-emerald-500 text-slate-950 font-black px-3 py-1 rounded-full uppercase tracking-wider">LIPA NA M-PESA</span>
+                      <h4 className="text-xs font-bold text-slate-600 block pt-1 leading-snug font-mono">
+                        Paybill Name: SWIFTSHOP
+                      </h4>
+                      <h4 className="text-xs font-bold text-slate-500 block leading-snug font-mono">
+                        Shortcode Number: {mpesaShortCode}
+                      </h4>
+                      <h4 className="text-xs font-black text-rose-600 block font-sans">
+                        Billing Total: KES {phoneScreen === "detail" ? (selectedProduct.priceUSD * 130).toLocaleString() : getCartTotalKES().toLocaleString()}
+                      </h4>
+                    </div>
+
+                    <div className="space-y-2">
+                      <label className="text-3xs uppercase text-slate-400 font-extrabold tracking-wider block font-mono">Enter 4-Digit Secret mobile Wallet PIN:</label>
+                      <input
+                        type="password"
+                        maxLength={4}
+                        readOnly
+                        value={simPin}
+                        placeholder="••••"
+                        className="w-2/3 mx-auto text-lg text-center border-b-2 border-slate-300 focus:outline-hidden tracking-widest font-mono font-black py-1.5 focus:border-emerald-500 block text-slate-900 bg-slate-100 rounded-lg"
+                      />
+                    </div>
+
+                    {/* Numeric custom keypad for premium interactive experience */}
+                    <div className="grid grid-cols-3 gap-2">
+                      {[1, 2, 3, 4, 5, 6, 7, 8, 9].map(num => (
+                        <button
+                          key={num}
+                          type="button"
+                          onClick={() => {
+                            if (simPin.length < 4) setSimPin(prev => prev + num);
+                          }}
+                          className="h-10 rounded-xl bg-slate-50 text-slate-800 font-extrabold text-xs active:bg-slate-200 border border-slate-100 transition-colors cursor-pointer"
+                        >
+                          {num}
+                        </button>
+                      ))}
+                      <button
+                        type="button"
+                        onClick={() => setSimPin("")}
+                        className="h-10 rounded-xl bg-rose-50 text-rose-600 font-bold text-2xs uppercase tracking-tight flex items-center justify-center active:bg-rose-100 cursor-pointer"
+                      >
+                        Clear
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (simPin.length < 4) setSimPin(prev => prev + "0");
+                        }}
+                        className="h-10 rounded-xl bg-slate-50 text-slate-800 font-extrabold text-xs active:bg-slate-200 border border-slate-100 cursor-pointer"
+                      >
+                        0
+                      </button>
+                      <button
+                        type="button"
+                        onClick={handleExecuteMpesaTelemetry}
+                        className="h-10 rounded-xl bg-emerald-500 text-slate-950 font-black text-2xs uppercase tracking-tight flex items-center justify-center active:bg-emerald-600 hover:scale-102 transition-transform cursor-pointer"
+                      >
+                        Send
+                      </button>
                     </div>
 
                     <button 
                       onClick={() => setMpesaPaymentState("idle")}
-                      className="w-full bg-slate-900 hover:bg-slate-800 text-white font-extrabold py-2 rounded-xl text-xs uppercase tracking-wider transition-colors"
+                      className="text-3xs tracking-widest uppercase font-extrabold text-slate-400 hover:text-slate-600 block w-full pt-1 cursor-pointer"
                     >
-                      Return to Product Detail
+                      Cancel transaction
                     </button>
+
+                  </div>
+                )}
+
+                {/* Processing Sandbox logs screen */}
+                {mpesaPaymentState === "processing" && (
+                  <div className="bg-slate-950 rounded-3xl p-5 w-full max-w-[340px] shadow-2xl border border-slate-800 text-left space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[10px] bg-[#1e293b] text-emerald-400 font-bold px-2.5 py-0.5 rounded uppercase font-mono tracking-wider">DARAJA API STREAM</span>
+                      <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 animate-ping" />
+                    </div>
+
+                    <p className="text-3xs text-slate-400 leading-normal font-sans">
+                      Active tracking of Daraja SDK OAuth queries, SSL handshakes, and webhook logs.
+                    </p>
+
+                    {/* Sim Logs console output */}
+                    <div className="bg-[#090d16] border border-slate-900 rounded-xl p-3.5 h-[240px] overflow-y-auto no-scrollbar font-mono text-[9px] text-[#4ade80] space-y-2 leading-relaxed">
+                      {simTerminalLogs.map((log, i) => (
+                        <div key={i} className="animate-fadeIn">
+                          <span className="text-slate-500 mr-1.5">{`>`}</span>
+                          <span>{log}</span>
+                        </div>
+                      ))}
+                    </div>
+
+                    <div className="text-center">
+                      <p className="text-3xs text-slate-500 animate-pulse font-mono">Executing system operations. Let's study callback payloads...</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Successful Payment Receipt */}
+                {mpesaPaymentState === "success" && (
+                  <div className="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl border border-slate-200 text-center space-y-5 animate-fadeIn">
+                    
+                    <div className="w-12 h-12 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto shadow-inner">
+                      <CheckCircle size={26} />
+                    </div>
+
+                    <div className="space-y-1">
+                      <h4 className="text-sm font-black text-slate-900 leading-none">Payment Succeeded!</h4>
+                      <p className="text-3xs text-slate-400">Transaction authenticated by Safaricom ledger nodes.</p>
+                    </div>
+
+                    {/* Receipt breakdown */}
+                    <div className="bg-slate-50 rounded-2xl p-4 border border-slate-100 text-left space-y-2 font-mono text-3xs">
+                      <div className="flex justify-between font-bold text-slate-400">
+                        <span>LIPA NA M-PESA RECEIPT</span>
+                        <span className="text-emerald-600 font-black">CONFIRMED</span>
+                      </div>
+                      <hr className="border-slate-200/50" />
+                      
+                      <div className="grid grid-cols-2 gap-y-1 text-slate-500">
+                        <span>Transaction key:</span>
+                        <span className="text-slate-950 text-right font-extrabold">{orderReceiptId}</span>
+
+                        <span>Local Mongo status:</span>
+                        <span className="text-[#005161] text-right font-black">col_ord_41a98</span>
+
+                        <span>Shortcode Paid:</span>
+                        <span className="text-slate-950 text-right">{mpesaShortCode}</span>
+
+                        <span>Total KES sum:</span>
+                        <span className="text-emerald-700 font-black text-right">
+                          KES {phoneScreen === "detail" ? (selectedProduct.priceUSD * 130).toLocaleString() : getCartTotalKES().toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <button
+                      onClick={() => setMpesaPaymentState("idle")}
+                      className="w-full bg-[#1AA254] hover:bg-[#158243] text-white py-2.5 rounded-xl text-3xs font-extrabold uppercase tracking-widest transition-colors cursor-pointer"
+                    >
+                      Return to Sandbox View
+                    </button>
+
                   </div>
                 )}
 
               </div>
             )}
 
-            {/* Simulated Bottom sticky navigation layout */}
-            <footer className="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-100 px-5 py-3.5 flex items-center space-x-3.5 z-30 select-none">
-              <button 
-                onClick={() => {
-                  setIsFavorited(!isFavorited);
-                  triggerAlertToast(isFavorited ? "Removed from Favorites." : "Saved SwiftFlow Kinetic series to your Favorites!");
-                }}
-                className={`h-11 w-11 shrink-0 rounded-2xl border flex items-center justify-center transition-all ${
-                  isFavorited 
-                    ? "bg-pink-50 border-pink-200 text-pink-500 scale-102"
-                    : "bg-[#F8FAFC] border-slate-200 text-slate-400 hover:text-slate-600 hover:border-slate-300"
-                }`}
-              >
-                <Heart size={20} className={isFavorited ? "fill-pink-500 stroke-pink-500" : "stroke-slate-400"} />
-              </button>
-
-              <button 
-                onClick={() => triggerAddToCart()}
-                className="flex-1 h-11 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-2xl flex items-center justify-center space-x-2 transition-all duration-150 active:scale-97 shadow-lg shadow-slate-900/10"
-              >
-                <ShoppingCart size={16} />
-                <span>Add to Cart</span>
-              </button>
-            </footer>
-
           </div>
         </section>
 
-        {/* ==================== RIGHT COLUMN: EDUCATIONAL DEVELOPMENT ACADEMY PORTAL (7 Columns) ==================== */}
-        {/* Deep pedagogical interface displaying real code structures, reactive states, & callbacks as they click! */}
-        <section className="col-span-1 lg:col-span-7 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-2xl flex flex-col justify-between min-h-[860px]">
-          
-          <div>
-            {/* Header controls for Academy Tabs */}
-            <div className="px-6 py-4 border-b border-slate-100 bg-slate-50/55 flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center space-x-2.5">
-                <BookOpen size={18} className="text-slate-900" />
-                <h2 className="text-sm font-extrabold tracking-wider text-slate-900 uppercase">
-                  ShopSwift E-Commerce Development Academy
-                </h2>
-              </div>
-              <span className="text-[10px] text-slate-500 bg-slate-100 border border-slate-200 rounded px-2.5 py-0.5 font-mono">
-                Interactive Learning Portal
-              </span>
-            </div>
-
-            {/* Tab select strip */}
-            <div className="bg-slate-50/40 px-4 py-2 flex items-center space-x-1.5 overflow-x-auto no-scrollbar border-b border-slate-100 select-none">
-              {[
-                { key: "welcome", label: "Overview & Stack" },
-                { key: "states_explained", label: "1. State Variables (React)" },
-                { key: "mpesa_handshake", label: "2. Lipa Na M-Pesa Code" },
-                { key: "review_component", label: "3. Interactive Reviews" }
-              ].map(academy => (
-                <button
-                  key={academy.key}
-                  onClick={() => setAcademyTab(academy.key)}
-                  className={`px-3 py-1.5 rounded-xl text-3xs font-extrabold uppercase tracking-widest whitespace-nowrap transition-all border ${
-                    academyTab === academy.key 
-                      ? "bg-slate-910 text-white border-slate-950 bg-slate-900 shadow-sm"
-                      : "text-slate-500 bg-white border-slate-200 hover:text-slate-800 hover:border-slate-300"
-                  }`}
-                >
-                  {academy.label}
-                </button>
-              ))}
-            </div>
-
-            {/* Dynamic Educational Content Container */}
-            <div className="p-6 space-y-6">
-              
-              {/* Tab: Welcome & Arch Stack */}
-              {academyTab === "welcome" && (
-                <div className="space-y-6 animate-fadeIn">
-                  
-                  <div className="space-y-2">
-                    <h3 className="text-base font-extrabold text-slate-900 flex items-center">
-                      <Sparkles size={16} className="text-indigo-600 mr-2 shrink-0" />
-                      Premium Interactive Learning Sandbox
-                    </h3>
-                    <p className="text-xs text-slate-600 leading-relaxed">
-                      Welcome to the ShopSwift sandbox. This workspace has been designed to teach you how to write modern React components and how transactions operate in production backends.
-                    </p>
-                  </div>
-
-                  {/* Aesthetic visual components showcase */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    
-                    <div className="bg-[#FAF9F6]/80 p-4 rounded-2xl border border-slate-200 space-y-2">
-                      <h4 className="text-xs font-bold text-[#003441] flex items-center">
-                        <Award size={14} className="text-[#006d37] mr-1.5" /> Core UI Design Intentions
-                      </h4>
-                      <p className="text-[11px] text-slate-600 leading-relaxed font-sans">
-                        We mapped the product catalog from your provided image. Notice parameters such as <strong>UK Size 12 being greyed out (out of stock)</strong>, the <strong>"NEW ARRIVAL" green pill badge</strong>, the detailed rating rows, and color palettes that update the display dynamically.
-                      </p>
-                    </div>
-
-                    <div className="bg-[#FAF9F6]/80 p-4 rounded-2xl border border-slate-200 space-y-2">
-                      <h4 className="text-xs font-bold text-[#003441] flex items-center">
-                        <Smartphone size={14} className="text-indigo-600 mr-1.5" /> High Fidelity SVG Shoe
-                      </h4>
-                      <p className="text-[11px] text-[#2c3e50] leading-relaxed font-sans">
-                        Rather than using static external images, we coded a <strong>vector path rendering</strong> in pure inline React. This lets us inject real-time state values into the shoe silhouette so clicking the color palettes switches the model color!
-                      </p>
-                    </div>
-
-                  </div>
-
-                  {/* ASCII Diagram showing the Lipa Na M-Pesa workflow */}
-                  <div className="space-y-2.5">
-                    <h4 className="text-3xs uppercase font-extrabold text-slate-400 tracking-wider">M-Pesa cashflow transaction sequence:</h4>
-                    <div className="bg-slate-900 rounded-xl p-4 font-mono text-[10px] text-emerald-400 leading-relaxed overflow-x-auto shadow-inner select-all">
-                      {"1. User Clicks 'Pay with M-Pesa' on Phone Mockup → Launches React SIM Prompter."}<br />
-                      {"2. Frontend collects customer standard mobile parameter (0712345678)."}<br />
-                      {"3. Secure Next.js endpoint fetches Token from Safaricom with API credentials."}<br />
-                      {"4. Daraja platform triggers SSL Lipa Na M-Pesa Online STK Push to client cell phone."}<br />
-                      {"5. User inputs PIN validation → Safaricom notifies App asynchronously (Webhook)."}<br />
-                      {"6. Orders inside MongoDB update status to PAID ──→ Client UI displays success receipt!"}
-                    </div>
-                  </div>
-
-                  {/* Call to action guidance */}
-                  <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-xl flex items-start space-x-3.5">
-                    <Eye size={18} className="text-indigo-600 shrink-0 mt-0.5 animate-pulse" />
-                    <div>
-                      <h4 className="text-xs font-bold text-indigo-900">Get Started with State Hooks!</h4>
-                      <p className="text-[11px] text-indigo-700 leading-relaxed">
-                        Interact with the visual phone showcase. Watch the shoe recolor, add elements to your Cart, toggle your Favorites, or enter mock SIM codes to understand how active hooks respond! Select the tabs above to explore the code.
-                      </p>
-                    </div>
-                  </div>
-
-                </div>
-              )}
-
-              {/* Tab: React State variables dynamic inspector */}
-              {academyTab === "states_explained" && (
-                <div className="space-y-6 animate-fadeIn">
-                  
-                  <div className="space-y-1.5">
-                    <h3 className="text-sm font-black text-slate-900 flex items-center">
-                      <Cpu size={14} className="text-indigo-600 mr-1.5" /> Real-time React Hooks Inspector
-                    </h3>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      React manages user interactions utilizing state variables created with the <code className="text-indigo-600 bg-slate-100 p-0.5 rounded font-mono font-bold text-3xs">useState</code> hook. Here are the active values currently running inside the phone's engine:
-                    </p>
-                  </div>
-
-                  {/* Interactive tabular debugger showcasing local hook parameters changing as they click! */}
-                  <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-xs">
-                    <div className="grid grid-cols-3 bg-slate-50 border-b border-slate-200 px-4 py-2 text-[10px] font-bold text-slate-500 uppercase tracking-wider">
-                      <span>Variable Name</span>
-                      <span>Current State Value</span>
-                      <span>Code Role / Purpose</span>
-                    </div>
-
-                    <div className="divide-y divide-slate-100 text-xs font-mono">
-                      
-                      <div className="grid grid-cols-3 px-4 py-2.5 items-center">
-                        <span className="text-indigo-600 font-bold">selectedColor</span>
-                        <span className="font-extrabold text-slate-900 bg-indigo-50 px-2 py-0.5 rounded w-fit">{selectedColor}</span>
-                        <span className="text-slate-500 text-[10px] leading-snug">Decides shoe fill color & thumbnail styles</span>
-                      </div>
-
-                      <div className="grid grid-cols-3 px-4 py-2.5 items-center">
-                        <span className="text-indigo-600 font-bold">selectedSize</span>
-                        <span className="font-extrabold text-slate-900 bg-indigo-50 px-2 py-0.5 rounded w-fit">UK {selectedSize}</span>
-                        <span className="text-slate-500 text-[10px] leading-snug">Maintains currently selected shoe dimension</span>
-                      </div>
-
-                      <div className="grid grid-cols-3 px-4 py-2.5 items-center">
-                        <span className="text-indigo-600 font-bold">cartCount</span>
-                        <span className="font-extrabold text-slate-900 bg-indigo-50 px-2 py-0.5 rounded w-fit">{cartCount} items</span>
-                        <span className="text-slate-500 text-[10px] leading-snug">Controls badge tally on smartphone cart icons</span>
-                      </div>
-
-                      <div className="grid grid-cols-3 px-4 py-2.5 items-center">
-                        <span className="text-indigo-600 font-bold">isFavorited</span>
-                        <span className="font-extrabold text-slate-900 bg-indigo-50 px-2 py-0.5 rounded w-fit">{isFavorited ? "TRUE (Liked)" : "FALSE"}</span>
-                        <span className="text-slate-500 text-[10px] leading-snug">Controls heart background active filling</span>
-                      </div>
-
-                      <div className="grid grid-cols-3 px-4 py-2.5 items-center">
-                        <span className="text-indigo-600 font-bold">mpesaPaymentState</span>
-                        <span className="font-extrabold text-[#1E5D1E] bg-emerald-50 px-2 py-0.5 rounded w-fit uppercase">{mpesaPaymentState}</span>
-                        <span className="text-slate-500 text-[10px] leading-snug">Tracks simulator overlays for PIN prompted handshakes</span>
-                      </div>
-
-                    </div>
-                  </div>
-
-                  {/* Learn Code snippet container */}
-                  <div className="space-y-2">
-                    <h4 className="text-xs font-bold text-slate-900 flex items-center">
-                      <Code size={12} className="text-indigo-600 mr-1" /> How to declare state variables inside components:
-                    </h4>
-                    <pre className="bg-slate-900 text-slate-100 rounded-xl p-4 font-mono text-[11px] leading-normal select-all">
-{`// Declarations inside App.jsx
-import React, { useState } from 'react';
-
-export default function ProductPage() {
-  const [selectedColor, setSelectedColor] = useState("Crimson Red");
-  const [selectedSize, setSelectedSize] = useState(9);
-  
-  return (
-    <button onClick={() => setSelectedColor("Lime Green")}>
-      Recolor Active Model
-    </button>
-  );
-}`}
-                    </pre>
-                  </div>
-
-                </div>
-              )}
-
-              {/* Tab: Lipa Na M-Pesa API integration steps */}
-              {academyTab === "mpesa_handshake" && (
-                <div className="space-y-6 animate-fadeIn">
-                  
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-bold text-slate-900 flex items-center">
-                      <Smartphone size={14} className="text-emerald-500 mr-1.5" />
-                      Safaricom Daraja API (STK Push) Handshake Code Block
-                    </h3>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      Lipa Na M-Pesa online operates using three simple, vital components. Let's study how the background endpoints calculate configurations:
-                    </p>
-                  </div>
-
-                  {/* Sub-steps of Daraja SDK development */}
-                  <div className="space-y-4">
-                    
-                    <div className="space-y-1">
-                      <h4 className="text-xs font-bold text-slate-800 font-sans">1. Standardizing timestamp variables:</h4>
-                      <p className="text-[11px] text-slate-500 leading-relaxed">
-                        To sign request requests safely, you generate a timestamp in standard Safaricom formatting: <code className="text-indigo-600 bg-slate-100 p-0.5 rounded font-mono">YYYYMMDDHHmmss</code> (e.g., 20260614004520).
-                      </p>
-                    </div>
-
-                    <div className="space-y-1">
-                      <h4 className="text-xs font-bold text-slate-800 font-sans">2. Generation of the Base64 Header Passwords:</h4>
-                      <p className="text-[11px] text-slate-500 leading-relaxed">
-                        You composite your shortcode and private merchant key. Placing this calculation server-side prevents client exposure.
-                      </p>
-                    </div>
-
-                    <div className="space-y-2">
-                      <h4 className="text-xs font-bold text-slate-800 font-sans">3. Dispatch of the STK Push payload:</h4>
-                      <p className="text-[11px] text-slate-500 leading-relaxed">
-                        This shows the exact structure of the JSON dispatched to Safaricom inside the Node.js or Next.js route:
-                      </p>
-                      <pre className="bg-slate-900 text-teal-400 rounded-xl p-4 font-mono text-[10px] leading-normal select-all">
-{`// Next.js Route POST payload dispatched to safaricom
-const stkPushPayload = {
-  BusinessShortCode: "174379",
-  Password: "M2QyZjg4YjYyYTZjYzgxODNiNWNlNDc...",
-  Timestamp: "20260614004520",
-  TransactionType: "CustomerPayBillOnline",
-  Amount: 12499,
-  PartyA: "254712345678", // Subscriber Number
-  PartyB: "174379",       // Business paybill code
-  PhoneNumber: "254712345678",
-  CallBackURL: "https://shopswift.com/api/payments/callback",
-  AccountReference: "SwiftFlow Kinetic",
-  TransactionDesc: "Payment for sports gear"
-};`}
-                      </pre>
-                    </div>
-
-                  </div>
-
-                </div>
-              )}
-
-              {/* Tab: Review Component Code, Local persistence */}
-              {academyTab === "review_component" && (
-                <div className="space-y-6 animate-fadeIn">
-                  
-                  <div className="space-y-2">
-                    <h3 className="text-sm font-bold text-slate-900 flex items-center">
-                      <Users size={14} className="text-indigo-600 mr-1.5" />
-                      Dynamically mapping collections securely
-                    </h3>
-                    <p className="text-xs text-slate-500 leading-relaxed">
-                      In the mockup app, click <span className="font-bold text-indigo-600">"Write a Review"</span>. As you type and submit the local form, JavaScript appends the item to the React array.
-                    </p>
-                  </div>
-
-                  {/* Component design breakdowns for learning */}
-                  <div className="space-y-3 font-sans">
-                    <div className="bg-[#FAF9F6] p-4 rounded-xl border border-slate-200">
-                      <h4 className="text-xs font-bold text-slate-800">Dynamic Key Array Rendering</h4>
-                      <p className="text-[11px] text-slate-600 leading-relaxed mt-1">
-                        We map the review objects array dynamically using JavaScript's native map iterator inside the JSX. React requires active child loops to contain unique <code className="text-indigo-600 font-mono">key</code> properties to render updates.
-                      </p>
-                    </div>
-
-                    <div className="bg-[#FAF9F6] p-4 rounded-xl border border-slate-200">
-                      <h4 className="text-xs font-bold text-slate-800">Form Submission Handlers</h4>
-                      <p className="text-[11px] text-slate-600 leading-relaxed mt-1">
-                        When capturing submissions: we bind values securely utilizing the <code className="text-indigo-600 font-mono">onChange</code> handlers, run <code className="text-indigo-600 font-mono">e.preventDefault()</code> to eliminate default page reloads, and copy old states securely utilizing destructured spread symbols (<code className="text-indigo-600 font-mono">[newNode, ...oldNode]</code>).
-                      </p>
-                    </div>
-                  </div>
-
-                  {/* JSX implementation review code */}
-                  <pre className="bg-slate-900 text-indigo-300 rounded-xl p-4 font-mono text-[10px] leading-normal select-all">
-{`{/* JSX review looping template */}
-<div className="space-y-2">
-  {userReviews.map(review => (
-    <div key={review.id} className="border p-4 rounded-xl">
-      <h4>{review.author}</h4>
-      <p>{review.comment}</p>
-    </div>
-  ))}
-</div>`}
-                  </pre>
-
-                </div>
-              )}
-
-            </div>
-          </div>
-
-          {/* Elegant Footer Details for Education */}
-          <footer className="border-t border-slate-100 bg-slate-50 p-4 shrink-0 flex flex-col sm:flex-row items-center justify-between text-[11px] text-slate-400">
-            <span>ShopSwift Premium Learning Toolkit</span>
-            <div className="flex items-center space-x-2 mt-2 sm:mt-0 font-medium text-slate-500">
-              <span>Frontend Sandbox</span>
-              <span>•</span>
-              <span>100% Client-Side Interactive</span>
-            </div>
-          </footer>
-
-        </section>
+        {/* ==================== RIGHT COLUMN: DEVELOPMENT ACADEMY PORTAL (5 Columns) ==================== */}
+        {/* Mapped perfectly to state structures to inspect local variables reactively */}
+        <AcademyPortal 
+          selectedProduct={selectedProduct}
+          selectedColor={selectedColor}
+          selectedSize={selectedSize}
+          cartCount={cartCount}
+          isFavorited={favorites.includes(selectedProduct.id)}
+          mpesaPaymentState={mpesaPaymentState}
+          academyTab={academyTab}
+          setAcademyTab={setAcademyTab}
+          phoneNumber={phoneNumber}
+          mpesaShortCode={mpesaShortCode}
+        />
 
       </main>
 
       {/* Main outer Footer */}
-      <footer className="border-t border-slate-200 bg-white py-4 px-6 text-center text-xs text-slate-400">
-        <p>© 2026 ShopSwift Premium Showcase. Crafted for learning & architectural planning.</p>
+      <footer className="border-t border-slate-200 bg-white py-6 px-6 text-center text-xs text-slate-400 font-sans">
+        <p>© 2026 ShopSwift Premium Showcase Sandbox. Designed for structural layout and payment integration tutorials.</p>
       </footer>
     </div>
   );
