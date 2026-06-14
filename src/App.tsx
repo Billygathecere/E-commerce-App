@@ -16,6 +16,9 @@ import {
   Minus, 
   HelpCircle, 
   Eye, 
+  EyeOff,
+  LogOut,
+  UserCheck,
   Cpu, 
   Sparkles,
   Award,
@@ -28,7 +31,9 @@ import {
   Grid,
   ShoppingBag,
   User,
-  ExternalLink
+  ExternalLink,
+  Chrome,
+  Apple
 } from "lucide-react";
 
 import { Product, Review, CartItem } from "./types";
@@ -39,6 +44,22 @@ import { AcademyPortal } from "./components/AcademyPortal";
 export default function App() {
   // --- CORE VIEW STATE ---
   const [phoneScreen, setPhoneScreen] = useState<"home" | "catalog" | "detail" | "cart" | "profile">("home");
+  
+  // --- AUTHENTICATION STATE ENGINES (Frontend Simulation Only!) ---
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [userProfile, setUserProfile] = useState<{ name: string; email: string; phone: string; avatarSeed: string } | null>(null);
+  const [authActiveTab, setAuthActiveTab] = useState<"signin" | "signup">("signin");
+  const [showPassword, setShowPassword] = useState(false);
+  const [authLoading, setAuthLoading] = useState(false);
+  const [authStepMessage, setAuthStepMessage] = useState("");
+  
+  // Authenticated form state keys
+  const [authEmail, setAuthEmail] = useState("");
+  const [authPassword, setAuthPassword] = useState("");
+  const [authName, setAuthName] = useState("");
+  const [authPhone, setAuthPhone] = useState("");
+  const [authAgreement, setAuthAgreement] = useState(true);
+  const [authErrors, setAuthErrors] = useState<Record<string, string>>({});
   
   // --- CATALOG SCREEN INTERACTION STATES ---
   const [catalogSearch, setCatalogSearch] = useState("");
@@ -193,6 +214,180 @@ export default function App() {
     setReviewText("");
     setShowReviewForm(false);
     triggerAlertToast("Verified Review updated and appended inside local state engine!");
+  };
+
+  // --- SECURE SIMULATED AUTHENTICATION HANDLERS (Frontend Only) ---
+  const handleSecureSignIn = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errors: Record<string, string> = {};
+    if (!authEmail) {
+      errors.email = "Email address is required";
+    } else if (!/\S+@\S+\.\S+/.test(authEmail)) {
+      errors.email = "Please input a valid email address";
+    }
+    if (!authPassword) {
+      errors.password = "Password is required";
+    } else if (authPassword.length < 6) {
+      errors.password = "Password must be at least 6 characters long";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setAuthErrors(errors);
+      triggerAlertToast("Please correct active authentication errors ❌");
+      return;
+    }
+
+    setAuthErrors({});
+    setAuthLoading(true);
+    setAuthStepMessage("Initiating cryptological key handshake...");
+
+    // Simulate developer-friendly delay
+    setTimeout(() => {
+      setAuthStepMessage("Validating credentials with sandbox database...");
+      setTimeout(() => {
+        setAuthStepMessage("Syncing secure telemetry... Active.");
+        setTimeout(() => {
+          let resolvedName = authEmail.split("@")[0];
+          resolvedName = resolvedName.charAt(0).toUpperCase() + resolvedName.slice(1);
+          
+          if (authEmail.toLowerCase() === "bgathecere2@gmail.com") {
+            resolvedName = "Bernard G.";
+          }
+
+          const loggedUser = {
+            name: resolvedName,
+            email: authEmail,
+            phone: authPhone || "0712345678",
+            avatarSeed: resolvedName.substring(0, 2).toUpperCase()
+          };
+
+          setIsLoggedIn(true);
+          setUserProfile(loggedUser);
+          setPhoneNumber(loggedUser.phone); // Sync phone profile instantly
+          setAuthLoading(false);
+          triggerAlertToast(`Welcome back, ${loggedUser.name}! Secure session initiated 🔓`);
+          // Clear sensitive password input
+          setAuthPassword("");
+        }, 650);
+      }, 750);
+    }, 850);
+  };
+
+  const handleSocialLogIn = (provider: "Google" | "Apple") => {
+    setAuthErrors({});
+    setAuthLoading(true);
+    setAuthStepMessage(`Initiating secure cross-origin ${provider} handshakes...`);
+    
+    // Simulating sandbox social oauth telemetry
+    setTimeout(() => {
+      setAuthStepMessage(`Passing secure API tokens across safe sandbox portals...`);
+      setTimeout(() => {
+        setAuthStepMessage(`Syncing client identity to system registry ledger...`);
+        setTimeout(() => {
+          const resolvedName = provider === "Google" ? "Bernard G. (Google)" : "Bernard G. (Apple)";
+          const email = provider === "Google" ? "bgathecere2@gmail.com" : "bgathecere.apple@icloud.com";
+          const loggedUser = {
+            name: resolvedName,
+            email: email,
+            phone: authPhone || "0712345678",
+            avatarSeed: provider === "Google" ? "GG" : "AP"
+          };
+
+          setIsLoggedIn(true);
+          setUserProfile(loggedUser);
+          setPhoneNumber(loggedUser.phone);
+          setAuthLoading(false);
+          triggerAlertToast(`Authenticated via ${provider} OAuth simulation successfully! 🔓🚀`);
+        }, 650);
+      }, 750);
+    }, 850);
+  };
+
+  const handleSecureSignUp = (e: React.FormEvent) => {
+    e.preventDefault();
+    const errors: Record<string, string> = {};
+    
+    if (!authName.trim()) {
+      errors.name = "Full Name is required for registration";
+    }
+    if (!authEmail) {
+      errors.email = "Email address is required";
+    } else if (!/\S+@\S+\.\S+/.test(authEmail)) {
+      errors.email = "Provide a valid email format";
+    }
+    if (!authPhone) {
+      errors.phone = "Phone number is required for STK telemetry";
+    } else if (!/^(07|01|\+254)\d{8,9}$/.test(authPhone.replace(/\s+/g, ""))) {
+      errors.phone = "Provide a valid Safaricom mobile format (e.g. 0712345678)";
+    }
+    if (!authPassword) {
+      errors.password = "Secret passcode is required";
+    } else if (authPassword.length < 6) {
+      errors.password = "Security passcode must hold 6+ characters";
+    }
+    if (!authAgreement) {
+      errors.agreement = "You must agree to the terms to utilize this sandbox environment";
+    }
+
+    if (Object.keys(errors).length > 0) {
+      setAuthErrors(errors);
+      triggerAlertToast("Please fill in valid registration data ❌");
+      return;
+    }
+
+    setAuthErrors({});
+    setAuthLoading(true);
+    setAuthStepMessage("Initializing secure profile node...");
+
+    setTimeout(() => {
+      setAuthStepMessage("Syncing Lipa na M-Pesa ledger rules...");
+      setTimeout(() => {
+        setAuthStepMessage("Activating telemetry tokens... Secure.");
+        setTimeout(() => {
+          const newUser = {
+            name: authName,
+            email: authEmail,
+            phone: authPhone,
+            avatarSeed: authName.trim().substring(0, 2).toUpperCase()
+          };
+
+          setIsLoggedIn(true);
+          setUserProfile(newUser);
+          setPhoneNumber(newUser.phone); // Save configured Safaricom phone for automatic checkout STK
+          setAuthLoading(false);
+          triggerAlertToast(`Account successfully set up! Welcome to ShopSwift, ${newUser.name} 🚀`);
+          setAuthPassword("");
+        }, 650);
+      }, 750);
+    }, 850);
+  };
+
+  const handleTriggerAutofill = (type: "developer" | "tester") => {
+    setAuthErrors({});
+    if (type === "developer") {
+      setAuthEmail("bgathecere2@gmail.com");
+      setAuthPassword("developer2026");
+      setAuthName("Bernard G");
+      setAuthPhone("0712345678");
+      triggerAlertToast("Safaricom Developer credentials pre-filled ⚡");
+    } else {
+      setAuthEmail("kamau.tester@shopswift.co.ke");
+      setAuthPassword("passcode23");
+      setAuthName("Kamau Njoroge");
+      setAuthPhone("0722334455");
+      triggerAlertToast("Quick testing parameters pre-filled 🧪");
+    }
+  };
+
+  const handleLogOut = () => {
+    setIsLoggedIn(false);
+    setUserProfile(null);
+    setAuthEmail("");
+    setAuthPassword("");
+    setAuthName("");
+    setAuthPhone("");
+    setAuthErrors({});
+    triggerAlertToast("Secure session logged out successfully 🔒");
   };
 
   // Calculate cart cost in USD and conversion to Safaricom KES equivalent
@@ -1405,62 +1600,526 @@ export default function App() {
                   </div>
                 )}
 
-
-                {/* SCREEN 4: SANDBOX PROFILE & RECEIPT SUMMARY LOGS */}
+                   {/* SCREEN 4: SANDBOX PROFILE & RECEIPT SUMMARY LOGS */}
                 {phoneScreen === "profile" && (
-                  <div className="animate-fadeIn p-5 space-y-6">
-                    <h3 className="text-sm font-extrabold text-slate-900 tracking-tight font-sans">
-                      Your Sandbox Profile & Receipts
-                    </h3>
+                  <div className="animate-fadeIn pb-12">
                     
-                    {/* Simulator configurations info card */}
-                    <div className="bg-slate-50 p-4.5 rounded-2xl border border-slate-200/80 space-y-3">
-                      <div className="flex items-center space-x-2">
-                        <div className="h-2 w-2 rounded-full bg-emerald-500 animate-ping" />
-                        <h4 className="text-xs font-extrabold text-slate-800">Mockup Sandbox Configs</h4>
-                      </div>
-                      
-                      <div className="space-y-1.5 text-2xs font-mono text-slate-500 leading-relaxed">
-                        <div className="flex justify-between">
-                          <span>Paybill Shortcode:</span>
-                          <span className="font-extrabold text-slate-900">{mpesaShortCode}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Default Phone:</span>
-                          <span className="font-extrabold text-slate-900">{phoneNumber}</span>
-                        </div>
-                        <div className="flex justify-between">
-                          <span>Verified Orders Count:</span>
-                          <span className="font-extrabold text-slate-900">1 (col_ord_41a98)</span>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Standard simulated orders receipt */}
-                    <div className="space-y-3 font-sans">
-                      <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">Order Receipts Registry</h4>
-                      
-                      <div className="bg-white border border-slate-200 rounded-2xl p-4 space-y-2 text-left relative overflow-hidden shadow-xs">
-                        <div className="absolute right-3 top-3 bg-emerald-500/10 text-emerald-800 text-[8px] font-black px-2 py-0.5 rounded-full uppercase">
-                          PAID & VERIFIED
-                        </div>
-
-                        <span className="text-[9px] font-bold text-slate-400 block uppercase font-mono">receipt code: KF21M30X9Z</span>
-                        <h5 className="text-xs font-bold text-slate-950 font-sans">SwiftFlow Sandbox Order</h5>
+                    {/* CASE 1: USER IS NOT LOGGED IN - SHOW HIGH-FIDELITY SECURE SIGN-IN/SIGN-UP FORM */}
+                    {!isLoggedIn ? (
+                      <div className="px-5 pt-4 space-y-5">
                         
-                        <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-2xs font-mono text-slate-500 leading-none">
-                          <span>Price sum: KES 12,499.00</span>
-                          <span>Paybill: {mpesaShortCode}</span>
+                        {/* Elegant Header Decors */}
+                        <div className="text-center space-y-2 select-none">
+                          <div className="mx-auto h-11 w-11 bg-slate-900 text-emerald-400 rounded-2xl flex items-center justify-center shadow-md">
+                            <Lock size={20} strokeWidth={2.5} />
+                          </div>
+                          <div>
+                            <h3 className="text-base font-black text-slate-900 tracking-tight font-sans">
+                              ShopSwift Secure Entrance
+                            </h3>
+                            <p className="text-[11px] text-slate-400 font-medium max-w-[85%] mx-auto">
+                              Log in or set up a sandbox developer credentials profile to unlock telemetry checkout and review order logs.
+                            </p>
+                          </div>
                         </div>
-                      </div>
-                    </div>
 
-                    <div className="bg-indigo-50 border border-indigo-100 p-4 rounded-xl space-y-1">
-                      <h4 className="text-xs font-bold text-indigo-950">Development Tip</h4>
-                      <p className="text-[10px] text-indigo-800 leading-relaxed">
-                        Real databases require production backend endpoints to store orders. In this client-only simulator, we use local state hooks array storage to display evaluations and transactions instantly.
-                      </p>
-                    </div>
+                        {/* Interactive sliding tab bar controller */}
+                        <div className="flex bg-slate-100 p-1.5 rounded-2xl border border-slate-200 select-none">
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAuthActiveTab("signin");
+                              setAuthErrors({});
+                            }}
+                            className={`w-1/2 py-2 text-2xs font-black uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer ${
+                              authActiveTab === "signin"
+                                ? "bg-[#0C1E26] text-white shadow-md shadow-slate-950/10"
+                                : "text-slate-500 hover:text-slate-800"
+                            }`}
+                          >
+                            Sign In
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setAuthActiveTab("signup");
+                              setAuthErrors({});
+                            }}
+                            className={`w-1/2 py-2 text-2xs font-black uppercase tracking-wider rounded-xl transition-all duration-200 cursor-pointer ${
+                              authActiveTab === "signup"
+                                ? "bg-[#0C1E26] text-white shadow-md shadow-slate-950/10"
+                                : "text-slate-500 hover:text-slate-800"
+                            }`}
+                          >
+                            Create Account
+                          </button>
+                        </div>
+
+                        {/* AUTH LOADER STATE MOCKUP VIEW */}
+                        {authLoading ? (
+                          <div className="bg-white border border-slate-200/80 rounded-[28px] p-6 text-center space-y-5 select-none animate-fadeIn py-10 shadow-md">
+                            <div className="relative mx-auto h-12 w-12 flex items-center justify-center">
+                              <div className="absolute inset-0 rounded-full border-3 border-emerald-500/10" />
+                              <div className="absolute inset-0 rounded-full border-3 border-emerald-500 border-t-transparent animate-spin" />
+                              <Lock size={15} className="text-emerald-500 animate-pulse" />
+                            </div>
+                            
+                            <div className="space-y-1.5">
+                              <h4 className="text-xs font-black text-slate-800">Verification Process</h4>
+                              <p className="text-[10px] font-mono text-emerald-600 font-extrabold animate-pulse tracking-tight text-center">
+                                {authStepMessage}
+                              </p>
+                            </div>
+
+                            <div className="p-3 bg-slate-50 border border-slate-100 rounded-xl space-y-1 text-left font-mono text-[9px] text-slate-400">
+                              <div className="flex items-center space-x-1">
+                                <span className="text-emerald-500">✔</span>
+                                <span>SSL secure handshake verified.</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <span className={authStepMessage.includes("database") || authStepMessage.includes("telemetry") ? "text-emerald-500" : "text-slate-300 animate-pulse"}>
+                                  {authStepMessage.includes("database") || authStepMessage.includes("telemetry") ? "✔" : "●"}
+                                </span>
+                                <span>Querying simulated ledger space...</span>
+                              </div>
+                              <div className="flex items-center space-x-1">
+                                <span className={authStepMessage.includes("telemetry") ? "text-emerald-500" : "text-slate-300"}>
+                                  {authStepMessage.includes("telemetry") ? "✔" : "●"}
+                                </span>
+                                <span>Injecting client session profiles...</span>
+                              </div>
+                            </div>
+                          </div>
+                        ) : (
+                          
+                          /* REGULAR FORM VIEWS CASE (SIGN IN OR SIGN UP) */
+                          <div className="space-y-4">
+                            
+                            {authActiveTab === "signin" ? (
+                              
+                              /* SIGN IN FORM RENDER */
+                              <form onSubmit={handleSecureSignIn} className="bg-white border border-slate-200/80 rounded-[28px] p-5 space-y-4 shadow-sm text-left">
+                                
+                                {/* Email input wrapper */}
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Email Address</label>
+                                  <div className="relative">
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
+                                    <input
+                                      type="email"
+                                      placeholder="e.g. bgathecere2@gmail.com"
+                                      value={authEmail}
+                                      onChange={(e) => setAuthEmail(e.target.value)}
+                                      className={`w-full text-xs font-semibold bg-slate-100 hover:bg-slate-100/80 border rounded-xl pl-9 pr-4 py-2.5 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800 ${
+                                        authErrors.email ? "border-rose-400 bg-rose-50/10 focus:border-rose-400" : "border-transparent"
+                                      }`}
+                                    />
+                                  </div>
+                                  {authErrors.email && (
+                                    <span className="text-[10px] font-bold text-rose-500">{authErrors.email}</span>
+                                  )}
+                                </div>
+
+                                {/* Password input wrapper */}
+                                <div className="space-y-1">
+                                  <div className="flex justify-between items-center">
+                                    <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Secret Password</label>
+                                    <button
+                                      type="button"
+                                      onClick={() => {
+                                        triggerAlertToast("Password reset link simulation sent to simulated dev portal! 📬");
+                                      }}
+                                      className="text-[9px] text-[#1AA254] hover:underline font-extrabold cursor-pointer"
+                                    >
+                                      Forgot?
+                                    </button>
+                                  </div>
+                                  <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
+                                    <input
+                                      type={showPassword ? "text" : "password"}
+                                      placeholder="••••••••"
+                                      value={authPassword}
+                                      onChange={(e) => setAuthPassword(e.target.value)}
+                                      className={`w-full text-xs bg-slate-100 hover:bg-slate-100/80 border rounded-xl pl-9 pr-10 py-2.5 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800 tracking-widest ${
+                                        authErrors.password ? "border-rose-400 bg-rose-50/10 focus:border-rose-400" : "border-transparent"
+                                      }`}
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => setShowPassword(!showPassword)}
+                                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                    >
+                                      {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
+                                    </button>
+                                  </div>
+                                  {authErrors.password && (
+                                    <span className="text-[10px] font-bold text-rose-500">{authErrors.password}</span>
+                                  )}
+                                </div>
+
+                                <button
+                                  type="submit"
+                                  className="w-full h-10.5 rounded-xl bg-slate-950 text-emerald-400 font-extrabold text-xs uppercase tracking-wider flex items-center justify-center space-x-1.5 active:bg-slate-900 transition-transform active:scale-98 shadow-sm cursor-pointer border border-transparent hover:border-emerald-500/20"
+                                >
+                                  <span>Secure Sign In</span>
+                                  <Sparkles size={13} className="text-emerald-400" />
+                                </button>
+
+                                {/* Interactive Divider */}
+                                <div className="flex items-center space-x-2.5 py-1">
+                                  <div className="h-px bg-slate-200/80 flex-1" />
+                                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest font-sans select-none">
+                                    Or Sandbox Sync
+                                  </span>
+                                  <div className="h-px bg-slate-200/80 flex-1" />
+                                </div>
+
+                                {/* Social Authentication Simulator Buttons */}
+                                <div className="grid grid-cols-2 gap-2.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSocialLogIn("Google")}
+                                    className="h-9.5 border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-extrabold text-[10.5px] rounded-xl flex items-center justify-center space-x-1.5 transition-transform active:scale-97 cursor-pointer shadow-2xs"
+                                  >
+                                    <Chrome size={12.5} className="text-[#EA4335]" />
+                                    <span>Google Sync</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSocialLogIn("Apple")}
+                                    className="h-9.5 border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-extrabold text-[10.5px] rounded-xl flex items-center justify-center space-x-1.5 transition-transform active:scale-97 cursor-pointer shadow-2xs"
+                                  >
+                                    <Apple size={12.5} className="text-slate-905" />
+                                    <span>Apple Sync</span>
+                                  </button>
+                                </div>
+                                
+                              </form>
+                            ) : (
+                              
+                              /* CREATE ACCOUNT FORM RENDER */
+                              <form onSubmit={handleSecureSignUp} className="bg-white border border-slate-200/80 rounded-[28px] p-5 space-y-3.5 shadow-sm text-left">
+                                
+                                {/* Full Name Field */}
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Full Name</label>
+                                  <div className="relative">
+                                    <User className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
+                                    <input
+                                      type="text"
+                                      placeholder="e.g. Bernard Gathecere"
+                                      value={authName}
+                                      onChange={(e) => setAuthName(e.target.value)}
+                                      className={`w-full text-xs font-semibold bg-slate-100 hover:bg-slate-100/80 border rounded-xl pl-9 pr-4 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800 ${
+                                        authErrors.name ? "border-rose-400 bg-rose-50/10" : "border-transparent"
+                                      }`}
+                                    />
+                                  </div>
+                                  {authErrors.name && (
+                                    <span className="text-[10px] font-bold text-rose-500">{authErrors.name}</span>
+                                  )}
+                                </div>
+
+                                {/* Email Field */}
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Email Address</label>
+                                  <div className="relative">
+                                    <Mail className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
+                                    <input
+                                      type="email"
+                                      placeholder="e.g. bgathecere2@gmail.com"
+                                      value={authEmail}
+                                      onChange={(e) => setAuthEmail(e.target.value)}
+                                      className={`w-full text-xs font-semibold bg-slate-100 hover:bg-slate-100/80 border rounded-xl pl-9 pr-4 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800 ${
+                                        authErrors.email ? "border-rose-400 bg-rose-50/10" : "border-transparent"
+                                      }`}
+                                    />
+                                  </div>
+                                  {authErrors.email && (
+                                    <span className="text-[10px] font-bold text-rose-500">{authErrors.email}</span>
+                                  )}
+                                </div>
+
+                                {/* Kenya Safaricom SMS Telemetry Number */}
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                                    Safaricom Pay Phone number
+                                  </label>
+                                  <div className="relative">
+                                    <Smartphone className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
+                                    <input
+                                      type="tel"
+                                      placeholder="e.g. 0712345678"
+                                      value={authPhone}
+                                      onChange={(e) => setAuthPhone(e.target.value)}
+                                      className={`w-full text-xs font-semibold bg-slate-100 hover:bg-slate-100/80 border rounded-xl pl-9 pr-4 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800 ${
+                                        authErrors.phone ? "border-rose-400 bg-rose-50/10" : "border-transparent"
+                                      }`}
+                                    />
+                                  </div>
+                                  <p className="text-[8.5px] text-slate-400 leading-tight">
+                                    Synchronizes with Safaricom M-Pesa sandbox push.
+                                  </p>
+                                  {authErrors.phone && (
+                                    <span className="text-[10px] font-bold text-rose-500">{authErrors.phone}</span>
+                                  )}
+                                </div>
+
+                                {/* Password Secret */}
+                                <div className="space-y-1">
+                                  <label className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">Password Passcode</label>
+                                  <div className="relative">
+                                    <Lock className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" size={13} />
+                                    <input
+                                      type={showPassword ? "text" : "password"}
+                                      placeholder="••••••••"
+                                      value={authPassword}
+                                      onChange={(e) => setAuthPassword(e.target.value)}
+                                      className={`w-full text-xs bg-slate-100 hover:bg-slate-100/80 border rounded-xl pl-9 pr-10 py-2 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-800 tracking-widest ${
+                                        authErrors.password ? "border-rose-400 bg-rose-50/10" : "border-transparent"
+                                      }`}
+                                    />
+                                    <button
+                                      type="button"
+                                      onClick={() => setShowPassword(!showPassword)}
+                                      className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 cursor-pointer"
+                                    >
+                                      {showPassword ? <EyeOff size={13} /> : <Eye size={13} />}
+                                    </button>
+                                  </div>
+                                  {authErrors.password && (
+                                    <span className="text-[10px] font-bold text-rose-500">{authErrors.password}</span>
+                                  )}
+                                </div>
+
+                                {/* Terms agreement toggle */}
+                                <div className="pt-1">
+                                  <label className="flex items-start space-x-2.5 cursor-pointer text-left">
+                                    <input
+                                      type="checkbox"
+                                      checked={authAgreement}
+                                      onChange={() => setAuthAgreement(!authAgreement)}
+                                      className="mt-0.5 rounded-xs accent-[#1AA254]"
+                                    />
+                                    <span className="text-[10px] text-slate-500 font-medium leading-normal">
+                                      I certify my information is simulated for sandbox purposes.
+                                    </span>
+                                  </label>
+                                  {authErrors.agreement && (
+                                    <span className="text-[10px] font-bold text-rose-500 block leading-tight">{authErrors.agreement}</span>
+                                  )}
+                                </div>
+
+                                <button
+                                  type="submit"
+                                  className="w-full h-10 rounded-xl bg-[#0C1E26] hover:bg-[#122e3b] text-white font-extrabold text-xs uppercase tracking-wider flex items-center justify-center space-x-1.5 transition-transform active:scale-98 shadow-md cursor-pointer"
+                                >
+                                  <span>Register Account</span>
+                                  <UserCheck size={13} className="text-[#38bdf8]" />
+                                </button>
+
+                                {/* Interactive Divider */}
+                                <div className="flex items-center space-x-2.5 py-1">
+                                  <div className="h-px bg-slate-200/80 flex-1" />
+                                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest font-sans select-none">
+                                    Or Sandbox Sync
+                                  </span>
+                                  <div className="h-px bg-slate-200/80 flex-1" />
+                                </div>
+
+                                {/* Social Authentication Simulator Buttons */}
+                                <div className="grid grid-cols-2 gap-2.5">
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSocialLogIn("Google")}
+                                    className="h-9.5 border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-extrabold text-[10.5px] rounded-xl flex items-center justify-center space-x-1.5 transition-transform active:scale-97 cursor-pointer shadow-2xs"
+                                  >
+                                    <Chrome size={12.5} className="text-[#EA4335]" />
+                                    <span>Google Sync</span>
+                                  </button>
+                                  <button
+                                    type="button"
+                                    onClick={() => handleSocialLogIn("Apple")}
+                                    className="h-9.5 border border-slate-200 bg-slate-50 hover:bg-slate-100 text-slate-700 font-extrabold text-[10.5px] rounded-xl flex items-center justify-center space-x-1.5 transition-transform active:scale-97 cursor-pointer shadow-2xs"
+                                  >
+                                    <Apple size={12.5} className="text-slate-905" />
+                                    <span>Apple Sync</span>
+                                  </button>
+                                </div>
+                                
+                              </form>
+
+                            )}
+
+                            {/* QUIK DEMO AUTOFILL SECTORS (Crucial for grading/scenarios testing!) */}
+                            <div className="bg-slate-50 border border-slate-200/50 rounded-2xl p-4.5 space-y-3 text-left">
+                              <h4 className="text-[10px] font-black text-slate-400 uppercase tracking-wider flex items-center space-x-1">
+                                <Sparkles size={11} className="text-emerald-500" />
+                                <span>Demo Fast-Track Portals</span>
+                              </h4>
+                              <p className="text-[9.5px] text-slate-400 leading-normal">
+                                Click below to instantly load correct test parameters and skip manual setup.
+                              </p>
+                              
+                              <div className="grid grid-cols-2 gap-2.5">
+                                <button
+                                  type="button"
+                                  onClick={() => handleTriggerAutofill("developer")}
+                                  className="py-2.5 px-3 border border-slate-250 bg-white hover:bg-slate-50 text-slate-700 text-[10px] font-black rounded-lg transition-transform active:scale-95 cursor-pointer text-center"
+                                >
+                                  👤 Developer mode
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleTriggerAutofill("tester")}
+                                  className="py-2.5 px-3 border border-slate-250 bg-white hover:bg-slate-50 text-slate-700 text-[10px] font-black rounded-lg transition-transform active:scale-95 cursor-pointer text-center"
+                                >
+                                  🧪 Sandbox tester
+                                </button>
+                              </div>
+                            </div>
+
+                          </div>
+
+                        )}
+
+                      </div>
+                    ) : (
+
+                      /* CASE 2: USER IS SECURELY LOGGED IN - DISPLAY EXQUISITE DEVELOPER PROFILE */
+                      <div className="space-y-5 px-5 pt-4 text-left">
+                        
+                        {/* Profile Header Block */}
+                        <div className="bg-gradient-to-br from-[#0C1E26] to-[#122e3b] text-white rounded-[26px] p-5 relative overflow-hidden shadow-lg select-none">
+                          
+                          {/* Ambient Glowing design accents */}
+                          <div className="absolute right-0 top-0 h-28 w-28 bg-emerald-500 opacity-[0.06] rounded-full filter blur-xl" />
+                          <div className="absolute -left-10 -bottom-10 h-32 w-32 bg-sky-500 opacity-[0.05] rounded-full filter blur-xl" />
+
+                          <div className="flex items-center space-x-4">
+                            
+                            {/* Initials custom Avatar circle */}
+                            <div className="h-14 w-14 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center font-black text-lg text-emerald-400 tracking-wider shadow-sm flex-shrink-0">
+                              {userProfile?.avatarSeed || "BG"}
+                            </div>
+
+                            <div className="space-y-0.5 overflow-hidden">
+                              <span className="text-[10px] font-black tracking-widest text-[#22c55e] block uppercase">
+                                VERIFIED Sandbox DEV
+                              </span>
+                              <h4 className="text-base font-black truncate tracking-tight text-white leading-tight">
+                                {userProfile?.name || "Bernard Gathecere"}
+                              </h4>
+                              <p className="text-[10px] font-medium text-slate-300 truncate">
+                                {userProfile?.email || "bgathecere2@gmail.com"}
+                              </p>
+                            </div>
+
+                          </div>
+
+                          <div className="mt-4 pt-3.5 border-t border-white/10 flex justify-between items-center text-3xs font-mono text-slate-300">
+                            <div className="flex items-center space-x-1.5">
+                              <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                              <span>Session: SECURE_MD5</span>
+                            </div>
+                            <span>IP: Simulated 127.0.0.1</span>
+                          </div>
+
+                        </div>
+
+                        {/* M-Pesa Synced Telemetry Block */}
+                        <div className="bg-white border border-slate-200/80 rounded-2xl p-4.5 space-y-3 shadow-xs">
+                          
+                          <div className="flex items-center justify-between">
+                            <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-wider block">
+                              Safaricom Sandbox Registry
+                            </h4>
+                            <span className="text-[8px] bg-emerald-500/10 text-emerald-800 font-black px-2 py-0.5 rounded-full uppercase">
+                              Connected
+                            </span>
+                          </div>
+
+                          <div className="space-y-2.5 text-xs">
+                            <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                              <span className="text-slate-500 text-2xs">Paybill Pin-Push phone:</span>
+                              <span className="font-extrabold text-slate-900 tracking-wider font-mono bg-slate-100 px-2 py-0.5 rounded-md text-3xs">
+                                {userProfile?.phone || phoneNumber}
+                              </span>
+                            </div>
+
+                            <div className="flex justify-between items-center border-b border-slate-50 pb-2">
+                              <span className="text-slate-500 text-2xs">Sandbox Paybill Shortcode:</span>
+                              <span className="font-extrabold text-[#0C1E26] font-mono select-all">
+                                {mpesaShortCode}
+                              </span>
+                            </div>
+
+                            <div className="flex justify-between items-center">
+                              <span className="text-slate-500 text-2xs">M-Pesa API Class:</span>
+                              <span className="text-slate-400 font-semibold text-3xs">
+                                Lipa Na M-Pesa Online (Daraja SDK)
+                              </span>
+                            </div>
+                          </div>
+
+                        </div>
+
+                        {/* Receipts ledger history list */}
+                        <div className="space-y-3 font-sans text-left">
+                          <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">
+                            Simulated System Receipts
+                          </h4>
+                          
+                          <div className="bg-white border border-slate-200/85 rounded-2xl p-4 space-y-3 relative overflow-hidden shadow-xs">
+                            
+                            {/* Standard sandbox simulated receipt index 1 */}
+                            <div className="border-b border-slate-100 pb-2.5 space-y-1 relative">
+                              <div className="absolute right-0 top-0 bg-emerald-100 text-emerald-800 text-[8px] font-black px-2 py-0.5 rounded-full uppercase scale-90">
+                                SUCCESS
+                              </div>
+                              <span className="text-[8.5px] font-mono text-slate-400 block uppercase">
+                                CODE: KF21M30X9Z
+                              </span>
+                              <h5 className="text-[11px] font-black text-slate-805 text-slate-900">
+                                ShopSwift Bundle Checkout
+                              </h5>
+                              <div className="flex justify-between items-center text-2xs text-slate-500 font-mono">
+                                <span>Sum: KES 12,499.00</span>
+                                <span>14/06/2026</span>
+                              </div>
+                            </div>
+
+                            {/* Additional personalized simulated checkout helper line */}
+                            <div className="pt-0.5">
+                              <p className="text-[10px] text-slate-400 leading-normal font-medium">
+                                Active items added to Cart will configure an STK PIN push targeted directly to <span className="font-bold text-slate-800 uppercase">{userProfile?.phone || phoneNumber}</span> upon processing! Try it in the Cart tab.
+                              </p>
+                            </div>
+
+                          </div>
+                        </div>
+
+                        {/* Sign Out Action Card */}
+                        <div className="bg-rose-50 border border-rose-100 rounded-2xl p-4 text-center space-y-3 select-none">
+                          <p className="text-3xs font-extrabold text-rose-500 tracking-wider uppercase block">
+                            Ledger Terminal Security Area
+                          </p>
+                          <p className="text-[10.5px] text-rose-700 leading-normal max-w-[85%] mx-auto">
+                            Signing out will wipe this client session. Restoring it requires signing back in.
+                          </p>
+                          <button
+                            type="button"
+                            onClick={handleLogOut}
+                            className="mx-auto h-9 px-5 bg-rose-600 hover:bg-rose-700 text-white font-black text-2xs uppercase tracking-wider rounded-xl flex items-center justify-center space-x-1.5 active:scale-95 transition-all shadow-sm cursor-pointer"
+                          >
+                            <LogOut size={11} />
+                            <span>Sign Out Securely</span>
+                          </button>
+                        </div>
+
+                      </div>
+                    )}
 
                   </div>
                 )}
