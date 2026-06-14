@@ -348,9 +348,276 @@ export function CameraIllustration({ className = "w-full h-full" }: { className?
       {/* Dynamic Lens Deep Glare Glass optics */}
       <circle cx="150" cy="175" r="39" fill="url(#lensReflect)" stroke="#090d16" strokeWidth="1.5" />
 
-      {/* Internal lens cyan glint curve */}
+       {/* Internal lens cyan glint curve */}
       <path d="M 124,158 A 32 32 0 0 1 176,158" stroke="#10b981" strokeWidth="1.5" strokeLinecap="round" fill="none" opacity="0.6" />
       <circle cx="132" cy="164" r="3" fill="#38bdf8" opacity="0.6" className="drop-shadow-[0_0_4px_#38bdf8]" />
+    </svg>
+  );
+}
+
+// AirSync Pods (Earbuds) SVG Component
+export function EarbudsIllustration({ className = "w-full h-full" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 300 300" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <ellipse cx="150" cy="260" rx="70" ry="10" fill="black" opacity="0.15" />
+        <linearGradient id="caseBodyGrad" x1="80" y1="80" x2="220" y2="240" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#1e293b" />
+          <stop offset="50%" stopColor="#0f172a" />
+          <stop offset="100%" stopColor="#020617" />
+        </linearGradient>
+        <linearGradient id="lidGrad" x1="100" y1="110" x2="200" y2="150" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#334155" />
+          <stop offset="100%" stopColor="#0f172a" />
+        </linearGradient>
+      </defs>
+
+      {/* Charging Case Base Body */}
+      <rect x="85" y="110" width="130" height="110" rx="40" fill="url(#caseBodyGrad)" stroke="#334155" strokeWidth="2.5" />
+      
+      {/* Glossy highlight reflect */}
+      <path d="M 95,140 C 95,125 105,115 125,115 L 175,115 C 195,115 205,125 205,140 C 185,130 115,130 95,140 Z" fill="#ffffff" opacity="0.08" />
+      
+      {/* Case Seam/Opening line */}
+      <path d="M 85,135 Q 150,140 215,135" stroke="#020617" strokeWidth="3" fill="none" />
+      <path d="M 85,135 Q 150,140 215,135" stroke="#475569" strokeWidth="1" fill="none" opacity="0.6" />
+
+      {/* Case Inner Tray (Open look visualization) */}
+      <rect x="110" y="118" width="80" height="4" rx="2" fill="#090d16" />
+
+      {/* Three Power Status LED Dots (As seen in reference image!) */}
+      <circle cx="136" cy="180" r="2" fill="#22c55e" className="animate-pulse" />
+      <circle cx="150" cy="180" r="2" fill="#22c55e" />
+      <circle cx="164" cy="180" r="2" fill="#22c55e" className="animate-pulse" />
+
+      {/* Left Earbud Pod Silhouette inside/above */}
+      <g transform="translate(-1, 0)">
+        {/* Soft stem */}
+        <path d="M 125,115 C 122,95 122,85 125,80" stroke="#1e293b" strokeWidth="8" strokeLinecap="round" />
+        {/* Rounded head */}
+        <circle cx="120" cy="78" r="11" fill="#0f172a" stroke="#334155" strokeWidth="1" />
+        <circle cx="123" cy="78" r="5" fill="#1e293b" opacity="0.9" />
+      </g>
+
+      {/* Right Earbud Pod Silhouette inside/above */}
+      <g transform="translate(1, 0)">
+        {/* Soft stem */}
+        <path d="M 175,115 C 178,95 178,85 175,80" stroke="#1e293b" strokeWidth="8" strokeLinecap="round" />
+        {/* Rounded head */}
+        <circle cx="180" cy="78" r="11" fill="#0f172a" stroke="#334155" strokeWidth="1" />
+        <circle cx="177" cy="78" r="5" fill="#1e293b" opacity="0.9" />
+      </g>
+    </svg>
+  );
+}
+
+// NovaPad X10 (Tablet) SVG Component
+export function TabletIllustration({ className = "w-full h-full" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 300 300" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        {/* Flat floor shadow */}
+        <ellipse cx="150" cy="270" rx="95" ry="8" fill="black" opacity="0.2" />
+        
+        {/* Abstract Colorful Fluid Wallpaper Gradients */}
+        <linearGradient id="waveGrad1" x1="0" y1="0" x2="300" y2="300" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#1e1b4b" />
+          <stop offset="35%" stopColor="#4f46e5" />
+          <stop offset="70%" stopColor="#ea580c" />
+          <stop offset="100%" stopColor="#facc15" />
+        </linearGradient>
+
+        <linearGradient id="standGrad" x1="100" y1="210" x2="200" y2="270" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#475569" />
+          <stop offset="100%" stopColor="#0f172a" />
+        </linearGradient>
+      </defs>
+
+      {/* Folio origami keyboard stand path */}
+      <path d="M 80,180 L 60,265 L 240,265 L 220,180 Z" fill="url(#standGrad)" stroke="#1e293b" strokeWidth="2" />
+      <path d="M 60,265 L 240,265" stroke="#64748b" strokeWidth="2" />
+
+      {/* Beveled Outer Slate Border */}
+      <rect x="75" y="45" width="150" height="210" rx="14" fill="#0f172a" stroke="#475569" strokeWidth="2" transform="rotate(-15 150 150)" />
+      
+      {/* Display Screen */}
+      <rect x="80" y="50" width="140" height="200" rx="10" fill="url(#waveGrad1)" transform="rotate(-15 150 150)" />
+
+      {/* Colorful abstract background curves on the screen to match screenshot perfectly! */}
+      <path d="M 90,200 C 120,130 140,110 210,135" stroke="#f97316" strokeWidth="8" strokeLinecap="round" transform="rotate(-15 150 150)" opacity="0.9" />
+      <path d="M 85,220 C 130,160 160,130 215,160" stroke="#facc15" strokeWidth="12" strokeLinecap="round" transform="rotate(-15 150 150)" opacity="0.8" />
+      <path d="M 110,140 C 140,80 180,90 205,110" stroke="#3b82f6" strokeWidth="6" strokeLinecap="round" transform="rotate(-15 150 150)" opacity="0.85" />
+      <path d="M 120,240 Q 150,210 200,230" stroke="#dc2626" strokeWidth="16" transform="rotate(-15 150 150)" opacity="0.75" />
+
+      {/* Screen Gloss Reflection line */}
+      <path d="M 100,55 L 200,155" stroke="#ffffff" strokeWidth="12" opacity="0.08" transform="rotate(-15 150 150)" />
+      
+      {/* Front camera dot */}
+      <circle cx="150" cy="55" r="1.5" fill="#334155" transform="rotate(-15 150 150)" />
+    </svg>
+  );
+}
+
+// ClickMaster (Mechanical Keyboard) SVG Component
+export function KeyboardIllustration({ className = "w-full h-full" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 300 300" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <ellipse cx="150" cy="235" rx="110" ry="12" fill="black" opacity="0.18" />
+        <radialGradient id="tealGlow" cx="150" cy="160" r="90" fx="150" fy="160" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#0d9488" stopOpacity="0.45" />
+          <stop offset="100%" stopColor="#0f172a" stopOpacity="0" />
+        </radialGradient>
+      </defs>
+
+      {/* Tech glow behind keys */}
+      <rect x="40" y="100" width="220" height="110" rx="12" fill="url(#tealGlow)" />
+
+      {/* Sleek Aluminum Keyboard Base */}
+      <rect x="44" y="110" width="212" height="95" rx="8" fill="#1e293b" stroke="#334155" strokeWidth="2.5" />
+      <rect x="48" y="114" width="204" height="87" rx="6" fill="#0f172a" />
+
+      {/* Mechanical Key matrix rows (Teal Glowing keycaps representation!) */}
+      <g transform="translate(54, 120)" fill="#115e59" stroke="#0f766e" strokeWidth="1">
+        {/* Row 1 */}
+        <rect x="0" y="0" width="10" height="10" rx="1.5" />
+        <rect x="14" y="0" width="10" height="10" rx="1.5" />
+        <rect x="28" y="0" width="10" height="10" rx="1.5" />
+        <rect x="42" y="0" width="10" height="10" rx="1.5" />
+        <rect x="56" y="0" width="10" height="10" rx="1.5" fill="#14b8a6" />
+        <rect x="70" y="0" width="10" height="10" rx="1.5" fill="#14b8a6" />
+        <rect x="84" y="0" width="10" height="10" rx="1.5" />
+        <rect x="98" y="0" width="10" height="10" rx="1.5" />
+        <rect x="112" y="0" width="10" height="10" rx="1.5" />
+        <rect x="126" y="0" width="10" height="10" rx="1.5" />
+        <rect x="140" y="0" width="10" height="10" rx="1.5" />
+        <rect x="154" y="0" width="10" height="10" rx="1.5" />
+        <rect x="168" y="0" width="24" height="10" rx="1.5" fill="#0d9488" />
+
+        {/* Row 2 */}
+        <rect x="0" y="14" width="16" height="10" rx="1.5" fill="#0d9488" />
+        <rect x="20" y="14" width="10" height="10" rx="1.5" />
+        <rect x="34" y="14" width="10" height="10" rx="1.5" />
+        <rect x="48" y="14" width="10" height="10" rx="1.5" />
+        <rect x="62" y="14" width="10" height="10" rx="1.5" />
+        <rect x="76" y="14" width="10" height="10" rx="1.5" />
+        <rect x="90" y="14" width="10" height="10" rx="1.5" />
+        <rect x="104" y="14" width="10" height="10" rx="1.5" />
+        <rect x="118" y="14" width="10" height="10" rx="1.5" />
+        <rect x="132" y="14" width="10" height="10" rx="1.5" />
+        <rect x="146" y="14" width="10" height="10" rx="1.5" />
+        <rect x="160" y="14" width="10" height="10" rx="1.5" />
+        <rect x="174" y="14" width="18" height="10" rx="1.5" fill="#0d9488" />
+
+        {/* Row 3 */}
+        <rect x="0" y="28" width="20" height="10" rx="1.5" fill="#0d9488" />
+        <rect x="24" y="28" width="10" height="10" rx="1.5" />
+        <rect x="38" y="28" width="10" height="10" rx="1.5" />
+        <rect x="52" y="28" width="10" height="10" rx="1.5" />
+        <rect x="66" y="28" width="10" height="10" rx="1.5" fill="#14b8a6" />
+        <rect x="80" y="28" width="10" height="10" rx="1.5" fill="#14b8a6" />
+        <rect x="94" y="28" width="10" height="10" rx="1.5" />
+        <rect x="108" y="28" width="10" height="10" rx="1.5" />
+        <rect x="122" y="28" width="10" height="10" rx="1.5" />
+        <rect x="136" y="28" width="10" height="10" rx="1.5" />
+        <rect x="150" y="28" width="10" height="10" rx="1.5" />
+        <rect x="164" y="28" width="28" height="10" rx="1.5" fill="#0d9488" />
+
+        {/* Row 4 (Spacebar row) */}
+        <rect x="0" y="42" width="24" height="10" rx="1.5" fill="#0d9488" />
+        <rect x="28" y="42" width="10" height="10" rx="1.5" />
+        <rect x="42" y="42" width="10" height="10" rx="1.5" />
+        <rect x="56" y="42" width="80" height="10" rx="1.5" fill="#14b8a6" /> {/* Spacebar */}
+        <rect x="140" y="42" width="10" height="10" rx="1.5" />
+        <rect x="154" y="42" width="10" height="10" rx="1.5" />
+        <rect x="168" y="42" width="24" height="10" rx="1.5" fill="#0d9488" />
+      </g>
+
+      {/* Small Glowing active indicator LEDs */}
+      <circle cx="236" cy="120" r="1.5" fill="#14b8a6" />
+      <circle cx="244" cy="120" r="1.5" fill="#94a3b8" />
+    </svg>
+  );
+}
+
+// VisionCore 27" (Computer Display Monitor) SVG Component
+export function MonitorIllustration({ className = "w-full h-full" }: { className?: string }) {
+  return (
+    <svg viewBox="0 0 300 300" className={className} fill="none" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        {/* Footprint shadow */}
+        <ellipse cx="150" cy="260" rx="60" ry="7" fill="black" opacity="0.22" />
+        
+        {/* Silver metal finish for stand */}
+        <linearGradient id="silverMetal" x1="120" y1="200" x2="180" y2="260" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#cbd5e1" />
+          <stop offset="60%" stopColor="#f8fafc" />
+          <stop offset="100%" stopColor="#94a3b8" />
+        </linearGradient>
+
+        <linearGradient id="monitorGlow" x1="50" y1="50" x2="250" y2="185" gradientUnits="userSpaceOnUse">
+          <stop offset="0%" stopColor="#0f172a" />
+          <stop offset="50%" stopColor="#0b2430" />
+          <stop offset="100%" stopColor="#020617" />
+        </linearGradient>
+      </defs>
+
+      {/* Solid metal angled desktop stand */}
+      <path d="M 135,185 L 142,250 L 158,250 L 165,185 Z" fill="url(#silverMetal)" stroke="#94a3b8" strokeWidth="0.5" />
+      <path d="M 115,250 C 115,245 185,245 185,250 L 175,258 L 125,258 Z" fill="url(#silverMetal)" />
+
+      {/* Outer monitor screen bezel (Sleek minimalist black frame) */}
+      <rect x="40" y="55" width="220" height="135" rx="6" fill="#090d16" stroke="#475569" strokeWidth="1.5" />
+      
+      {/* Matte Inside Display Screen */}
+      <rect x="44" y="59" width="212" height="121" rx="2" fill="url(#monitorGlow)" />
+
+      {/* Analytics Dashboard Grid Visualization (Matches screenshot's dashboard UI!) */}
+      {/* Dashboard Top bar */}
+      <rect x="48" y="63" width="204" height="8" rx="1.5" fill="#1e293b" />
+      <circle cx="53" cy="67" r="1.5" fill="#f43f5e" />
+      <circle cx="58" cy="67" r="1.5" fill="#eab308" />
+      <circle cx="63" cy="67" r="1.5" fill="#22c55e" />
+      <text x="74" y="69.5" fill="#64748b" fontFamily="sans-serif" fontSize="4.5" fontWeight="bold">ShopSwift Server Analytics</text>
+
+      {/* Row of three dashboard visual widgets */}
+      {/* Widget 1: Bar chart */}
+      <rect x="48" y="75" width="62" height="46" rx="3" fill="#0f172a" stroke="#1e293b" strokeWidth="0.5" />
+      <text x="52" y="82" fill="#94a3b8" fontFamily="sans-serif" fontSize="4" fontWeight="bold">DAILY SALES</text>
+      <rect x="54" y="94" width="4" height="20" fill="#0ea5e9" rx="0.5" />
+      <rect x="62" y="88" width="4" height="26" fill="#0ea5e9" rx="0.5" />
+      <rect x="70" y="100" width="4" height="14" fill="#38bdf8" rx="0.5" />
+      <rect x="78" y="84" width="4" height="30" fill="#22c55e" rx="0.5" />
+      <rect x="86" y="90" width="4" height="24" fill="#10b981" rx="0.5" />
+      <rect x="94" y="98" width="4" height="16" fill="#14b8a6" rx="0.5" />
+      <line x1="52" y1="116" x2="106" y2="116" stroke="#334155" strokeWidth="0.5" />
+
+      {/* Widget 2: Line wave trend area */}
+      <rect x="114" y="75" width="138" height="46" rx="3" fill="#0f172a" stroke="#1e293b" strokeWidth="0.5" />
+      <text x="118" y="82" fill="#94a3b8" fontFamily="sans-serif" fontSize="4" fontWeight="bold">CONVERSION TRENDS (UTC LOCALTIME)</text>
+      {/* Wave chart path */}
+      <path d="M 118,110 Q 130,90 145,100 T 175,85 T 205,95 T 240,80 L 246,114 L 118,114 Z" fill="#14b8a6" opacity="0.15" />
+      <path d="M 118,110 Q 130,90 145,100 T 175,85 T 205,95 T 240,80" stroke="#14b8a6" strokeWidth="1.2" strokeLinecap="round" />
+      <circle cx="175" cy="85" r="2" fill="#ffffff" stroke="#14b8a6" strokeWidth="0.8" />
+      <circle cx="205" cy="95" r="1.5" fill="#38bdf8" />
+      <circle cx="145" cy="100" r="1.5" fill="#38bdf8" />
+
+      {/* Widget Rows Bottom */}
+      <rect x="48" y="125" width="204" height="50" rx="3" fill="#0f172a" stroke="#1e293b" strokeWidth="0.5" />
+      <text x="52" y="132" fill="#94a3b8" fontFamily="sans-serif" fontSize="4.5" fontWeight="bold">SECURE TRANSACTION METRIC LOGS</text>
+      <line x1="52" y1="138" x2="246" y2="138" stroke="#1e293b" strokeWidth="0.5" />
+      {/* Code logs simulator representation */}
+      <text x="52" y="146" fill="#4ade80" fontFamily="monospace" fontSize="4" opacity="0.85">{`> GET /api/transactions 200 OK - 15.4ms`}</text>
+      <text x="52" y="154" fill="#4ade80" fontFamily="monospace" fontSize="4" opacity="0.85">{`> Webhook received: Daraja ResultCode 0 'Success'`}</text>
+      <text x="52" y="162" fill="#64748b" fontFamily="monospace" fontSize="4" opacity="0.6">{`> Database MongoDB write complete. Saved standard JSON`}</text>
+      <text x="52" y="170" fill="#64748b" fontFamily="monospace" fontSize="4" opacity="0.6">{`> Service layer heartbeat active. Port :3000 online`}</text>
+
+      {/* Subtle Screen reflection highlights */}
+      <path d="M 50,60 L 180,180" stroke="#ffffff" strokeWidth="15" opacity="0.04" />
+      
+      {/* Bottom aluminum bezel strip decoration */}
+      <rect x="40" y="177" width="220" height="13" fill="#cbd5e1" stroke="#94a3b8" strokeWidth="0.5" />
+      <circle cx="150" cy="183.5" r="2.5" fill="#475569" /> {/* Elegant Center branding dot representing logo */}
     </svg>
   );
 }
@@ -358,10 +625,23 @@ export function CameraIllustration({ className = "w-full h-full" }: { className?
 // Master wrapper to get accurate illustration component based on image keyword
 export function ProductImageRender({ name, colorSpecs, className }: { name: string; colorSpecs?: any; className?: string }) {
   const norm = name.toLowerCase();
-  if (norm.includes("watch") || norm.includes("smartwatch")) {
+  
+  if (norm.includes("earbuds") || norm.includes("airsync")) {
+    return <EarbudsIllustration className={className} />;
+  }
+  if (norm.includes("tablet") || norm.includes("novapad") || norm.includes("pad")) {
+    return <TabletIllustration className={className} />;
+  }
+  if (norm.includes("keyboard") || norm.includes("clickmaster")) {
+    return <KeyboardIllustration className={className} />;
+  }
+  if (norm.includes("display") || norm.includes("monitor") || norm.includes("visioncore") || norm.includes("screen")) {
+    return <MonitorIllustration className={className} />;
+  }
+  if (norm.includes("watch") || norm.includes("smartwatch") || norm.includes("coretime")) {
     return <WatchIllustration className={className} />;
   }
-  if (norm.includes("headphones") || norm.includes("sonicmaster")) {
+  if (norm.includes("headphones") || norm.includes("sonicmaster") || norm.includes("swiftsound")) {
     return <HeadphonesIllustration className={className} />;
   }
   if (norm.includes("camera") || norm.includes("retro-shot")) {
@@ -370,3 +650,4 @@ export function ProductImageRender({ name, colorSpecs, className }: { name: stri
   // Otherwise default to the sneaker with color spec styling!
   return <SneakerIllustration className={className} colorSpecs={colorSpecs} />;
 }
+

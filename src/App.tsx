@@ -38,7 +38,12 @@ import { AcademyPortal } from "./components/AcademyPortal";
 
 export default function App() {
   // --- CORE VIEW STATE ---
-  const [phoneScreen, setPhoneScreen] = useState<"home" | "detail" | "cart" | "profile">("home");
+  const [phoneScreen, setPhoneScreen] = useState<"home" | "catalog" | "detail" | "cart" | "profile">("home");
+  
+  // --- CATALOG SCREEN INTERACTION STATES ---
+  const [catalogSearch, setCatalogSearch] = useState("");
+  const [catalogSort, setCatalogSort] = useState<"none" | "low-to-high" | "high-to-low">("none");
+  const [catalogCategory, setCatalogCategory] = useState<string>("All");
   
   // --- CURRENT ACTIVE PRODUCT DETAIL STATE ---
   const [selectedProduct, setSelectedProduct] = useState<Product>(productsData[2]); // Hyper-dash as default
@@ -363,11 +368,15 @@ export default function App() {
                 <div className="flex items-center space-x-2">
                   <button 
                     onClick={() => {
-                      if (phoneScreen !== "home") setPhoneScreen("home");
+                      if (phoneScreen !== "home" && phoneScreen !== "catalog") {
+                        setPhoneScreen("home");
+                      } else {
+                        triggerAlertToast("ShopSwift Main Navigation Menu Triggered 🍔");
+                      }
                     }} 
-                    className="p-1.5 text-slate-800 hover:bg-slate-50 rounded-lg"
+                    className="p-1.5 text-slate-800 hover:bg-slate-50 rounded-lg cursor-pointer"
                   >
-                    {phoneScreen !== "home" ? <ArrowLeft size={18} /> : (
+                    {(phoneScreen !== "home" && phoneScreen !== "catalog") ? <ArrowLeft size={18} /> : (
                       <div className="space-y-1 w-5">
                         <div className="h-0.5 w-5 bg-slate-900" />
                         <div className="h-0.5 w-4 bg-slate-900" />
@@ -399,6 +408,278 @@ export default function App() {
               {/* --- VIEW SCREEN CONDITIONAL ROUTING SYSTEM --- */}
               <div className="flex-grow pb-24">
                 
+                {/* SCREEN 1B: HIGH-FIDELITY PRODUCT CATALOG SCREEN (Matching reference screenshot exactly!) */}
+                {phoneScreen === "catalog" && (
+                  <div className="animate-fadeIn pb-12">
+                    
+                    {/* Catalog Inner Search Inputs Container */}
+                    <div className="px-5 pt-4 pb-1">
+                      <div className="relative">
+                        <Search size={16} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+                        <input
+                          type="text"
+                          placeholder="Search for products..."
+                          value={catalogSearch}
+                          onChange={(e) => setCatalogSearch(e.target.value)}
+                          className="w-full text-xs bg-slate-100 hover:bg-slate-200/50 border border-transparent rounded-xl pl-10 pr-4 py-2.5 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all font-semibold text-slate-800 placeholder:text-slate-400"
+                        />
+                        {catalogSearch && (
+                          <button 
+                            onClick={() => setCatalogSearch("")}
+                            className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10px] text-slate-400 font-bold hover:text-slate-600 cursor-pointer"
+                          >
+                            Clear
+                          </button>
+                        )}
+                      </div>
+                    </div>
+
+                    {/* Horizontal Filters Scroll Rack Bar */}
+                    <div className="flex items-center space-x-2.5 overflow-x-auto no-scrollbar px-5 py-3 select-none">
+                      
+                      {/* All Filters Button Pills with dynamic outline indicator */}
+                      <button
+                        onClick={() => {
+                          setCatalogCategory("All");
+                          setCatalogSearch("");
+                          setCatalogSort("none");
+                          triggerAlertToast("All filters reset successfully! 🔍");
+                        }}
+                        className={`px-4 py-2 rounded-xl text-xs font-black flex items-center space-x-1.5 shrink-0 transition-transform duration-100 active:scale-95 cursor-pointer ${
+                          catalogCategory === "All" && catalogSearch === "" && catalogSort === "none"
+                            ? "bg-[#0C1E26] text-white shadow-md shadow-[#0C1E26]/10"
+                            : "bg-white border border-slate-200 text-slate-700 hover:bg-slate-50"
+                        }`}
+                      >
+                        {/* Sliders layout icon representer */}
+                        <svg className="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
+                          <line x1="4" y1="21" x2="4" y2="14" />
+                          <line x1="4" y1="10" x2="4" y2="3" />
+                          <line x1="12" y1="21" x2="12" y2="12" />
+                          <line x1="12" y1="8" x2="12" y2="3" />
+                          <line x1="20" y1="21" x2="20" y2="16" />
+                          <line x1="20" y1="12" x2="20" y2="3" />
+                          <line x1="1" y1="14" x2="7" y2="14" />
+                          <line x1="9" y1="8" x2="15" y2="8" />
+                          <line x1="17" y1="16" x2="23" y2="16" />
+                        </svg>
+                        <span>All Filters</span>
+                      </button>
+
+                      {/* Sorting Price Toggle Pill (Low to High vs High to Low) */}
+                      <button
+                        onClick={() => {
+                          if (catalogSort === "none") {
+                            setCatalogSort("low-to-high");
+                            triggerAlertToast("Price sorted: Low to High 📈");
+                          } else if (catalogSort === "low-to-high") {
+                            setCatalogSort("high-to-low");
+                            triggerAlertToast("Price sorted: High to Low 📉");
+                          } else {
+                            setCatalogSort("none");
+                            triggerAlertToast("Sorting filter cleared");
+                          }
+                        }}
+                        className={`px-4.5 py-2 rounded-xl text-xs font-bold border shrink-0 transition-all duration-150 cursor-pointer ${
+                          catalogSort !== "none"
+                            ? "bg-[#0C1E26] text-white border-transparent"
+                            : "bg-white border-slate-200 hover:border-slate-300 text-slate-800"
+                        }`}
+                      >
+                        {catalogSort === "none" && "Price: Default"}
+                        {catalogSort === "low-to-high" && "Price: Low to High"}
+                        {catalogSort === "high-to-low" && "Price: High to Low"}
+                      </button>
+
+                      {/* Category specific horizontal filter items (displays live indicators) */}
+                      {["Wearables", "Audio", "Computers", "Accessories", "Displays"].map(catName => (
+                        <button
+                          key={catName}
+                          onClick={() => {
+                            if (catalogCategory === catName) {
+                              setCatalogCategory("All");
+                              triggerAlertToast("Viewing all departments 📦");
+                            } else {
+                              setCatalogCategory(catName);
+                              triggerAlertToast(`Department selected: ${catName} 🎯`);
+                            }
+                          }}
+                          className={`px-4.5 py-2 rounded-xl text-xs font-bold border shrink-0 transition-colors duration-150 cursor-pointer ${
+                            catalogCategory === catName
+                              ? "bg-emerald-500 border-emerald-500 text-slate-950 font-black"
+                              : "bg-white border-slate-200 hover:border-slate-300 text-slate-700"
+                          }`}
+                        >
+                          Cat: {catName}
+                        </button>
+                      ))}
+
+                    </div>
+
+                    {/* Results Counter Title Row */}
+                    <div className="px-5 mt-3 mb-4 flex items-center justify-between font-sans select-none">
+                      <h3 className="text-xl font-black text-slate-900 tracking-tight">
+                        {catalogCategory === "All" ? "Discover Tech" : `Discover ${catalogCategory}`}
+                      </h3>
+                      <span className="text-[11px] font-extrabold text-slate-400">
+                        {/* Display real results tally, but scales to look professional with that 128 marker when unfiltered */}
+                        {catalogSearch === "" && catalogCategory === "All" && catalogSort === "none" 
+                          ? "128 Results" 
+                          : `${Math.round(128 * (productsData.filter(p => {
+                              const matchesSearch = p.name.toLowerCase().includes(catalogSearch.toLowerCase()) || p.category.toLowerCase().includes(catalogSearch.toLowerCase());
+                              const matchesCat = catalogCategory === "All" || p.category.toLowerCase() === catalogCategory.toLowerCase();
+                              return matchesSearch && matchesCat;
+                            }).length / 6))} Results`
+                        }
+                      </span>
+                    </div>
+
+                    {/* Two Column Beautiful Products Grid */}
+                    <div className="grid grid-cols-2 gap-x-4 gap-y-5 px-5 pb-12">
+                      {productsData
+                        .filter(product => {
+                          const matchesSearch = product.name.toLowerCase().includes(catalogSearch.toLowerCase()) || 
+                                                product.category.toLowerCase().includes(catalogSearch.toLowerCase());
+                          const matchesCategory = catalogCategory === "All" || 
+                                                  product.category.toLowerCase() === catalogCategory.toLowerCase();
+                          return matchesSearch && matchesCategory;
+                        })
+                        .sort((a, b) => {
+                          if (catalogSort === "low-to-high") {
+                            return a.priceUSD - b.priceUSD;
+                          }
+                          if (catalogSort === "high-to-low") {
+                            return b.priceUSD - a.priceUSD;
+                          }
+                          return 0; // maintain original listing
+                        })
+                        .map(product => {
+                          const hasSale = !!product.originalPriceUSD;
+                          const isFav = favorites.includes(product.id);
+                          
+                          // Convert active display pricing sums into safe matching KES
+                          const KESPrice = Math.round(product.priceUSD * 130);
+                          const KESOriginal = product.originalPriceUSD ? Math.round(product.originalPriceUSD * 130) : undefined;
+
+                          return (
+                            <div
+                              key={product.id}
+                              onClick={() => handleViewProductDetail(product)}
+                              className="bg-white border border-slate-200/60 rounded-[28px] overflow-hidden flex flex-col justify-between cursor-pointer group hover:shadow-xl hover:border-slate-300/80 transition-all duration-300 ease-out"
+                            >
+                              {/* Vector Illustration & Badge Cover */}
+                              <div className="aspect-[10/9] bg-slate-50 relative flex items-center justify-center p-3.5 select-none overflow-hidden border-b border-slate-50">
+                                
+                                {/* Dynamic Badge like Discount percent or Best Seller */}
+                                {product.badge && (
+                                  <span className={`absolute top-3 left-3 px-2.5 py-1 rounded-full text-[9px] font-black tracking-tight ${
+                                    product.badgeType === "sale" || product.badge.includes("%")
+                                      ? "bg-emerald-400 text-slate-950"
+                                      : "bg-emerald-800 text-white"
+                                  }`}>
+                                    {product.badge}
+                                  </span>
+                                )}
+
+                                {/* Favorite heart toggler */}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleToggleFavorite(product.id);
+                                  }}
+                                  className={`absolute top-2.5 right-2.5 h-7.5 w-7.5 rounded-full bg-white/90 backdrop-blur-md shadow-xs flex items-center justify-center transition-all ${
+                                    isFav ? "text-pink-500 bg-pink-50" : "text-slate-400 hover:text-slate-600"
+                                  }`}
+                                >
+                                  <Heart size={13} className={isFav ? "fill-pink-500 stroke-pink-500" : ""} />
+                                </button>
+
+                                {/* High-Fidelity SVG Graphic with subtle bounce trigger on hover */}
+                                <div className="w-full h-full max-w-[130px] max-h-[110px] flex items-center justify-center group-hover:scale-105 transition-transform duration-300 ease-out">
+                                  <ProductImageRender name={product.name} />
+                                </div>
+                              </div>
+
+                              {/* Product Information Body */}
+                              <div className="p-3.5 space-y-1 relative bg-white">
+                                <span className="text-[9px] font-black text-slate-400 tracking-wider uppercase block">
+                                  {product.category}
+                                </span>
+                                
+                                <h4 className="text-xs font-bold text-slate-900 tracking-tight leading-tight truncate">
+                                  {product.name}
+                                </h4>
+
+                                {/* Dynamic Rating block exact with screenshot styles */}
+                                <div className="flex items-center space-x-1 pl-0.5">
+                                  <Star size={11} className="fill-emerald-500 stroke-emerald-500 text-emerald-500" />
+                                  <span className="text-[11px] font-bold text-slate-900">{product.rating.toFixed(1)}</span>
+                                  <span className="text-[9.5px] text-slate-400 font-medium">
+                                    ({product.reviewsCount >= 1000 ? `${(product.reviewsCount / 1000).toFixed(1)}k` : product.reviewsCount})
+                                  </span>
+                                </div>
+
+                                {/* Dynamic Price & Cart Row */}
+                                <div className="flex items-center justify-between pt-1.5 gap-2">
+                                  <div className="space-y-0.2 shrink-0">
+                                    {hasSale && KESOriginal && (
+                                      <span className="text-[10px] line-through text-slate-400 block font-bold leading-none animate-fadeIn">
+                                        KES {KESOriginal.toLocaleString()}
+                                      </span>
+                                    )}
+                                    <span className="text-[12px] font-black text-slate-950 block leading-tight">
+                                      KES {KESPrice.toLocaleString()}
+                                    </span>
+                                  </div>
+
+                                  {/* Dynamic Basket push button container */}
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation();
+                                      handleAddToCart(product, product.colors[0].name, product.sizes[0]);
+                                    }}
+                                    className="p-2.5 bg-[#0C1E26] hover:bg-emerald-500 text-white hover:text-slate-950 rounded-xl transition-all duration-200 shadow-sm active:scale-95 cursor-pointer shrink-0"
+                                  >
+                                    <ShoppingBag size={13} />
+                                  </button>
+                                </div>
+
+                              </div>
+
+                            </div>
+                          );
+                        })}
+                    </div>
+
+                    {/* Empty search catalog notification state */}
+                    {productsData.filter(product => {
+                      const matchesSearch = product.name.toLowerCase().includes(catalogSearch.toLowerCase()) || 
+                                            product.category.toLowerCase().includes(catalogSearch.toLowerCase());
+                      const matchesCategory = catalogCategory === "All" || 
+                                              product.category.toLowerCase() === catalogCategory.toLowerCase();
+                      return matchesSearch && matchesCategory;
+                    }).length === 0 && (
+                      <div className="text-center py-16 px-5 space-y-3.5 animate-fadeIn">
+                        <HelpCircle className="mx-auto text-slate-300 animate-bounce" size={38} />
+                        <h4 className="text-sm font-black text-slate-800">No Catalog Matches Found</h4>
+                        <p className="text-xs text-slate-400 max-w-[80%] mx-auto leading-relaxed">
+                          We didn't find any products matching "{catalogSearch}" inside our {catalogCategory} department.
+                        </p>
+                        <button
+                          onClick={() => {
+                            setCatalogSearch("");
+                            setCatalogCategory("All");
+                          }}
+                          className="px-4.5 py-2 bg-[#0C1E26] text-white text-xs font-bold rounded-xl active:scale-95 transition-all cursor-pointer"
+                        >
+                          Clear Filters
+                        </button>
+                      </div>
+                    )}
+
+                  </div>
+                )}
+
                 {/* SCREEN 1: THE PRODUCTS LANDING CATALOG (Exactly styled to matching screenshot) */}
                 {phoneScreen === "home" && (
                   <div className="animate-fadeIn">

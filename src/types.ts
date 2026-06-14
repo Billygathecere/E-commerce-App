@@ -4,7 +4,7 @@ export interface Product {
   tagline: string;
   priceUSD: number;
   originalPriceUSD?: number;
-  category: "Electronics" | "Fashion" | "Velocity" | "Audio" | "Electronics" | "Optic";
+  category: string;
   badge?: string;
   badgeType?: "new" | "sale";
   description: string;

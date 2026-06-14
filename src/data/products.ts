@@ -2,125 +2,141 @@ import { Product } from "../types";
 
 export const productsData: Product[] = [
   {
-    id: "pro-smartwatch",
-    name: "Pro Smartwatch XT",
-    tagline: "TECH SERIES",
-    priceUSD: 299.00,
-    category: "Electronics",
-    description: "Crafted from aerospace-grade titanium and fitted with a sapphire crystal responsive dome, the ShopSwift Pro Smartwatch XT is a masterpiece of precision and power. Features continuous ECG heart telemetry, ambient stress tracker nodes, 7-day kinetic standby battery performance, and cellular standalone connectivity. Completely depth-safe to 50 meters, it represents the absolute apex of multi-sport electronic companion devices.",
-    rating: 4.8,
-    reviewsCount: 184,
-    tag: "Active Tracking",
+    id: "coretime-elite",
+    name: "CoreTime Elite",
+    tagline: "WEARABLES",
+    priceUSD: 142.30769, // Exactly 18,500 KES inside system simulator
+    category: "Wearables",
+    description: "Experience premium wrist craftsmanship with the CoreTime Elite smartwatch. Features physical metal bezel dials, deep heart-rate monitoring, activity tracking telemetry, 7-day battery configurations, and stand-alone notifications. Fully customized to sync instantly inside our Lipa na M-Pesa ledger environment.",
+    rating: 4.7,
+    reviewsCount: 890,
+    tag: "Time & Fitness",
     colors: [
       {
-        name: "Obsidian Silver",
-        hex: "#F1F5F9",
-        main: "#e2e8f0",
-        accent: "#14b8a6",
+        name: "Classic White",
+        hex: "#FAFAFC",
+        main: "#fafafc",
+        accent: "#cbd5e1",
         accentDark: "#1e293b"
       },
       {
-        name: "Tech Black",
+        name: "Noir Black",
         hex: "#0F172A",
-        main: "#1e293b",
-        accent: "#06b6d4",
-        accentDark: "#0f172a"
+        main: "#0f172a",
+        accent: "#334155",
+        accentDark: "#020617"
       }
     ],
     sizes: [41, 44]
   },
   {
-    id: "sonicmaster-headphones",
-    name: "SonicMaster ANC-90",
-    tagline: "AUDIO LUX",
-    priceUSD: 159.00,
-    originalPriceUSD: 199.00,
+    id: "swiftsound-studio",
+    name: "SwiftSound Studio Pro",
+    tagline: "AUDIO",
+    priceUSD: 73.84615, // Exactly 9,600 KES inside system simulator
+    originalPriceUSD: 92.30769, // Exactly 12,000 KES inside system simulator (-20% discount)
     category: "Audio",
-    badge: "SALE -20%",
+    badge: "-20%",
     badgeType: "sale",
-    description: "Indulge in studio-grade acoustic high-fidelity with our signature SonicMaster Active Noise Canceling headset. Built with custom 40mm bio-cellulose dynamic drivers, it is designed to isolate external noise up to -45dB. Finished with rich memory foam protein ear padding and robust bands for luxurious long-duration premium comfort.",
+    description: "Premium high-fidelity active noise canceling (ANC) headphones designed for extreme audio clarity. Features thick leatherette memory foam pads, lightweight aluminum frames, and dual 40mm acoustic drivers that block ambient disturbances so you can focus on coding and productivity.",
     rating: 4.9,
-    reviewsCount: 240,
-    tag: "Acoustic Silence",
+    reviewsCount: 2400,
+    tag: "High-Fidelity Audio",
     colors: [
       {
         name: "Matte Black",
         hex: "#0F172A",
         main: "#0f172a",
-        accent: "#38bdf8",
+        accent: "#10b981",
         accentDark: "#020617"
-      },
-      {
-        name: "Sandstone Gold",
-        hex: "#E2E8F0",
-        main: "#cbd5e1",
-        accent: "#eab308",
-        accentDark: "#475569"
       }
     ],
     sizes: [1]
   },
   {
-    id: "hyper-dash-sneaker",
-    name: "Hyper-Dash Trainer",
-    tagline: "VELOCITY",
-    priceUSD: 120.00,
-    category: "Velocity",
-    description: "Elevate your running velocity instantly with the record-breaking Hyper-Dash trainer. Fitted with carbon-fiber responsive propulsion plates embedded inside active lightweight foam and dual-density cyan cushioning shock absorber pods. Features advanced seamless knit technology for dynamic foot temperature regulation and durable grip traction.",
+    id: "airsync-pods",
+    name: "AirSync Pods Pro",
+    tagline: "AUDIO",
+    priceUSD: 40.00, // Exactly 5,200 KES inside system simulator
+    category: "Audio",
+    badge: "Best Seller",
+    badgeType: "new",
+    description: "Your perfect on-the-go wireless acoustic solution. The AirSync Pods Pro features touch controls, adaptive transparency nodes, and three green LED indicators that display charge states in real-time. Charges instantly via USB-C or induction.",
     rating: 5.0,
-    reviewsCount: 312,
-    tag: "Carbon Propulsion",
+    reviewsCount: 4100,
+    tag: "True Wireless",
     colors: [
       {
-        name: "Crimson Red",
-        hex: "#E74C3C",
-        main: "#E74C3C",
-        accent: "#ff6c5c",
-        accentDark: "#a82012"
-      },
+        name: "Tech Charcoal",
+        hex: "#1E293B",
+        main: "#1e293b",
+        accent: "#22c55e",
+        accentDark: "#090d16"
+      }
+    ],
+    sizes: [1]
+  },
+  {
+    id: "novapad-x10",
+    name: "NovaPad X10",
+    tagline: "COMPUTERS",
+    priceUSD: 346.1538, // Exactly 45,000 KES inside system simulator
+    category: "Computers",
+    description: "A gorgeous 11-inch active canvas display with fluid 120Hz refresh profiles. NovaPad X10 is configured with high-performance octa-core processors, making drawing, streaming, and editing spreadsheet dashboards seamless.",
+    rating: 4.6,
+    reviewsCount: 152,
+    tag: "Speed & Clarity",
+    colors: [
       {
-        name: "Lime Green",
-        hex: "#8FE31C",
-        main: "#8FE31C",
-        accent: "#adff3d",
-        accentDark: "#5c9c04"
-      },
+        name: "Space Grey",
+        hex: "#334155",
+        main: "#334155",
+        accent: "#f97316",
+        accentDark: "#0f172a"
+      }
+    ],
+    sizes: [128, 256]
+  },
+  {
+    id: "clickmaster-mech",
+    name: "ClickMaster Pro",
+    tagline: "ACCESSORIES",
+    priceUSD: 65.3846, // Exactly 8,500 KES inside system simulator
+    category: "Accessories",
+    description: "Experience absolute mechanical typing perfection. Designed with high-durability tactile custom switches and vibrant, customizable dual-tone keycaps underlaid with ice-teal glowing customizable LED matrices.",
+    rating: 4.8,
+    reviewsCount: 450,
+    tag: "Tactile Precision",
+    colors: [
       {
-        name: "Obsidian Navy",
-        hex: "#1E2D3D",
-        main: "#1c2e42",
-        accent: "#3a5675",
-        accentDark: "#0c1521"
-      },
+        name: "Teal Matrix",
+        hex: "#0D9488",
+        main: "#0d9488",
+        accent: "#14b8a6",
+        accentDark: "#0f172a"
+      }
+    ],
+    sizes: [75, 100]
+  },
+  {
+    id: "visioncore-27",
+    name: "VisionCore 27\"",
+    tagline: "DISPLAYS",
+    priceUSD: 246.1538, // Exactly 32,000 KES inside system simulator
+    category: "Displays",
+    description: "A gorgeous 27-inch 4K resolution Studio-Display workspace monitor. Featuring ultra-thin bezels, aluminum stands, and custom color profiles engineered specifically to monitor live transactional APIs and logs.",
+    rating: 4.9,
+    reviewsCount: 230,
+    tag: "Visual Real Estate",
+    colors: [
       {
-        name: "Pearl White",
-        hex: "#FAFAFC",
-        main: "#f8fafc",
-        accent: "#94a3b8",
+        name: "Alloy Silver",
+        hex: "#94A3B8",
+        main: "#94a3b8",
+        accent: "#14b8a6",
         accentDark: "#475569"
       }
     ],
-    sizes: [7, 8, 9, 10, 11]
-  },
-  {
-    id: "retro-shot-camera",
-    name: "Retro-Shot Z1 Camera",
-    tagline: "OPTIC MASTER",
-    priceUSD: 849.00,
-    category: "Optic",
-    description: "Experience classic photography reborn. The ShopSwift Retro-Shot Z1 features a state-of-the-art 35mm full-frame 24.3 Megapixel sensor matched with an exquisite f/1.4 luxury glass prime lens. Housed inside a premium silver-aluminum magnesium alloy shell wrapped with vintage tactile non-slip vulcanite leather grip. Includes mechanical retro selector control knobs and dynamic optical hybrid navigation dials.",
-    rating: 4.7,
-    reviewsCount: 94,
-    tag: "Mechanical Optics",
-    colors: [
-      {
-        name: "Vintage Silver",
-        hex: "#CBD5E1",
-        main: "#cbd5e1",
-        accent: "#10b981",
-        accentDark: "#1e293b"
-      }
-    ],
-    sizes: [35]
+    sizes: [27]
   }
 ];
