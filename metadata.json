@@ -1,0 +1,6 @@
+{
+  "name": "ShopSwift",
+  "description": "An interactive premium e-commerce learning simulator with modern UI styling, dynamic color picker state engines, and Lipa Na M-Pesa STK Push API sandbox guides.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
