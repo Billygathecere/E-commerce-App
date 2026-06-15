@@ -40,10 +40,13 @@ import {
   Save,
   Settings,
   X,
-  Sliders
+  Sliders,
+  Truck,
+  Package,
+  Clock
 } from "lucide-react";
 
-import { Product, Review, CartItem } from "./types";
+import { Product, Review, CartItem, Order } from "./types";
 import { productsData } from "./data/products";
 import { ProductImageRender } from "./components/ProductIllustrations";
 import { AcademyPortal } from "./components/AcademyPortal";
@@ -107,6 +110,63 @@ export default function App() {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [favorites, setFavorites] = useState<string[]>([]);
   
+  // --- ORDER TRACKING STATE ---
+  const [orders, setOrders] = useState<Order[]>(() => {
+    const saved = localStorage.getItem("shopswift_orders");
+    if (saved) {
+      try {
+        return JSON.parse(saved);
+      } catch (e) {
+        console.error("Failed to parse orders from localStorage", e);
+      }
+    }
+    return [
+      {
+        id: "ORD_73921",
+        receiptId: "KF21M30X9Z",
+        date: "14/06/2026, 10:15 AM",
+        items: [
+          {
+            productId: "hyper-dash-sneaker",
+            name: "Hyper-Dash Pro Sneaker x90",
+            priceUSD: 160,
+            quantity: 1,
+            selectedColor: "Volt Lime/Black",
+            selectedSize: 9
+          }
+        ],
+        totalKES: 20800,
+        totalUSD: 160,
+        status: "On the Way",
+        statusUpdates: [
+          {
+            status: "Placed",
+            timestamp: "14/06/2026, 10:15 AM",
+            description: "Order successfully placed and paid via Safaricom Lipa Na M-Pesa."
+          },
+          {
+            status: "Processing",
+            timestamp: "14/06/2026, 10:30 AM",
+            description: "Packed in premium ShopSwift showcase box. Passed quality assurance inspection."
+          },
+          {
+            status: "On the Way",
+            timestamp: "14/06/2026, 11:45 AM",
+            description: "Dispatched via ShopSwift Express rider. Customs clearance approved; package is currently en route."
+          }
+        ],
+        phone: "0712345678",
+        name: "Bernard Gathecere"
+      }
+    ];
+  });
+
+  const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+
+  useEffect(() => {
+    localStorage.setItem("shopswift_orders", JSON.stringify(orders));
+  }, [orders]);
+  
   // --- SEARCH & FILTERS ---
   const [searchQuery, setSearchQuery] = useState("");
   const [activeCategoryFilter, setActiveCategoryFilter] = useState<"All" | "New" | "Sale">("All");
@@ -152,7 +212,68 @@ export default function App() {
   const [academyTab, setAcademyTab] = useState("welcome");
 
   // --- ADMIN PORTAL STATE ---
-  const [adminActiveTab, setAdminActiveTab] = useState<"list" | "form">("list");
+  const [deleteConfirmId, setDeleteConfirmId] = useState<string | null>(null);
+  const [deleteConfirmName, setDeleteConfirmName] = useState<string>("");
+  const [isResetConfirmOpen, setIsResetConfirmOpen] = useState(false);
+
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState<boolean>(() => {
+    return localStorage.getItem("shopswift_admin_authenticated") === "true";
+  });
+  const [adminPasscode, setAdminPasscode] = useState("");
+  const [passcodeError, setPasscodeError] = useState("");
+  const [showPasscode, setShowPasscode] = useState(false);
+
+  const ADMIN_PASSCODE_PIN = "1234";
+  const ADMIN_PASSCODE_PWD = "admin";
+
+  const handleAdminAuthSubmit = (passwordAttempt?: string) => {
+    const attempt = (passwordAttempt !== undefined ? passwordAttempt : adminPasscode).trim();
+    if (attempt === ADMIN_PASSCODE_PIN || attempt.toLowerCase() === ADMIN_PASSCODE_PWD) {
+      setIsAdminAuthenticated(true);
+      localStorage.setItem("shopswift_admin_authenticated", "true");
+      setAdminPasscode("");
+      setPasscodeError("");
+      triggerAlertToast("Access Granted! Welcome to Superuser controls. 🔐");
+    } else {
+      setPasscodeError("Invalid Secure Credentials. Try again.");
+      triggerAlertToast("Security Error: Access Denied! ❌");
+    }
+  };
+
+  const handleAdminLogout = () => {
+    setIsAdminAuthenticated(false);
+    localStorage.removeItem("shopswift_admin_authenticated");
+    setAdminPasscode("");
+    setPasscodeError("");
+    triggerAlertToast("Logged out of Superuser terminal safely. 🔒");
+    setPhoneScreen("home");
+  };
+
+  const [adminActiveTab, setAdminActiveTab] = useState<"analytics" | "orders" | "oversight" | "list" | "form">("analytics");
+
+  // State engines for Admin User Oversight and support escalations
+  const [accounts, setAccounts] = useState([
+    { name: "Bernard Gathecere", email: "bgathecere2@gmail.com", phone: "0712345678", status: "Active", device: "Desktop (Safari)" },
+    { name: "John Kamau", email: "j.kamau@safaricom.co.ke", phone: "0759219400", status: "Active", device: "Mobile (iPhone)" },
+    { name: "Mary Wanjiru", email: "mary.wanjiru@swiftmail.com", phone: "0724911003", status: "Idle", device: "Tablet (iPad)" },
+    { name: "Demo Sandbox Tester", email: "tester@shopswift.io", phone: "0700000000", status: "Active", device: "Desktop (Chrome)" }
+  ]);
+
+  const [escalations, setEscalations] = useState([
+    { id: "ESC_904", ticketName: "Delayed STK Push Callback validation", customer: "Bernard Gathecere", priority: "High", status: "Open", date: "14/06/2026", description: "Customer paid via Lipa Na M-Pesa but sandbox transaction state flag did not complete hooks instantly." },
+    { id: "ESC_312", ticketName: "Wrong color selection mismatch delivery", customer: "Mary Wanjiru", priority: "Medium", status: "Resolved", date: "12/06/2026", description: "Requested Cobalt Blue smartwatch but received Midnight Mist. Courier swap triggered." },
+    { id: "ESC_105", ticketName: "Double-charge simulation refund query", customer: "John Kamau", priority: "Critical", status: "Open", date: "15/06/2026", description: "STK push triggered twin SMS confirmation. Customer requests wallet ledger check and instant rollback." }
+  ]);
+
+  const handleResolveEscalation = (id: string) => {
+    setEscalations(prev => prev.map(esc => esc.id === id ? { ...esc, status: "Resolved" } : esc));
+    triggerAlertToast("Escalation ticket marked as RESOLVED! Notification dispatched. 💡");
+  };
+
+  const handleTriggerDeliveryAlert = (orderId: string) => {
+    triggerAlertToast(`SMS delivery dispatch alert pushed to customer for order ${orderId}! 📲`);
+  };
+
   const [editingProductId, setEditingProductId] = useState<string | null>(null); // null means "Add Product"
   const [adminName, setAdminName] = useState("");
   const [adminCategory, setAdminCategory] = useState("Sneaker");
@@ -180,6 +301,43 @@ export default function App() {
     // Remove from cart
     setCart(cart.filter(item => item.product.id !== productId));
     triggerAlertToast("Product removed from catalog successfully! 🗑️");
+  };
+
+  // Admin action: Change order status and append chronological updates
+  const handleUpdateOrderStatus = (orderId: string, newStatus: "Placed" | "Processing" | "On the Way" | "Delivered") => {
+    setOrders(prevOrders => {
+      return prevOrders.map(order => {
+        if (order.id !== orderId) return order;
+        
+        let description = "";
+        const timestamp = new Date().toLocaleDateString("en-KE") + ", " + new Date().toLocaleTimeString("en-KE", { hour: "2-digit", minute: "2-digit" });
+        
+        switch (newStatus) {
+          case "Placed":
+            description = "Order placed and paid successfully.";
+            break;
+          case "Processing":
+            description = "Packed in premium high-spec box. Handed to logistics dispatch scanner.";
+            break;
+          case "On the Way":
+            description = "Dispatched via standard express rider. Cargo en route to recipient address.";
+            break;
+          case "Delivered":
+            description = "Parcel successfully hand-delivered and cleared. Session closed.";
+            break;
+        }
+
+        const cleanedUpdates = order.statusUpdates.filter(u => u.status !== newStatus);
+        const newUpdates = [...cleanedUpdates, { status: newStatus, timestamp, description }];
+        
+        return {
+          ...order,
+          status: newStatus,
+          statusUpdates: newUpdates
+        };
+      });
+    });
+    triggerAlertToast(`Order ${orderId} updated to ${newStatus} 🎯`);
   };
 
   // Admin action: Populate form for editing
@@ -291,10 +449,9 @@ export default function App() {
 
   // Reset all products back to default schema
   const handleResetCatalogToDefault = () => {
-    if (window.confirm("Are you sure you want to reset the catalog database back to the standard showcase items? This will remove all your custom creations!")) {
-      setProducts(productsData);
-      triggerAlertToast("Catalog database flushed & restored to standard showroom items! 🧹");
-    }
+    setProducts(productsData);
+    setIsResetConfirmOpen(false);
+    triggerAlertToast("Catalog database flushed & restored to standard showroom items! 🧹");
   };
 
   // --- DERIVED CART COUNT TALLIES ---
@@ -603,7 +760,49 @@ export default function App() {
 
     // Micro stages simulation logs to educate standard workspace users
     const checkoutValueKES = phoneScreen === "detail" ? Math.round(selectedProduct.priceUSD * 130) : getCartTotalKES();
-    const mockOrderNum = "ORD_" + Math.random().toString(36).substring(3, 8).toUpperCase();
+    
+    // Build order beforehand to capture items cleanly in list
+    const orderItemsList = phoneScreen === "detail" 
+      ? [{
+          productId: selectedProduct.id,
+          name: selectedProduct.name,
+          priceUSD: selectedProduct.priceUSD,
+          quantity: 1,
+          selectedColor: selectedColor,
+          selectedSize: selectedSize
+        }]
+      : cart.map(item => ({
+          productId: item.product.id,
+          name: item.product.name,
+          priceUSD: item.product.priceUSD,
+          quantity: item.quantity,
+          selectedColor: item.selectedColor,
+          selectedSize: item.selectedSize
+        }));
+    
+    const orderId = "ORD_" + Math.floor(10000 + Math.random() * 90000);
+    const generatedReceiptId = "KT" + Math.floor(Math.random() * 89999 + 10000) + "M30X";
+    const orderDate = new Date().toLocaleDateString("en-KE") + ", " + new Date().toLocaleTimeString("en-KE", { hour: "2-digit", minute: "2-digit" });
+
+    const pendingOrder: Order = {
+      id: orderId,
+      receiptId: generatedReceiptId,
+      date: orderDate,
+      items: orderItemsList,
+      totalKES: checkoutValueKES,
+      totalUSD: phoneScreen === "detail" ? selectedProduct.priceUSD : getCartTotalUSD(),
+      status: "Placed",
+      statusUpdates: [
+        {
+          status: "Placed",
+          timestamp: orderDate,
+          description: "Order successfully placed and paid via Safaricom Lipa Na M-Pesa."
+        }
+      ],
+      phone: userProfile?.phone || phoneNumber,
+      name: userProfile?.name || "Anonymous Buyer"
+    };
+
     const logs = [
       { text: "🔑 Authenticating client credential nodes on Daraja sandbox gateway...", interval: 200 },
       { text: "🔑 Generating HMAC Base64 request payloads with client private key passkeys...", interval: 700 },
@@ -621,7 +820,8 @@ export default function App() {
         setSimTerminalLogs(old => [...old, log.text]);
         if (log.text.includes("payment confirmation screen")) {
           setMpesaPaymentState("success");
-          setOrderReceiptId("KT" + Math.floor(Math.random() * 89999 + 10000) + "M30X");
+          setOrderReceiptId(generatedReceiptId);
+          setOrders(prev => [pendingOrder, ...prev]);
           triggerAlertToast("Lipa Na M-Pesa transaction confirmed successfully!");
           // Empty cart upon successful overall e-commerce pay
           if (phoneScreen === "cart") {
@@ -680,39 +880,85 @@ export default function App() {
         </div>
       )}
 
-      {/* Academy Main Header Bar */}
-      <header className="border-b border-slate-200 bg-white shadow-xs px-6 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
-        <div className="flex items-center space-x-3.5">
-          <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center text-white font-black text-xl tracking-wider">
-            S
-          </div>
-          <div>
-            <div className="flex items-center space-x-2">
-              <h1 className="font-extrabold text-[#0D0F12] text-md tracking-tight flex items-center gap-1.5">
+      {/* Premium Web Store Header Bar */}
+      <header className="sticky top-0 z-40 border-b border-rose-100 bg-white/95 backdrop-blur-md px-4 sm:px-6 md:px-8 py-4 flex items-center justify-between shadow-xs select-none">
+        <div className="flex items-center space-x-8">
+          <div 
+            onClick={() => { setPhoneScreen("home"); setSearchQuery(""); }}
+            className="flex items-center space-x-3 cursor-pointer group"
+          >
+            <div className="h-10 w-10 rounded-xl bg-slate-900 flex items-center justify-center text-white font-black text-xl tracking-wider group-hover:scale-105 transition-transform">
+              S
+            </div>
+            <div>
+              <h1 className="font-sans font-black text-slate-900 text-lg tracking-tight flex items-center gap-2">
                 ShopSwift
-                <span className="text-2xs bg-emerald-500/10 text-emerald-700 border border-emerald-500/10 rounded-full px-2.5 py-0.5 font-bold">
-                  Catalog Sandbox v2.0
+                <span className="text-[10px] bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-2.5 py-0.5 font-bold font-mono">
+                  PRO WEB
                 </span>
               </h1>
+              <p className="text-[10px] text-slate-400 font-medium hidden sm:block">Premium Tech E-Commerce Catalog</p>
             </div>
-            <p className="text-xs text-slate-500">Explore premium catalog screens, layout architecture, and M-Pesa STK simulations.</p>
           </div>
+
+          {/* Desktop Web Navigation Links */}
+          <nav className="hidden md:flex items-center space-x-1.5 font-sans">
+            {[
+              { key: "home", label: "Home", icon: Home },
+              { key: "catalog", label: "Products Catalog", icon: Grid },
+              { key: "wishlist", label: "Wishlist", icon: Heart, badge: favorites.length },
+              { key: "profile", label: "Active Tracker", icon: User },
+              { key: "admin", label: "Admin Panel", icon: Sliders }
+            ].map((tab) => {
+              const Icon = tab.icon;
+              const isActive = phoneScreen === tab.key;
+              return (
+                <button
+                  key={tab.key}
+                  onClick={() => {
+                    setPhoneScreen(tab.key as any);
+                    if (tab.key === "home") {
+                      setSearchQuery("");
+                      setActiveCategoryFilter("All");
+                    }
+                  }}
+                  className={`flex items-center space-x-1.5 px-3.5 py-2 rounded-xl text-xs font-black uppercase tracking-wider transition-all duration-150 cursor-pointer ${
+                    isActive
+                      ? "bg-slate-900 text-white shadow-xs"
+                      : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
+                  }`}
+                >
+                  <Icon size={13} className={isActive ? "text-emerald-400" : ""} />
+                  <span>{tab.label}</span>
+                  {tab.badge !== undefined && tab.badge > 0 ? (
+                    <span className={`h-4.5 min-w-4.5 px-1 rounded-full text-[9px] font-mono font-black flex items-center justify-center ${isActive ? "bg-emerald-500 text-slate-950" : "bg-rose-100 text-rose-600"}`}>
+                      {tab.badge}
+                    </span>
+                  ) : null}
+                </button>
+              );
+            })}
+          </nav>
         </div>
 
-        {/* Global Cart status indicator for state tracking */}
+        {/* Global Widgets & Cart and Live Pin Status */}
         <div className="flex items-center space-x-4">
-          <span className="hidden sm:inline-flex items-center text-xs text-slate-500 bg-slate-100 border border-slate-100 px-3 py-1.5 rounded-lg">
+          <span className="hidden lg:inline-flex items-center text-xs text-slate-500 bg-emerald-50/50 border border-emerald-100 px-3 py-1.5 rounded-xl font-medium select-none">
             <span className="h-1.5 w-1.5 rounded-full bg-emerald-500 mr-2 animate-ping" />
-            Sandbox Gateway Active
+            Safaricom Sandbox Gateway Connected
           </span>
 
-          <div 
+          <div
             onClick={() => setPhoneScreen("cart")}
-            className="h-10 px-4 bg-slate-900 hover:bg-slate-800 text-white rounded-xl flex items-center justify-center space-x-2.5 cursor-pointer select-none transition-all duration-150 active:scale-95"
+            className={`h-10 px-4 rounded-xl flex items-center justify-center space-x-2.5 cursor-pointer select-none transition-all duration-150 active:scale-95 border ${
+              phoneScreen === "cart"
+                ? "bg-emerald-50 border-emerald-300 text-emerald-800 font-extrabold"
+                : "bg-slate-950 border-slate-800 text-white hover:bg-slate-850 text-xs"
+            }`}
           >
-            <ShoppingCart size={14} className="text-emerald-400" />
-            <span className="text-xs font-bold">Your Cart</span>
-            <span className="bg-emerald-500 text-slate-950 font-black text-[10px] h-5 w-5 rounded-full flex items-center justify-center">
+            <ShoppingCart size={14} className={phoneScreen === "cart" ? "text-emerald-700" : "text-emerald-400 animate-bounce"} />
+            <span className="text-xs font-bold font-sans">Your Cart</span>
+            <span className="bg-emerald-500 text-slate-950 font-black text-[10px] h-5 w-5 rounded-full flex items-center justify-center font-mono">
               {cartCount}
             </span>
           </div>
@@ -720,105 +966,57 @@ export default function App() {
       </header>
 
       {/* Interactive Play Space */}
-      <main className="flex-grow max-w-[1450px] w-full mx-auto px-4 py-8 md:px-6 lg:px-8 grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        
-        {/* ==================== LEFT COLUMN: PHONE MOCKUP VIEWPORT (7 Columns) ==================== */}
-        {/* Render precise client UI representation with realistic framing dimensions */}
-        <section className="col-span-1 lg:col-span-12 xl:col-span-7 flex justify-center">
-          <div className="relative w-full max-w-[420px] aspect-[9/19] min-h-[780px] md:min-h-[850px] bg-slate-950 rounded-[52px] p-3.5 shadow-2xl border-4 border-slate-900 ring-12 ring-slate-900/30 flex flex-col justify-between overflow-hidden">
+      <main className="flex-grow w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex flex-col justify-between relative no-scrollbar">
+
+        {/* Sticky Bottom Navigation for Mobile Devices */}
+        <nav 
+          className="fixed bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-205 px-4 py-3 pb-5 flex md:hidden items-center justify-around z-40 select-none shadow-lg"
+          id="smartphone-bottom-navigation"
+        >
+          {[
+            { key: "home", label: "Home", icon: Home },
+            { key: "catalog", label: "Catalog", icon: Grid },
+            { key: "wishlist", label: "Saved", icon: Heart, badge: favorites.length },
+            { key: "profile", label: "Profile", icon: User },
+            { key: "admin", label: "Admin", icon: Sliders }
+          ].map(tab => {
+            const Icon = tab.icon;
+            const isActive = phoneScreen === tab.key;
             
-            {/* Top Speaker Screen notch */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-32 h-6 bg-slate-950 rounded-b-2xl z-40 flex items-center justify-center">
-              <div className="w-12 h-1 bg-slate-900 rounded-full" />
-              <div className="absolute right-4 w-1.5 h-1.5 bg-indigo-950/40 rounded-full" />
-            </div>
+            return (
+              <button
+                key={tab.key}
+                onClick={() => {
+                  setPhoneScreen(tab.key as any);
+                  if (tab.key === "home") {
+                    setSearchQuery("");
+                    setActiveCategoryFilter("All");
+                  }
+                }}
+                className={`flex items-center space-x-1.5 px-3 py-2 rounded-full transition-all duration-250 cursor-pointer ${
+                  isActive 
+                    ? "bg-slate-900 text-white font-black scale-102"
+                    : "text-slate-400 hover:text-slate-605"
+                }`}
+              >
+                <Icon size={14} strokeWidth={isActive ? 3 : 2} />
+                {isActive && (
+                  <span className="text-[10px] font-bold tracking-tight">
+                    {tab.label}
+                  </span>
+                )}
+                {!isActive && tab.badge !== undefined && tab.badge > 0 && (
+                  <span className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-rose-500 text-white text-[8px] rounded-full flex items-center justify-center font-black animate-scaleIn">
+                    {tab.badge}
+                  </span>
+                )}
+              </button>
+            );
+          })}
+        </nav>
 
-            {/* Simulated Glass Reflection */}
-            <div className="absolute top-0 right-0 w-1/2 h-full bg-linear-to-b from-white/5 to-transparent skew-x-12 pointer-events-none z-30" />
-
-            {/* ACTIVE SIMULATED PHONE GLASS SCREENPORT */}
-            <div 
-              id="mockup-inner-viewport"
-              className="w-full h-full bg-[#fcfcfd] rounded-[38px] overflow-y-auto no-scrollbar relative flex flex-col justify-between"
-            >
-              
-              {/* --- INNER PHONE NAVIGATION HEADER (Matches customer layout) --- */}
-              <header className="bg-white border-b border-slate-100 px-5 pt-8 pb-3.5 flex items-center justify-between sticky top-0 z-30 select-none">
-                <div className="flex items-center space-x-2">
-                  <button 
-                    onClick={() => {
-                      if (phoneScreen !== "home" && phoneScreen !== "catalog") {
-                        setPhoneScreen("home");
-                      } else {
-                        triggerAlertToast("ShopSwift Main Navigation Menu Triggered 🍔");
-                      }
-                    }} 
-                    className="p-1.5 text-slate-800 hover:bg-slate-50 rounded-lg cursor-pointer"
-                  >
-                    {(phoneScreen !== "home" && phoneScreen !== "catalog") ? <ArrowLeft size={18} /> : (
-                      <div className="space-y-1 w-5">
-                        <div className="h-0.5 w-5 bg-slate-900" />
-                        <div className="h-0.5 w-4 bg-slate-900" />
-                        <div className="h-0.5 w-5 bg-slate-900" />
-                      </div>
-                    )}
-                  </button>
-                </div>
-                
-                <span className="font-extrabold text-slate-950 tracking-wide text-base font-sans">
-                  ShopSwift
-                </span>
-
-                <div className="flex items-center space-x-1">
-                  <button 
-                    onClick={() => setPhoneScreen("admin")}
-                    className={`p-2 rounded-full relative transition-colors cursor-pointer ${
-                      phoneScreen === "admin" 
-                        ? "bg-emerald-50 text-emerald-500" 
-                        : "text-slate-800 hover:bg-slate-50"
-                    }`}
-                    title="Admin Console"
-                  >
-                    <Sliders size={18} />
-                    <span className="absolute -top-0.5 -right-0.5 h-2 w-2 bg-emerald-500 rounded-full flex items-center justify-center shadow-md animate-pulse" />
-                  </button>
-
-                  <button 
-                    onClick={() => setPhoneScreen("wishlist")}
-                    className={`p-2 rounded-full relative transition-colors cursor-pointer ${
-                      phoneScreen === "wishlist" 
-                        ? "bg-pink-50 text-pink-500" 
-                        : "text-slate-800 hover:bg-slate-50"
-                    }`}
-                  >
-                    <Heart size={18} className={favorites.length > 0 ? "fill-pink-500 stroke-pink-500 text-pink-500" : ""} />
-                    {favorites.length > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-pink-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-md">
-                        {favorites.length}
-                      </span>
-                    )}
-                  </button>
-
-                  <button 
-                    onClick={() => setPhoneScreen("cart")}
-                    className={`p-2 rounded-full relative transition-colors cursor-pointer ${
-                      phoneScreen === "cart" 
-                        ? "bg-slate-100 text-[#0C1E26]" 
-                        : "text-slate-800 hover:bg-slate-50"
-                    }`}
-                  >
-                    <ShoppingCart size={18} />
-                    {cartCount > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 h-4 w-4 bg-emerald-500 text-slate-950 text-[9px] font-black rounded-full flex items-center justify-center shadow-md animate-pulse">
-                        {cartCount}
-                      </span>
-                    )}
-                  </button>
-                </div>
-              </header>
-
-              {/* --- VIEW SCREEN CONDITIONAL ROUTING SYSTEM --- */}
-              <div className="flex-grow pb-24">
+        {/* --- VIEW SCREEN CONDITIONAL ROUTING SYSTEM --- */}
+        <div className="flex-grow pb-16 md:pb-6">
                 
                 {/* SCREEN 1B: HIGH-FIDELITY PRODUCT CATALOG SCREEN (Matching reference screenshot exactly!) */}
                 {phoneScreen === "catalog" && (
@@ -946,8 +1144,8 @@ export default function App() {
                       </span>
                     </div>
 
-                    {/* Two Column Beautiful Products Grid */}
-                    <div className="grid grid-cols-2 gap-x-4 gap-y-5 px-5 pb-12">
+                    {/* Highly responsive beautiful product grid sizing for web views */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 px-5 pb-12">
                       {products
                         .filter(product => {
                           const matchesSearch = product.name.toLowerCase().includes(catalogSearch.toLowerCase()) || 
@@ -1304,8 +1502,8 @@ export default function App() {
                         )}
                       </div>
 
-                      {/* Two Column Grid of Products Mapped elegantly */}
-                      <div className="grid grid-cols-2 gap-4">
+                      {/* Responsive Grid of products mapped for elegant web views */}
+                      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                         {filteredProducts.map(product => {
                           const hasSale = !!product.originalPriceUSD;
                           const isFav = favorites.includes(product.id);
@@ -1895,7 +2093,7 @@ export default function App() {
                     ) : (
                       /* ACTIVE WISHLIST PRODUCT GRID */
                       <div className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
                           {products
                             .filter(product => favorites.includes(product.id))
                             .map(product => {
@@ -1975,56 +2173,247 @@ export default function App() {
                 {/* SCREEN 6: ADMIN PRODUCTS CONTROLS SCREEN */}
                 {phoneScreen === "admin" && (
                   <div className="animate-fadeIn p-5 space-y-6">
-                    {/* Header with back navigation arrow */}
-                    <div className="flex items-center space-x-3.5 border-b border-slate-105 pb-3 select-none">
-                      <button
-                        onClick={() => {
-                          handleClearAdminForm();
-                          setPhoneScreen("profile");
-                        }}
-                        className="h-8 w-8 rounded-full bg-slate-105 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
-                        title="Back to developer profile"
-                      >
-                        <ArrowLeft size={14} strokeWidth={2.5} />
-                      </button>
-                      <div className="text-left">
-                        <h3 className="text-sm font-extrabold text-[#0C1E26] uppercase tracking-wider font-sans text-left">
-                          Admin Catalog Controls
-                        </h3>
-                        <p className="text-[10px] text-emerald-600 font-mono tracking-tight leading-none text-left">
-                          Local DB Live Sync Active
-                        </p>
-                      </div>
-                    </div>
+                    {!isAdminAuthenticated ? (
+                      /* HIGH-FIDELITY PASSCODE SECURE TERMINAL */
+                      <div className="space-y-6 animate-fadeIn">
+                        {/* Header back button */}
+                        <div className="flex items-center justify-between border-b border-slate-100 pb-3 select-none">
+                          <button
+                            onClick={() => {
+                              setAdminPasscode("");
+                              setPasscodeError("");
+                              setPhoneScreen("profile");
+                            }}
+                            className="h-8 w-8 rounded-full bg-slate-105 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
+                            title="Back to profile"
+                          >
+                            <ArrowLeft size={14} strokeWidth={2.5} />
+                          </button>
+                          <span className="text-[9px] font-black tracking-widest text-[#0C1E26] font-mono uppercase">
+                            Superuser PIN Gate
+                          </span>
+                          <div className="w-8 h-8" />
+                        </div>
 
-                    {/* Sub Tab Buttons inside Admin screen */}
-                    <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 select-none">
-                      <button
-                        onClick={() => setAdminActiveTab("list")}
-                        className={`w-1/2 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all duration-150 flex items-center justify-center space-x-1 cursor-pointer ${
-                          adminActiveTab === "list"
-                            ? "bg-[#0C1E26] text-white shadow-sm"
-                            : "text-slate-500 hover:text-slate-800"
-                        }`}
-                      >
-                        <Sliders size={11} />
-                        <span>Manage Items ({products.length})</span>
-                      </button>
-                      <button
-                        onClick={() => {
-                          if (adminActiveTab === "list") handleClearAdminForm();
-                          setAdminActiveTab("form");
-                        }}
-                        className={`w-1/2 py-2 text-[10px] font-black uppercase tracking-wider rounded-lg transition-all duration-150 flex items-center justify-center space-x-1 cursor-pointer ${
-                          adminActiveTab === "form"
-                            ? "bg-[#0C1E26] text-white shadow-sm"
-                            : "text-slate-500 hover:text-slate-800"
-                        }`}
-                      >
-                        {editingProductId ? <Edit size={11} /> : <PlusCircle size={11} />}
-                        <span>{editingProductId ? "Edit Item" : "Create Item"}</span>
-                      </button>
-                    </div>
+                        {/* Central lock illustrations */}
+                        <div className="text-center space-y-4 py-2 select-none">
+                          <div className="relative mx-auto h-16 w-16 bg-slate-900 border border-slate-800 text-emerald-400 rounded-3xl flex items-center justify-center shadow-lg">
+                            <Lock size={26} className="text-emerald-500 animate-pulse" />
+                            <div className="absolute -top-1 -right-1 h-3.5 w-3.5 bg-emerald-500 rounded-full border-2 border-slate-950 flex items-center justify-center">
+                              <span className="h-1.5 w-1.5 bg-white rounded-full animate-ping" />
+                            </div>
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <h4 className="text-xs font-black text-slate-900 font-sans uppercase tracking-wider">
+                              Developer Auths Gate
+                            </h4>
+                            <p className="text-[11px] text-slate-400 font-semibold leading-normal max-w-[85%] mx-auto text-center">
+                              Please verify your secure supervisor identity passcode to open custom catalog registers.
+                            </p>
+                          </div>
+                        </div>
+
+                        {/* PIN Dot Indicator Indicators */}
+                        <div className="flex justify-center space-x-3.5 py-1">
+                          {[1, 2, 3, 4].map((index) => {
+                            const isFilled = adminPasscode.length >= index;
+                            return (
+                              <div
+                                key={index}
+                                className={`h-3 w-3 rounded-full transition-all duration-300 ${
+                                  isFilled 
+                                    ? "bg-slate-900 scale-110 shadow-xs ring-4 ring-slate-100 animate-pulse" 
+                                    : "bg-slate-200"
+                                }`}
+                              />
+                            );
+                          })}
+                        </div>
+
+                        {/* Input & Form integration */}
+                        <form 
+                          onSubmit={(e) => {
+                            e.preventDefault();
+                            handleAdminAuthSubmit();
+                          }}
+                          className="space-y-4"
+                        >
+                          <div className="relative">
+                            <input
+                              type={showPasscode ? "text" : "password"}
+                              placeholder="Enter Passcode or Password"
+                              value={adminPasscode}
+                              onChange={(e) => {
+                                setAdminPasscode(e.target.value);
+                                setPasscodeError("");
+                              }}
+                              className="w-full text-center text-xs font-mono font-bold bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-2xl px-4 py-3 focus:outline-hidden focus:bg-white focus:border-slate-300 transition-all text-slate-950 tracking-widest placeholder:tracking-normal placeholder:font-sans placeholder:font-semibold text-center"
+                            />
+                            <button
+                              type="button"
+                              onClick={() => setShowPasscode(!showPasscode)}
+                              className="absolute right-3.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-650 cursor-pointer p-1 rounded-md transition-colors"
+                            >
+                              {showPasscode ? <EyeOff size={14} /> : <Eye size={14} />}
+                            </button>
+                          </div>
+
+                          {passcodeError && (
+                            <p className="text-[10px] text-rose-500 font-extrabold text-center bg-rose-50 border border-rose-100 rounded-xl py-2 animate-fadeIn font-mono">
+                              ⚠️ {passcodeError}
+                            </p>
+                          )}
+
+                          {/* Standard Keypad Actions layout */}
+                          <div className="grid grid-cols-3 gap-2.5 max-w-[240px] mx-auto select-none pt-1">
+                            {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                              <button
+                                key={num}
+                                type="button"
+                                onClick={() => {
+                                  if (adminPasscode.length < 16) {
+                                    setAdminPasscode(prev => prev + num);
+                                    setPasscodeError("");
+                                  }
+                                }}
+                                className="h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/60 active:scale-95 transition-all text-xs font-black text-slate-850 cursor-pointer flex items-center justify-center font-sans shadow-2xs"
+                              >
+                                {num}
+                              </button>
+                            ))}
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAdminPasscode("");
+                                setPasscodeError("");
+                              }}
+                              className="h-10 rounded-xl bg-rose-50/50 hover:bg-rose-50 border border-rose-100 active:scale-95 transition-all text-[10px] font-extrabold text-rose-600 cursor-pointer flex items-center justify-center font-sans tracking-tight"
+                            >
+                              Clear
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                if (adminPasscode.length < 16) {
+                                  setAdminPasscode(prev => prev + "0");
+                                  setPasscodeError("");
+                                }
+                              }}
+                              className="h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/60 active:scale-95 transition-all text-xs font-black text-slate-850 cursor-pointer flex items-center justify-center font-sans shadow-2xs"
+                            >
+                              0
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setAdminPasscode(prev => prev.slice(0, -1));
+                                setPasscodeError("");
+                              }}
+                              className="h-10 rounded-xl bg-slate-50 hover:bg-slate-100 border border-slate-200/60 active:scale-95 transition-all text-[11px] font-black text-slate-500 cursor-pointer flex items-center justify-center font-sans"
+                            >
+                              ⌫
+                            </button>
+                          </div>
+
+                          <div className="pt-2 space-y-3 select-none">
+                            <button
+                              type="submit"
+                              className="w-full py-2.5 bg-[#0C1E26] hover:bg-emerald-500 text-white hover:text-slate-950 text-xs uppercase tracking-wider font-extrabold rounded-xl transition-all cursor-pointer text-center flex items-center justify-center space-x-1.5 shadow-md border border-slate-800"
+                            >
+                              <ShieldCheck size={13} />
+                              <span>Unlock Console</span>
+                            </button>
+
+                            <div className="bg-amber-50 border border-amber-100/80 p-3 rounded-2xl text-left">
+                              <span className="text-[9.5px] font-black text-[#854d0e] block font-sans text-left">
+                                🔑 Sandboxed verification guide:
+                              </span>
+                              <p className="text-[9px] text-[#a16207] font-medium leading-relaxed mt-0.5 text-left">
+                                Try PIN passcode <code className="font-mono bg-amber-100 px-1 py-0.5 rounded font-black font-semibold text-[#854d0e]">1234</code> or text password <code className="font-mono bg-amber-100 px-1 py-0.5 rounded font-black font-semibold text-[#854d0e]">admin</code> to unlock.
+                              </p>
+                            </div>
+                          </div>
+                        </form>
+                      </div>
+                    ) : (
+                      /* ACTIVE CORE ADMIN CONTROLS */
+                      <div className="space-y-6 animate-fadeIn w-full">
+                        {/* Header with back navigation arrow & Logout */}
+                        <div className="flex items-center justify-between border-b border-slate-105 pb-3 select-none">
+                          <div className="flex items-center space-x-3.5">
+                            <button
+                              onClick={() => {
+                                handleClearAdminForm();
+                                setPhoneScreen("profile");
+                              }}
+                              className="h-8 w-8 rounded-full bg-slate-105 hover:bg-slate-200 flex items-center justify-center text-slate-700 transition-colors cursor-pointer"
+                              title="Back to developer profile"
+                            >
+                              <ArrowLeft size={14} strokeWidth={2.5} />
+                            </button>
+                            <div className="text-left">
+                              <h3 className="text-sm font-extrabold text-[#0C1E26] uppercase tracking-wider font-sans text-left">
+                                Admin Catalog Controls
+                              </h3>
+                              <p className="text-[10px] text-emerald-600 font-mono tracking-tight leading-none text-left">
+                                Superuser Console Active
+                              </p>
+                            </div>
+                          </div>
+
+                          <button
+                            type="button"
+                            onClick={handleAdminLogout}
+                            className="px-2.5 py-1 bg-rose-50 hover:bg-rose-100 text-rose-600 border border-rose-100 rounded-lg text-[9px] font-black uppercase tracking-wider flex items-center space-x-1 cursor-pointer transition-colors"
+                            title="Lock Terminal Access"
+                          >
+                            <LogOut size={10} />
+                            <span>Lock</span>
+                          </button>
+                        </div>
+
+                        {/* Sub Tab Buttons inside Admin screen */}
+                        <div className="flex bg-slate-100 p-1 rounded-xl border border-slate-200 select-none">
+                          <button
+                            onClick={() => setAdminActiveTab("list")}
+                            className={`w-1/3 py-1.5 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all duration-150 flex items-center justify-center space-x-1 cursor-pointer truncate ${
+                              adminActiveTab === "list"
+                                ? "bg-[#0C1E26] text-white shadow-sm"
+                                : "text-slate-500 hover:text-slate-800"
+                            }`}
+                          >
+                            <Sliders size={10} />
+                            <span>Items ({products.length})</span>
+                          </button>
+                          
+                          <button
+                            onClick={() => setAdminActiveTab("orders")}
+                            className={`w-1/3 py-1.5 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all duration-150 flex items-center justify-center space-x-1 cursor-pointer truncate ${
+                              adminActiveTab === "orders"
+                                ? "bg-[#0C1E26] text-white shadow-sm"
+                                : "text-slate-500 hover:text-slate-800"
+                            }`}
+                          >
+                            <Package size={10} />
+                            <span>Orders ({orders.length})</span>
+                          </button>
+                          
+                          <button
+                            onClick={() => {
+                              if (adminActiveTab === "list" || adminActiveTab === "orders") handleClearAdminForm();
+                              setAdminActiveTab("form");
+                            }}
+                            className={`w-1/3 py-1.5 text-[9px] font-black uppercase tracking-wider rounded-lg transition-all duration-150 flex items-center justify-center space-x-1 cursor-pointer truncate ${
+                              adminActiveTab === "form"
+                                ? "bg-[#0C1E26] text-white shadow-sm"
+                                : "text-slate-500 hover:text-slate-800"
+                            }`}
+                          >
+                            {editingProductId ? <Edit size={10} /> : <PlusCircle size={10} />}
+                            <span>{editingProductId ? "Edit" : "New"}</span>
+                          </button>
+                        </div>
 
                     {/* TAB CONTENT 1: LIST VIEW */}
                     {adminActiveTab === "list" && (
@@ -2104,9 +2493,8 @@ export default function App() {
                                     </button>
                                     <button
                                       onClick={() => {
-                                        if (window.confirm(`Are you sure you want to remove "${product.name}" from the catalog?`)) {
-                                          handleDeleteProduct(product.id);
-                                        }
+                                        setDeleteConfirmId(product.id);
+                                        setDeleteConfirmName(product.name);
                                       }}
                                       className="h-7 w-7 rounded-lg bg-rose-50 border border-rose-100 hover:bg-rose-100 flex items-center justify-center text-rose-600 transition-all cursor-pointer"
                                       title="Delete Product"
@@ -2129,7 +2517,7 @@ export default function App() {
                         {/* Reset Database triggers action */}
                         <div className="pt-2 border-t border-slate-100 flex justify-between items-center bg-white">
                           <button
-                            onClick={handleResetCatalogToDefault}
+                            onClick={() => setIsResetConfirmOpen(true)}
                             className="text-[9.5px] text-[#0C1E26] hover:text-rose-500 font-extrabold cursor-pointer hover:underline"
                           >
                             ⚠️ Reset back to factory showroom list
@@ -2137,8 +2525,118 @@ export default function App() {
                         </div>
                       </div>
                     )}
+                    
+                    {/* TAB CONTENT 2: MANAGE ACTIVE ORDERS */}
+                    {adminActiveTab === "orders" && (
+                      <div className="space-y-4 text-left animate-fadeIn">
+                        <div className="bg-[#0C1E26] text-white p-4 rounded-2xl space-y-1 shadow-sm">
+                          <h4 className="text-xs font-black uppercase tracking-wider text-emerald-400">Order Dispatch Console</h4>
+                          <p className="text-[9.5px] text-slate-300 leading-normal font-sans">
+                            Modify order states from the sandboxed database in real time. Changes synchronize with user tracking feeds instantly.
+                          </p>
+                        </div>
+                        
+                        <div className="space-y-3.5 max-h-[420px] overflow-y-auto pr-1">
+                          {orders.map((order) => {
+                            return (
+                              <div key={order.id} className="bg-white border border-slate-205 rounded-2xl p-4 space-y-3 relative shadow-2xs">
+                                <span className="absolute right-3.5 top-3.5 font-mono text-[8px] bg-slate-105 text-slate-700 font-extrabold px-2 py-0.5 rounded-md">
+                                  {order.id}
+                                </span>
+                                
+                                <div className="space-y-1">
+                                  <h5 className="text-xs font-black text-slate-900 leading-tight">
+                                    {order.name}
+                                  </h5>
+                                  <p className="text-[10px] text-slate-400 font-medium leading-none">
+                                    Phone: {order.phone} • Account receipt {order.receiptId}
+                                  </p>
+                                  <p className="text-[9.5px] text-slate-500 font-mono mt-0.5">
+                                    Date: {order.date}
+                                  </p>
+                                </div>
+                                
+                                <div className="text-[10px] text-slate-650 bg-slate-50 p-2.5 rounded-xl border border-slate-100 font-sans space-y-1">
+                                  <span className="font-bold text-[8.5px] uppercase text-slate-400 tracking-wider block">Items list:</span>
+                                  {order.items.map((item, id) => (
+                                    <div key={id} className="flex justify-between items-center text-[9.5px]">
+                                      <span className="truncate max-w-[85%]">{item.name} ({item.selectedColor}, Size {item.selectedSize})</span>
+                                      <span className="font-bold text-slate-900">x{item.quantity}</span>
+                                    </div>
+                                  ))}
+                                  <div className="border-t border-slate-200/50 pt-1.5 mt-1.5 font-bold text-emerald-700 flex justify-between">
+                                    <span>Simulated Value:</span>
+                                    <span>KES {order.totalKES.toLocaleString()}</span>
+                                  </div>
+                                </div>
+                                
+                                <div className="space-y-2">
+                                  <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Update Status Endpoint:</span>
+                                  
+                                  <div className="grid grid-cols-4 gap-1.5 font-sans">
+                                    <button
+                                      onClick={() => handleUpdateOrderStatus(order.id, "Placed")}
+                                      className={`py-1.5 rounded-lg text-4xs font-black tracking-tight uppercase border transition-all cursor-pointer ${
+                                        order.status === "Placed"
+                                          ? "bg-amber-100 border-amber-300 text-amber-800 font-black shadow-xs"
+                                          : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-800"
+                                      }`}
+                                    >
+                                      Placed
+                                    </button>
+                                    
+                                    <button
+                                      onClick={() => handleUpdateOrderStatus(order.id, "Processing")}
+                                      className={`py-1.5 rounded-lg text-4xs font-black tracking-tight uppercase border transition-all cursor-pointer ${
+                                        order.status === "Processing"
+                                          ? "bg-sky-100 border-sky-300 text-sky-805 text-sky-800 font-black shadow-xs"
+                                          : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-800"
+                                      }`}
+                                    >
+                                      Processing
+                                    </button>
+                                    
+                                    <button
+                                      onClick={() => handleUpdateOrderStatus(order.id, "On the Way")}
+                                      className={`py-1.5 rounded-lg text-4xs font-black tracking-tight uppercase border transition-all cursor-pointer ${
+                                        order.status === "On the Way"
+                                          ? "bg-purple-100 border-purple-300 text-purple-800 font-black shadow-xs animate-pulse"
+                                          : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-800"
+                                      }`}
+                                    >
+                                      On the Way
+                                    </button>
+                                    
+                                    <button
+                                      onClick={() => handleUpdateOrderStatus(order.id, "Delivered")}
+                                      className={`py-1.5 rounded-lg text-4xs font-black tracking-tight uppercase border transition-all cursor-pointer ${
+                                        order.status === "Delivered"
+                                          ? "bg-emerald-100 border-emerald-300 text-emerald-800 font-black shadow-xs"
+                                          : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-800"
+                                      }`}
+                                    >
+                                      Delivered
+                                    </button>
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                          
+                          {orders.length === 0 && (
+                            <div className="text-center py-12 text-slate-450 bg-slate-50 bg-slate-50/50 rounded-2xl border border-slate-150 font-medium">
+                              <HelpCircle size={28} className="mx-auto block text-slate-350 mb-2" />
+                              <p className="text-xs text-slate-500 font-bold">No active sandbox orders submitted yet</p>
+                              <p className="text-[10px] text-slate-400 mt-1 max-w-[80%] mx-auto leading-relaxed">
+                                Purchase an item from the main screen using Lipa na M-Pesa to populate entries.
+                              </p>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
 
-                    {/* TAB CONTENT 2: ADD/EDIT FORM VIEW */}
+                    {/* TAB CONTENT 3: ADD/EDIT FORM VIEW */}
                     {adminActiveTab === "form" && (
                       <div className="space-y-4 text-left animate-fadeIn">
                         <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 select-none">
@@ -2306,6 +2804,80 @@ export default function App() {
                             >
                               <Save size={11} />
                               <span>{editingProductId ? "Update Product" : "Save Product"}</span>
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                    </div>
+                    )}
+
+                    {/* CUSTOM MODAL OVERLAYS FOR DELETE / DB RESET RULES */}
+                    {deleteConfirmId && (
+                      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-5 z-40 animate-fadeIn">
+                        <div className="bg-white rounded-3xl p-5 w-full max-w-[280px] space-y-4 shadow-xl border border-slate-100 text-center select-none">
+                          <div className="mx-auto h-12 w-12 rounded-full bg-rose-50 text-rose-500 flex items-center justify-center">
+                            <Trash2 size={20} />
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <h4 className="text-xs font-black text-slate-900 uppercase">Confirm Deletion</h4>
+                            <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+                              Are you sure you want to permanently purge <span className="font-bold text-slate-800">"{deleteConfirmName}"</span>? This action is irreversible.
+                            </p>
+                          </div>
+
+                          <div className="flex gap-2.5 pt-1">
+                            <button
+                              onClick={() => {
+                                setDeleteConfirmId(null);
+                                setDeleteConfirmName("");
+                              }}
+                              className="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-extrabold uppercase tracking-wider rounded-xl cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={() => {
+                                handleDeleteProduct(deleteConfirmId);
+                                setDeleteConfirmId(null);
+                                setDeleteConfirmName("");
+                              }}
+                              className="w-1/2 py-2 bg-rose-600 hover:bg-rose-500 text-white text-[10px] font-extrabold uppercase tracking-wider rounded-xl cursor-pointer text-center flex items-center justify-center"
+                            >
+                              Purge Item
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+                    {isResetConfirmOpen && (
+                      <div className="absolute inset-0 bg-slate-900/60 backdrop-blur-xs flex items-center justify-center p-5 z-40 animate-fadeIn">
+                        <div className="bg-white rounded-3xl p-5 w-full max-w-[280px] space-y-4 shadow-xl border border-slate-100 text-center select-none">
+                          <div className="mx-auto h-12 w-12 rounded-full bg-amber-50 text-amber-500 flex items-center justify-center animate-pulse">
+                            <HelpCircle size={20} />
+                          </div>
+                          
+                          <div className="space-y-1">
+                            <h4 className="text-xs font-black text-slate-900 uppercase">Reset Showroom Catalog?</h4>
+                            <p className="text-[10px] text-slate-500 font-medium leading-relaxed">
+                              This will revert all listings back to standard factory settings. Custom items and edits will be lost.
+                            </p>
+                          </div>
+
+                          <div className="flex gap-2.5 pt-1">
+                            <button
+                              onClick={() => setIsResetConfirmOpen(false)}
+                              className="w-1/2 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-[10px] font-extrabold uppercase tracking-wider rounded-xl cursor-pointer"
+                            >
+                              Cancel
+                            </button>
+                            <button
+                              onClick={handleResetCatalogToDefault}
+                              className="w-1/2 py-2 bg-slate-900 hover:bg-slate-800 text-white text-[10px] font-extrabold uppercase tracking-wider rounded-xl cursor-pointer text-center flex items-center justify-center"
+                            >
+                              Factory Clear
                             </button>
                           </div>
                         </div>
@@ -2806,38 +3378,216 @@ export default function App() {
 
                         </div>
 
-                        {/* Receipts ledger history list */}
+                        {/* Receipts ledger history and Live Order Tracker */}
                         <div className="space-y-3 font-sans text-left">
                           <h4 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block pl-1">
-                            Simulated System Receipts
+                            📦 Active Order Tracker
                           </h4>
                           
-                          <div className="bg-white border border-slate-200/85 rounded-2xl p-4 space-y-3 relative overflow-hidden shadow-xs">
-                            
-                            {/* Standard sandbox simulated receipt index 1 */}
-                            <div className="border-b border-slate-100 pb-2.5 space-y-1 relative">
-                              <div className="absolute right-0 top-0 bg-emerald-100 text-emerald-800 text-[8px] font-black px-2 py-0.5 rounded-full uppercase scale-90">
-                                SUCCESS
-                              </div>
-                              <span className="text-[8.5px] font-mono text-slate-400 block uppercase">
-                                CODE: KF21M30X9Z
-                              </span>
-                              <h5 className="text-[11px] font-black text-slate-805 text-slate-900">
-                                ShopSwift Bundle Checkout
-                              </h5>
-                              <div className="flex justify-between items-center text-2xs text-slate-500 font-mono">
-                                <span>Sum: KES 12,499.00</span>
-                                <span>14/06/2026</span>
-                              </div>
-                            </div>
-
-                            {/* Additional personalized simulated checkout helper line */}
-                            <div className="pt-0.5">
-                              <p className="text-[10px] text-slate-400 leading-normal font-medium">
-                                Active items added to Cart will configure an STK PIN push targeted directly to <span className="font-bold text-slate-800 uppercase">{userProfile?.phone || phoneNumber}</span> upon processing! Try it in the Cart tab.
+                          {orders.length === 0 ? (
+                            <div className="bg-white border border-slate-200/85 rounded-2xl p-6 text-center space-y-2 shadow-2xs">
+                              <Package size={24} className="text-slate-300 mx-auto animate-pulse" />
+                              <h5 className="text-xs font-black text-slate-800 uppercase">No Orders Tracked Yet</h5>
+                              <p className="text-[10px] text-slate-400 font-medium leading-relaxed max-w-[85%] mx-auto">
+                                Add some premium tech gears to your Cart and authorize lipa na M-Pesa to initiate a tracked sandbox parcel.
                               </p>
                             </div>
+                          ) : (
+                            <div className="space-y-3">
+                              {orders.map((order) => {
+                                const isExpanded = selectedOrderId === order.id;
+                                
+                                // Status badge classes helper
+                                const getStatusStyles = (status: string) => {
+                                  switch (status) {
+                                    case "Placed":
+                                      return "bg-amber-50 text-amber-700 border-amber-200";
+                                    case "Processing":
+                                      return "bg-sky-50 text-sky-700 border-sky-200";
+                                    case "On the Way":
+                                      return "bg-purple-50 text-purple-700 border-purple-200 animate-pulse";
+                                    case "Delivered":
+                                      return "bg-emerald-50 text-emerald-700 border-emerald-200";
+                                    default:
+                                      return "bg-slate-50 text-slate-600 border-slate-200";
+                                  }
+                                };
+                                
+                                return (
+                                  <div 
+                                    key={order.id} 
+                                    className="bg-white border border-slate-250 hover:border-slate-350 rounded-2xl overflow-hidden shadow-2xs transition-all relative"
+                                    id={`order-card-${order.id}`}
+                                  >
+                                    {/* Main info header banner */}
+                                    <div className="p-4 flex items-start justify-between cursor-pointer" onClick={() => setSelectedOrderId(isExpanded ? null : order.id)}>
+                                      <div className="space-y-1">
+                                        <div className="flex items-center space-x-2">
+                                          <span className="text-[9px] font-mono text-slate-400 block uppercase font-bold tracking-tight">
+                                            {order.id}
+                                          </span>
+                                          <span className="text-3xs text-slate-300 font-bold">•</span>
+                                          <span className="text-3xs text-slate-400">
+                                            {order.date.split(",")[0]}
+                                          </span>
+                                        </div>
+                                        <h5 className="text-[11.5px] font-semibold text-slate-900 leading-snug">
+                                          {order.items.length === 1 
+                                            ? order.items[0].name 
+                                            : `ShopSwift Delivery (${order.items.length} items)`}
+                                        </h5>
+                                        <div className="text-3xs font-mono text-emerald-600 font-extrabold">
+                                          Total KES: {order.totalKES.toLocaleString()}
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="flex flex-col items-end gap-1.5 select-none font-sans">
+                                        <span className={`text-[8px] font-black border uppercase px-2 py-0.5 rounded-full ${getStatusStyles(order.status)}`}>
+                                          {order.status === "On the Way" ? "On the Way" : order.status}
+                                        </span>
+                                        <span className="text-[9px] text-[#0C1E26] hover:underline font-extrabold select-none cursor-pointer flex items-center space-x-0.5">
+                                          <span>{isExpanded ? "Collapse" : "Live Track"}</span>
+                                          <ChevronRight size={10} className={`transform transition-transform ${isExpanded ? "rotate-90" : ""}`} />
+                                        </span>
+                                      </div>
+                                    </div>
+                                    
+                                    {/* Expanded visual stepper tracking timeline */}
+                                    {isExpanded && (
+                                      <div className="border-t border-slate-100 bg-slate-50/70 p-4 space-y-4 animate-fadeIn select-none">
+                                        {/* List of items inside order */}
+                                        <div className="bg-white border border-slate-200/70 rounded-xl p-3 space-y-1.5">
+                                          <h6 className="text-[9px] font-bold text-slate-400 uppercase tracking-wider block">Package Contents:</h6>
+                                          {order.items.map((item, idx) => (
+                                            <div key={idx} className="flex justify-between items-center text-[10px] text-slate-600 font-medium">
+                                              <span>
+                                                {item.name} <span className="text-slate-400">({item.selectedColor}, Size {item.selectedSize})</span>
+                                              </span>
+                                              <span className="font-extrabold text-slate-900">x{item.quantity}</span>
+                                            </div>
+                                          ))}
+                                          <div className="border-t border-slate-100 pt-1.5 mt-1.5 flex justify-between text-3xs text-slate-400">
+                                            <span>M-Pesa Ledger Key:</span>
+                                            <span className="font-mono text-slate-650 font-bold uppercase">{order.receiptId}</span>
+                                          </div>
+                                        </div>
 
+                                        {/* Visual Stepper */}
+                                        <div className="space-y-4 relative pl-3.5 text-left border-l border-slate-200 ml-1.5 py-1">
+                                          
+                                          {/* STEP 1: PLACED (Always complete) */}
+                                          <div className="relative">
+                                            {/* Stepper Dot */}
+                                            <div className="absolute -left-[20px] top-0.5 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-xs" />
+                                            
+                                            <div className="space-y-0.5">
+                                              <div className="flex items-center space-x-2">
+                                                <h6 className="text-[10px] font-black text-slate-900 uppercase tracking-tight">Order Confirmed</h6>
+                                                <span className="text-4xs font-mono text-slate-400">{order.statusUpdates.find(u => u.status === "Placed")?.timestamp || order.date}</span>
+                                              </div>
+                                              <p className="text-[9.5px] text-slate-500 font-medium leading-snug">
+                                                Order successfully logged and synchronized with Lipa Na M-Pesa sandbox invoice class.
+                                              </p>
+                                            </div>
+                                          </div>
+                                          
+                                          {/* STEP 2: PROCESSING */}
+                                          {order.statusUpdates.some(u => u.status === "Processing" || u.status === "On the Way" || u.status === "Delivered") ? (
+                                            <div className="relative">
+                                              <div className="absolute -left-[20px] top-0.5 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-xs" />
+                                              <div className="space-y-0.5">
+                                                <div className="flex items-center space-x-2">
+                                                  <h6 className="text-[10px] font-black text-slate-900 uppercase tracking-tight font-sans">Quality Passed & Packaged</h6>
+                                                  <span className="text-4xs font-mono text-slate-400">{order.statusUpdates.find(u => u.status === "Processing")?.timestamp || order.date}</span>
+                                                </div>
+                                                <p className="text-[9.5px] text-slate-500 font-medium leading-snug">
+                                                  {order.statusUpdates.find(u => u.status === "Processing")?.description || "Packed in custom moisture-resistant sealbox casing. Passed optical/biometric testing."}
+                                                </p>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className="relative opacity-50">
+                                              <div className="absolute -left-[20px] top-0.5 h-3 w-3 rounded-full bg-slate-200 border-2 border-white" />
+                                              <div className="space-y-0.5">
+                                                <h6 className="text-[10px] font-black text-slate-500 uppercase tracking-tight">Warehouse QC & Packaging</h6>
+                                                <p className="text-[9.5px] text-slate-400 font-mono italic leading-none">Awaiting superuser dispatch...</p>
+                                              </div>
+                                            </div>
+                                          )}
+                                          
+                                          {/* STEP 3: ON THE WAY */}
+                                          {order.statusUpdates.some(u => u.status === "On the Way" || u.status === "Delivered") ? (
+                                            <div className="relative">
+                                              <div className="absolute -left-[20px] top-0.5 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-xs" />
+                                              <div className="space-y-0.5">
+                                                <div className="flex items-center space-x-2">
+                                                  <h6 className="text-[10px] font-black text-slate-900 uppercase tracking-tight">Out for Delivery</h6>
+                                                  <span className="text-4xs font-mono text-slate-400">{order.statusUpdates.find(u => u.status === "On the Way")?.timestamp || order.date}</span>
+                                                </div>
+                                                <p className="text-[9.5px] text-slate-500 font-medium leading-snug">
+                                                  {order.statusUpdates.find(u => u.status === "On the Way")?.description || "Courier partner picked up package. ShopSwift Express rider transit active."}
+                                                </p>
+                                                
+                                                {/* Live Rider details box */}
+                                                {order.status === "On the Way" && (
+                                                  <div className="mt-2 bg-emerald-50/70 border border-emerald-150 rounded-lg p-2 flex items-center space-x-2.5">
+                                                    <Truck className="text-emerald-600 animate-bounce" size={12} />
+                                                    <div className="text-[9px] text-[#144f14] leading-tight font-medium">
+                                                      <span className="font-bold block">Rider Assigned: Juma Ndiga (+254 759 219 400)</span>
+                                                      <span>Transit route: Nairobi CBD West to your sector</span>
+                                                    </div>
+                                                  </div>
+                                                )}
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className="relative opacity-50">
+                                              <div className="absolute -left-[20px] top-0.5 h-3 w-3 rounded-full bg-slate-200 border-2 border-white" />
+                                              <div className="space-y-0.5">
+                                                <h6 className="text-[10px] font-black text-slate-500 uppercase tracking-tight">Out for Delivery (Rider Transit)</h6>
+                                                <p className="text-[9.5px] text-slate-400 font-mono italic leading-none">Awaiting logistics handpicked scan...</p>
+                                              </div>
+                                            </div>
+                                          )}
+                                          
+                                          {/* STEP 4: DELIVERED */}
+                                          {order.status === "Delivered" ? (
+                                            <div className="relative">
+                                              <div className="absolute -left-[20px] top-0.5 h-3 w-3 rounded-full bg-emerald-500 border-2 border-white flex items-center justify-center shadow-xs" />
+                                              <div className="space-y-0.5">
+                                                <div className="flex items-center space-x-2">
+                                                  <h6 className="text-[10px] font-black text-emerald-700 uppercase tracking-tight">Successfully Delivered</h6>
+                                                  <span className="text-4xs font-mono text-slate-400">{order.statusUpdates.find(u => u.status === "Delivered")?.timestamp || order.date}</span>
+                                                </div>
+                                                <p className="text-[9.5px] text-emerald-800 font-medium leading-snug">
+                                                  {order.statusUpdates.find(u => u.status === "Delivered")?.description || "Package handed over directly to customer. Thank you for shopping with ShopSwift!"}
+                                                </p>
+                                              </div>
+                                            </div>
+                                          ) : (
+                                            <div className="relative opacity-50">
+                                              <div className="absolute -left-[20px] top-0.5 h-3 w-3 rounded-full bg-slate-200 border-2 border-white" />
+                                              <div className="space-y-0.5">
+                                                <h6 className="text-[10px] font-black text-slate-500 uppercase tracking-tight">Delivered & Closed</h6>
+                                                <p className="text-[9.5px] text-slate-400 font-mono italic leading-none">Awaiting endpoint delivery verification...</p>
+                                              </div>
+                                            </div>
+                                          )}
+
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {/* Quick simulated helper note context */}
+                          <div className="pt-0.5">
+                            <p className="text-[10px] text-slate-400 leading-normal font-medium bg-slate-50 p-2.5 rounded-xl border border-slate-150">
+                              💡 <span className="font-bold text-slate-700">Interactive Simulation:</span> Enter the <strong className="text-[#0C1E26] underline hover:text-emerald-600 block sm:inline cursor-pointer" onClick={() => setPhoneScreen("admin")}>Admin Dashboard</strong> after logging in to instantly update order statuses (Placed ➔ Processing ➔ On the Way ➔ Delivered) and watch this tracking feed update reactively!
+                            </p>
                           </div>
                         </div>
 
@@ -2865,67 +3615,16 @@ export default function App() {
                   </div>
                 )}
 
-              </div>
+        </div>
 
-              {/* --- PORTABLE BOTTOM GRAPHIC ACTION BAR (Saves space & matches layout) --- */}
-              <nav 
-                className="absolute bottom-0 left-0 w-full bg-white/95 backdrop-blur-md border-t border-slate-100 px-4 py-3 pb-5 flex items-center justify-around z-30 select-none shadow-xs"
-                id="smartphone-bottom-navigation"
-              >
-                {[
-                  { key: "home", label: "Home", icon: Home },
-                  { key: "catalog", label: "Catalog", icon: Grid },
-                  { key: "wishlist", label: "Saved", icon: Heart, badge: favorites.length },
-                  { key: "cart", label: "Cart", icon: ShoppingBag, badge: cartCount },
-                  { key: "profile", label: "Profile", icon: User }
-                ].map(tab => {
-                  const Icon = tab.icon;
-                  const isActive = phoneScreen === tab.key;
-                  
-                  return (
-                    <button
-                      key={tab.key}
-                      onClick={() => {
-                        setPhoneScreen(tab.key as any);
-                        // Reset search directory query
-                        if (tab.key === "home") {
-                          setSearchQuery("");
-                          setActiveCategoryFilter("All");
-                        }
-                      }}
-                      className={`flex items-center space-x-1.5 px-3 py-2 rounded-full transition-all duration-200 relative cursor-pointer ${
-                        isActive 
-                          ? "bg-emerald-500 text-slate-950 font-black scale-102"
-                          : "text-slate-400 hover:text-slate-600"
-                      }`}
-                    >
-                      <Icon size={15} strokeWidth={isActive ? 3 : 2} />
-                      
-                      {isActive && (
-                        <span className="text-[11px] font-bold tracking-tight">
-                          {tab.label}
-                        </span>
-                      )}
+      </main>
 
-                      {/* Floating dynamic tally status */}
-                      {!isActive && tab.badge !== undefined && tab.badge > 0 && (
-                        <span className="absolute top-1 right-2 h-3.5 w-3.5 bg-rose-500 border border-white text-white text-[8px] rounded-full flex items-center justify-center font-black">
-                          {tab.badge}
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </nav>
-
-            </div>
-
-            {/* --- SAVARICOM LIPA NA M-PESA SIMULATOR OVERLAYS FOR SECURE HANDSHAKE DESIGN --- */}
-            {mpesaPaymentState !== "idle" && (
-              <div 
-                className="absolute inset-0 bg-slate-950/85 backdrop-blur-xs z-50 flex items-center justify-center p-5 select-none animate-fadeIn"
-                id="mpesa-simulation-frame"
-              >
+      {/* --- SAVARICOM LIPA NA M-PESA SIMULATOR OVERLAYS FOR SECURE HANDSHAKE DESIGN --- */}
+      {mpesaPaymentState !== "idle" && (
+        <div 
+          className="fixed inset-0 bg-slate-950/85 backdrop-blur-md z-50 flex items-center justify-center p-5 select-none animate-fadeIn"
+          id="mpesa-simulation-frame"
+        >
                 {/* Micro Keypad frame */}
                 {mpesaPaymentState === "entering_pin" && (
                   <div className="bg-white rounded-3xl p-5 w-full max-w-[320px] shadow-2xl border border-slate-200 text-center space-y-5">
@@ -3080,28 +3779,8 @@ export default function App() {
                   </div>
                 )}
 
-              </div>
-            )}
-
-          </div>
-        </section>
-
-        {/* ==================== RIGHT COLUMN: DEVELOPMENT ACADEMY PORTAL (5 Columns) ==================== */}
-        {/* Mapped perfectly to state structures to inspect local variables reactively */}
-        <AcademyPortal 
-          selectedProduct={selectedProduct}
-          selectedColor={selectedColor}
-          selectedSize={selectedSize}
-          cartCount={cartCount}
-          isFavorited={favorites.includes(selectedProduct.id)}
-          mpesaPaymentState={mpesaPaymentState}
-          academyTab={academyTab}
-          setAcademyTab={setAcademyTab}
-          phoneNumber={phoneNumber}
-          mpesaShortCode={mpesaShortCode}
-        />
-
-      </main>
+        </div>
+      )}
 
       {/* Main outer Footer */}
       <footer className="border-t border-slate-200 bg-white py-6 px-6 text-center text-xs text-slate-400 font-sans">
