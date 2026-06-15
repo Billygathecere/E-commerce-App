@@ -7,6 +7,7 @@ export interface Product {
   category: string;
   badge?: string;
   badgeType?: "new" | "sale";
+  imageUrl?: string;
   description: string;
   rating: number;
   reviewsCount: number;

@@ -43,7 +43,8 @@ import {
   Sliders,
   Truck,
   Package,
-  Clock
+  Clock,
+  Upload
 } from "lucide-react";
 
 import { Product, Review, CartItem, Order } from "./types";
@@ -284,6 +285,7 @@ export default function App() {
   const [adminSizes, setAdminSizes] = useState("7, 8, 9, 10, 11");
   const [adminBadge, setAdminBadge] = useState("");
   const [adminBadgeType, setAdminBadgeType] = useState<"new" | "sale" | "">("");
+  const [adminImageUrl, setAdminImageUrl] = useState("");
 
   // Admin action: Delete product
   const handleDeleteProduct = (productId: string) => {
@@ -352,6 +354,7 @@ export default function App() {
     setAdminSizes(product.sizes.join(", "));
     setAdminBadge(product.badge || "");
     setAdminBadgeType(product.badgeType || "");
+    setAdminImageUrl(product.imageUrl || "");
     setAdminActiveTab("form");
   };
 
@@ -367,6 +370,41 @@ export default function App() {
     setAdminSizes("7, 8, 9, 10, 11");
     setAdminBadge("");
     setAdminBadgeType("");
+    setAdminImageUrl("");
+  };
+
+  // Handlers for premium custom picture uploader
+  const handleAdminFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          setAdminImageUrl(reader.result);
+          triggerAlertToast("Custom product picture loaded! 📸");
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+
+  const handleAdminDragOver = (e: React.DragEvent) => {
+    e.preventDefault();
+  };
+
+  const handleAdminDrop = (e: React.DragEvent) => {
+    e.preventDefault();
+    const file = e.dataTransfer.files?.[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        if (typeof reader.result === "string") {
+          setAdminImageUrl(reader.result);
+          triggerAlertToast("Custom product picture dropped & loaded! 📸");
+        }
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   // Admin action: Save product (handle edit or add)
@@ -406,6 +444,7 @@ export default function App() {
             description: adminDescription,
             badge: adminBadge || undefined,
             badgeType: (adminBadgeType || undefined) as any,
+            imageUrl: adminImageUrl || undefined,
             sizes: sizesArray.length > 0 ? sizesArray : [7, 8, 9, 10, 11]
           };
           if (selectedProduct.id === editingProductId) {
@@ -429,6 +468,7 @@ export default function App() {
         description: adminDescription,
         badge: adminBadge || undefined,
         badgeType: (adminBadgeType || undefined) as any,
+        imageUrl: adminImageUrl || undefined,
         rating: 5,
         reviewsCount: 1,
         tag: "new",
@@ -1206,7 +1246,7 @@ export default function App() {
 
                                 {/* High-Fidelity SVG Graphic with subtle bounce trigger on hover */}
                                 <div className="w-full h-full max-w-[130px] max-h-[110px] flex items-center justify-center group-hover:scale-105 transition-transform duration-300 ease-out">
-                                  <ProductImageRender name={product.name} />
+                                  <ProductImageRender name={product.name} imageUrl={product.imageUrl} />
                                 </div>
                               </div>
 
@@ -1536,7 +1576,7 @@ export default function App() {
 
                                 {/* Dynamic Vector Render */}
                                 <div className="w-full h-full max-w-[110px] max-h-[110px] flex items-center justify-center group-hover:scale-105 transition-transform duration-300">
-                                  <ProductImageRender name={product.name} />
+                                  <ProductImageRender name={product.name} imageUrl={product.imageUrl} />
                                 </div>
                               </div>
 
@@ -1697,6 +1737,7 @@ export default function App() {
                       <div className="w-full max-w-[180px] aspect-square flex items-center justify-center">
                         <ProductImageRender 
                           name={selectedProduct.name} 
+                          imageUrl={selectedProduct.imageUrl}
                           colorSpecs={selectedProduct.colors.find(c => c.name === selectedColor)} 
                         />
                       </div>
@@ -1949,7 +1990,7 @@ export default function App() {
                             >
                               {/* Vector thumbnail */}
                               <div className="h-12 w-12 bg-slate-50 rounded-xl flex items-center justify-center p-1.5 shrink-0">
-                                <ProductImageRender name={item.product.name} />
+                                <ProductImageRender name={item.product.name} imageUrl={item.product.imageUrl} />
                               </div>
 
                               {/* Text info block */}
@@ -2119,7 +2160,7 @@ export default function App() {
                                   {/* Thumbnail Illustration background */}
                                   <div className="aspect-[10/9] bg-slate-50 relative flex items-center justify-center p-3 select-none">
                                     <div className="w-20 h-20 flex items-center justify-center group-hover:scale-105 transition-transform">
-                                      <ProductImageRender name={product.name} />
+                                      <ProductImageRender name={product.name} imageUrl={product.imageUrl} />
                                     </div>
                                   </div>
 
@@ -2458,7 +2499,7 @@ export default function App() {
                                   className="p-3 bg-white border border-slate-200/80 rounded-2xl flex items-center justify-between hover:border-slate-300 transition-colors gap-3 text-left"
                                 >
                                   <div className="h-10 w-10 bg-slate-50 rounded-xl flex items-center justify-center border border-slate-100 flex-shrink-0">
-                                    <ProductImageRender name={product.name} />
+                                    <ProductImageRender name={product.name} imageUrl={product.imageUrl} />
                                   </div>
 
                                   <div className="flex-1 min-w-0 text-left">
@@ -2573,10 +2614,10 @@ export default function App() {
                                 <div className="space-y-2">
                                   <span className="text-[9px] font-bold text-slate-400 uppercase tracking-widest block">Update Status Endpoint:</span>
                                   
-                                  <div className="grid grid-cols-4 gap-1.5 font-sans">
+                                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-sans-serif">
                                     <button
                                       onClick={() => handleUpdateOrderStatus(order.id, "Placed")}
-                                      className={`py-1.5 rounded-lg text-4xs font-black tracking-tight uppercase border transition-all cursor-pointer ${
+                                      className={`py-2 px-1 rounded-xl text-[9.5px] xs:text-3xs font-extrabold tracking-normal uppercase border transition-all cursor-pointer ${
                                         order.status === "Placed"
                                           ? "bg-amber-100 border-amber-300 text-amber-800 font-black shadow-xs"
                                           : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-800"
@@ -2587,9 +2628,9 @@ export default function App() {
                                     
                                     <button
                                       onClick={() => handleUpdateOrderStatus(order.id, "Processing")}
-                                      className={`py-1.5 rounded-lg text-4xs font-black tracking-tight uppercase border transition-all cursor-pointer ${
+                                      className={`py-2 px-1 rounded-xl text-[9.5px] xs:text-3xs font-extrabold tracking-normal uppercase border transition-all cursor-pointer ${
                                         order.status === "Processing"
-                                          ? "bg-sky-100 border-sky-300 text-sky-805 text-sky-800 font-black shadow-xs"
+                                          ? "bg-sky-100 border-sky-300 text-sky-800 font-black shadow-xs"
                                           : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-800"
                                       }`}
                                     >
@@ -2598,7 +2639,7 @@ export default function App() {
                                     
                                     <button
                                       onClick={() => handleUpdateOrderStatus(order.id, "On the Way")}
-                                      className={`py-1.5 rounded-lg text-4xs font-black tracking-tight uppercase border transition-all cursor-pointer ${
+                                      className={`py-2 px-1 rounded-xl text-[9.5px] xs:text-3xs font-extrabold tracking-normal uppercase border transition-all cursor-pointer ${
                                         order.status === "On the Way"
                                           ? "bg-purple-100 border-purple-300 text-purple-800 font-black shadow-xs animate-pulse"
                                           : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-800"
@@ -2609,7 +2650,7 @@ export default function App() {
                                     
                                     <button
                                       onClick={() => handleUpdateOrderStatus(order.id, "Delivered")}
-                                      className={`py-1.5 rounded-lg text-4xs font-black tracking-tight uppercase border transition-all cursor-pointer ${
+                                      className={`py-2 px-1 rounded-xl text-[9.5px] xs:text-3xs font-extrabold tracking-normal uppercase border transition-all cursor-pointer ${
                                         order.status === "Delivered"
                                           ? "bg-emerald-100 border-emerald-300 text-emerald-800 font-black shadow-xs"
                                           : "bg-slate-50 border-slate-200 text-slate-400 hover:text-slate-800"
@@ -2771,6 +2812,128 @@ export default function App() {
                                 Sale (Pink Badge)
                               </button>
                             </div>
+                          </div>
+
+                          {/* Image/Picture Configuration card */}
+                          <div className="space-y-2 bg-slate-50 border border-slate-150 p-4 rounded-2xl">
+                            <label className="text-[10px] font-black text-slate-500 uppercase tracking-wider block text-left">Product Presentation Image</label>
+                            
+                            {/* Drag-and-drop or click selector area */}
+                            <div 
+                              onDragOver={handleAdminDragOver}
+                              onDrop={handleAdminDrop}
+                              onClick={() => document.getElementById("admin-file-picker")?.click()}
+                              className="border-2 border-dashed border-slate-200 hover:border-slate-300 rounded-xl p-4 text-center flex flex-col items-center justify-center space-y-1 cursor-pointer transition-all bg-white group"
+                            >
+                              <input 
+                                type="file" 
+                                id="admin-file-picker"
+                                accept="image/*"
+                                onChange={handleAdminFileChange}
+                                className="hidden" 
+                              />
+                              <Upload className="text-slate-400 group-hover:text-slate-600 animate-pulse" size={16} />
+                              <p className="text-[10.5px] font-bold text-slate-700 leading-tight">Drag & drop your product image</p>
+                              <p className="text-3xs text-slate-400 font-medium">Or click to select a file from your computer</p>
+                            </div>
+
+                            {/* Manual Image URL text input */}
+                            <div className="space-y-1">
+                              <label className="text-[9px] font-bold text-slate-400 uppercase tracking-wide block text-left">Or paste custom Image URL</label>
+                              <input
+                                type="text"
+                                placeholder="https://images.unsplash.com/photo-..."
+                                value={adminImageUrl}
+                                onChange={(e) => setAdminImageUrl(e.target.value)}
+                                className="w-full text-xs font-semibold bg-white hover:bg-slate-50/50 border border-slate-200 rounded-xl px-3 py-1.5 focus:outline-hidden focus:border-slate-300 transition-all text-slate-800"
+                              />
+                            </div>
+
+                            {/* Sample placeholders section */}
+                            <div className="space-y-1.5">
+                              <span className="text-[8.5px] font-extrabold text-slate-400 uppercase tracking-widest block text-left">Try our gorgeous instant Unsplash presets:</span>
+                              <div className="flex flex-wrap gap-1 hover:opacity-100 select-none text-left">
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setAdminImageUrl("https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=350&q=80");
+                                    triggerAlertToast("Preset Minimal Watch loaded! ⏱️");
+                                  }}
+                                  className="text-[8px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold px-1.5 py-0.5 rounded uppercase tracking-tight cursor-pointer"
+                                >
+                                  ⏱️ Minimal Watch
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setAdminImageUrl("https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=350&q=80");
+                                    triggerAlertToast("Preset Red Sneaker loaded! 👟");
+                                  }}
+                                  className="text-[8px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold px-1.5 py-0.5 rounded uppercase tracking-tight cursor-pointer"
+                                >
+                                  👟 Red Sneaker
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setAdminImageUrl("https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=350&q=80");
+                                    triggerAlertToast("Preset Gold Headphones loaded! 🎧");
+                                  }}
+                                  className="text-[8px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold px-1.5 py-0.5 rounded uppercase tracking-tight cursor-pointer"
+                                >
+                                  🎧 Gold Headset
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setAdminImageUrl("https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=350&q=80");
+                                    triggerAlertToast("Preset Vintage Camera loaded! 📷");
+                                  }}
+                                  className="text-[8px] bg-slate-100 hover:bg-slate-200 text-slate-700 font-extrabold px-1.5 py-0.5 rounded uppercase tracking-tight cursor-pointer"
+                                >
+                                  📷 Silver Lens
+                                </button>
+                              </div>
+                            </div>
+
+                            {/* Render active preview frame with reset button */}
+                            {adminImageUrl && (
+                              <div className="mt-2 bg-white border border-slate-200 rounded-xl p-2 flex items-center justify-between gap-3 animate-fadeIn">
+                                <div className="flex items-center space-x-2 min-w-0">
+                                  <div className="h-10 w-10 rounded-lg bg-slate-100 overflow-hidden flex items-center justify-center flex-shrink-0 border border-slate-150">
+                                    <img 
+                                      src={adminImageUrl} 
+                                      alt="Product upload showcase" 
+                                      referrerPolicy="no-referrer"
+                                      className="h-full w-full object-contain" 
+                                      onError={() => {
+                                        triggerAlertToast("⚠️ Warning: Custom image source error. Verify URL!");
+                                      }}
+                                    />
+                                  </div>
+                                  <div className="min-w-0 text-left">
+                                    <span className="text-[9px] font-black text-emerald-700 uppercase tracking-wider block">Image Registered</span>
+                                    <p className="text-[10px] text-slate-500 truncate max-w-[150px] font-mono leading-none">{adminImageUrl}</p>
+                                  </div>
+                                </div>
+                                <button
+                                  type="button"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setAdminImageUrl("");
+                                    triggerAlertToast("Product image cleared! 🧹");
+                                  }}
+                                  className="h-7 w-7 rounded-lg bg-rose-50 hover:bg-rose-100 text-rose-600 flex items-center justify-center flex-shrink-0 cursor-pointer transition-colors"
+                                  title="Clear image"
+                                >
+                                  <X size={11} />
+                                </button>
+                              </div>
+                            )}
                           </div>
 
                           {/* description block */}

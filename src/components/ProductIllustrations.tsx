@@ -623,7 +623,18 @@ export function MonitorIllustration({ className = "w-full h-full" }: { className
 }
 
 // Master wrapper to get accurate illustration component based on image keyword
-export function ProductImageRender({ name, colorSpecs, className }: { name: string; colorSpecs?: any; className?: string }) {
+export function ProductImageRender({ name, colorSpecs, className, imageUrl }: { name: string; colorSpecs?: any; className?: string; imageUrl?: string }) {
+  if (imageUrl && imageUrl.trim()) {
+    return (
+      <img 
+        src={imageUrl} 
+        alt={name} 
+        referrerPolicy="no-referrer" 
+        className="w-full h-full max-w-full max-h-full object-contain rounded-xl"
+        id={`product-custom-img-${name.replace(/\s+/g, '-').toLowerCase()}`}
+      />
+    );
+  }
   const norm = name.toLowerCase();
   
   if (norm.includes("earbuds") || norm.includes("airsync")) {
